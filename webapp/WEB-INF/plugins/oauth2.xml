@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><plug-in>
     <name>oauth2</name>
     <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
-    <version>1.0.0-SNAPSHOT</version>
-    <description>franceconnect.module.description</description>
+    <version>0.9.0-SNAPSHOT</version>
+    <description>oauth2.module.description</description>
     <documentation/>
     <installation/>
     <changes/>
     <user-guide/>
-    <provider>franceconnect.module.provider</provider>
+    <provider>oauth2.module.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
     <icon-url>images/admin/skin/plugins/oauth2/oauth2.png</icon-url>
     <copyright>Copyright 2001-2017 Mairie de Paris</copyright>
@@ -23,13 +23,13 @@
     <servlets>
         <servlet>
             <servlet-name>franceconnectAuthCallback</servlet-name>
-            <url-pattern>/servlet/plugins/franceconnect/callback</url-pattern>
+            <url-pattern>/servlet/plugins/oauth2/callback</url-pattern>
             <servlet-class>fr.paris.lutece.plugins.oauth2.web.OAuthCallbackServlet</servlet-class>
         </servlet>
         
         <servlet>
             <servlet-name>franceconnectAuthLogout</servlet-name>
-            <url-pattern>/servlet/plugins/franceconnect/logout</url-pattern>
+            <url-pattern>/servlet/plugins/oauth2/logout</url-pattern>
             <servlet-class>fr.paris.lutece.plugins.oauth2.web.OAuthLogoutServlet</servlet-class>
         </servlet>
     </servlets>
