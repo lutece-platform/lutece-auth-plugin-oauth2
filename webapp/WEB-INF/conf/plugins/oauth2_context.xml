@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+    
+    <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
+        <property name="issuer" value="http://fcp.integ01.dev-oauth2.fr"/>
+        <property name="authorizationEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/authorize"/>
+        <property name="tokenEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/token"/>
+        <property name="logoutEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/logout"/>
+    </bean> 
+    
+    <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
+        <property name="clientId" value="a9a25895f9d76f6c89aa21830575bf34b3f4f684a72a84c13ab1c3810643d859"/>
+        <property name="clientSecret" value="7504f9f0ef08473a4c26873e9c1b898e567a39e6b76b7e60e93a0cb25cae5eb8"/>
+        <property name="redirectUri" value="http://localhost:8084/lutece/servlet/plugins/oauth2/callback"/>
+    </bean>       
+    
+    <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
+        <property name="authServerConf" ref="oauth2.server"/>
+        <property name="authClientConf" ref="oauth2.client"/>
+        <property name="jWTParser" ref="oauth2.jWTParser"/>
+    </bean>      
+    
+    <bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient">
+        <property name="name" value="logUserInfo" />
+        <property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/>
+        <property name="tokenMethod" value="HEADER"/>
+        <property name="scope">
+            <set value-type="java.lang.String">
+                <value>openid</value>
+                <value>profile</value>
+                <value>email</value>
+                <value>address</value>
+                <value>phone</value>
+            </set>
+        </property>
+        <!-- Optional eIDAS management -->
+        <!--
+        <property name="acrValuesSet">
+            <set value-type="java.lang.String">
+                <value>eidas2</value>
+            </set>
+        </property>
+        -->
+    </bean>
+
+    <!--    <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /> -->
+    <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" />
+        
+</beans>
