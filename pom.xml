@@ -53,7 +53,7 @@
     <properties>
         <componentName>plugin-oauth2</componentName>
         <jiraProjectName>POAUTH2</jiraProjectName>
-        <jiraComponentId>12888</jiraComponentId>
+        <jiraComponentId>13772</jiraComponentId>
     </properties>
 
     <scm>

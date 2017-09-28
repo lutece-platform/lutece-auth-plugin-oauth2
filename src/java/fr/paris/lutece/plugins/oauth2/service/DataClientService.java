@@ -83,7 +83,7 @@ public final class DataClientService
         for ( DataClient client : SpringContextService.getBeansOfType( DataClient.class ) )
         {
             _mapClients.put( client.getName(  ), client );
-            _logger.info( "New FranceConnect Data Client registered : " + client.getName(  ) );
+            _logger.info( "New Oaut2 Data Client registered : " + client.getName(  ) );
         }
     }
 

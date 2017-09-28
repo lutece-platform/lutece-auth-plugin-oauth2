@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Plugin FranceConnect</title>
+        <title>Plugin Oauth2</title>
     </properties>
     <body>
-        <section name="Plugin FranceConnect">
+        <section name="Plugin Oauth2">
             <p>
-                <img src="images/franceconnect.png" />
+                <img src="images/oauth2.png" />
             </p>
             <subsection name="Introduction">
                 <p>
-                    Ce plugin permet d'acceder à des ressources via la plate-forme <a href="http://www.dev-franceconnect.fr" target="_blank">FranceConnect</a>.
-                    Grâce à l'authentification par le biais d'un fournisseur d'identités de la
-                    plate-forme FranceConnect, un fournisseur de service peut ensuite accéder à des ressources
+                    Ce plugin permet d'acceder à des ressources via le protocole oauth2.
+                    Grâce à l'authentification par le biais d'un fournisseur d'identités Oauth2,
+                    un fournisseur de service peut ensuite accéder à des ressources
                     liées à l'utilisateur (et avec son consentement).
-                    L'accès à ces ressources se fait via le protocole 
-                    <a href="http://openid.net/specs/openid-connect-core-1_0.html" target="_blank">OpenID Connect</a>. 
-                </p>
+                 </p>
                 <p>
                     Ce plugin propose aux fournisseurs de service une API Java <b>DataClient</b> qui
                     permet de créer des services d'accès aux données. Pour plus d'informations sur
                     l'utilisation de cette API, reportez-vous à la documentation du 
-                    <a href="wiki.lutece.paris.fr" target="_blank">Wiki</a>.  
+                    <a href="https://fr.lutece.paris.fr/" target="_blank">Wiki</a>.  
                 </p>
                 <p>
                     Ce plugin est également utilisé par le Module 
-                    <a href="https://github.com/lutece-platform/lutece-auth-module-mylutece-franceconnect" target="_blank">MyLutece FranceConnect</a> 
-                    qui permet de faire une authentification Lutece basée sur les
-                    fournisseurs d'identités de FranceConnect.
+                    <a href="https://github.com/lutece-platform/lutece-auth-module-mylutece-oauth2" target="_blank">MyLutece Oauth2</a> 
+                    qui permet de faire une authentification Lutece basée sur le protocole oauth2.
                 </p>
             </subsection>
         </section>
@@ -35,16 +32,16 @@
         <section name="Installation">
         <subsection name="Configuration">
        <p>
-           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/franceconnect_context.xml).
+           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml).
        </p>
         <p>   
            Il faut notamment paramétrer :
             <ul>
-                <li>Les adresses des WebServices la plate-forme FranceConnect (end points)</li>
-                <li>Vos identifiants  (id, secret) qui vous auront été fournit par FranceConnect</li>
+                <li>Les adresses des WebServices la plate-forme Oauth2 cible (end points)</li>
+                <li>Vos identifiants  (id, secret) qui vous auront été fournit par le service oauth2 utilisé</li>
                 <li>L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et 
-                associée à votre ID Client auprès FranceConnect. 
-                Tout changement de serveur doit faire l'objet d'un nouvel enregistrement)</li>
+                associée à votre ID Client auprès du service Oauth2 utilisé. 
+      			</li>
             </ul>
             
            doit ensuite être paramétré avec les informations 
@@ -54,54 +51,55 @@
        <div class="source">
 <pre>           
      
-    &lt;bean id="franceconnect.server" class="fr.paris.lutece.plugins.oauth2.oidc.AuthServerConf"&gt;
-        &lt;property name="issuer" value="http://fcp.integ01.dev-franceconnect.fr"/&gt;
+    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf"&gt;
+        &lt;property name="issuer" value=" **** à renseigner **** "/&gt;
         &lt;property name="authorizationEndpointUri"
-                                  value="https://fcp.integ01.dev-franceconnect.fr/api/v1/authorize"/&gt;
-        &lt;property name="tokenEndpointUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/token"/&gt;
+                                  value=" **** à renseigner **** "/&gt;
+        &lt;property name="tokenEndpointUri" value=" **** à renseigner **** "/&gt;
+        &lt;property name="logoutEndpointUri" value=" **** à renseigner **** "/&gt;
+        &lt;property name="enableJwtParser" value="true"  ****True si le serveur utilise JWT ****   &gt;
+        
     &lt;/bean&gt; 
     
-    &lt;bean id="franceconnect.client" class="fr.paris.lutece.plugins.oauth2.oidc.AuthClientConf"&gt;
+    &lt;bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf"&gt;
         &lt;property name="clientId" value=" **** à renseigner **** "/&gt;
         &lt;property name="clientSecret" value=" **** à renseigner **** "/&gt;
         &lt;property name="redirectUri" value=" **** à renseigner **** "/&gt;
     &lt;/bean&gt;       
     
-    &lt;bean id="franceconnect.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" &gt;
-        &lt;property name="authServerConf"&gt;
-            &lt;idref&gt;franceconnect.server&lt;/idref&gt;
-        &lt;/property&gt;
-        &lt;property name="authClientConf"&gt;
-            &lt;idref&gt;franceconnect.client&lt;/idref&gt;
-        &lt;/property&gt;
+    &lt;bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" &gt;
+      ;&lt;property name="authServerConf" ref="oauth2.server"&gt;
+       &lt;property name="authClientConf" ref="oauth2.client"&gt;
+       &lt;property name="jWTParser" ref="oauth2.jWTParser""&gt;
     &lt;/bean&gt;      
     
     &lt;!-- DataClient UserInfo --&gt;
-    &lt;bean id="franceconnect.userInfoClient" class="fr.paris.lutece.plugins.oauth2.oidc.DataClient"&gt;
-        &lt;property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/&gt;
-        &lt;property name="tokenMethod" value="HEADER"/&gt;
-        &lt;property name="scope"&gt;
-            &lt;set value-type="java.lang.String"&gt;
-                &lt;value&gt;openid&lt;/value&gt;
-                &lt;value&gt;profile&lt;/value&gt;
-                &lt;value&gt;email&lt;/value&gt;
-                &lt;value&gt;address&lt;/value&gt;
-                &lt;value&gt;phone&lt;/value&gt;
-            &lt;/set&gt;
-        &lt;/property&gt;
-        &lt;!-- Optional eIDAS management --&gt;
-        &lt;!--
-        &lt;property name="acrValuesSet"&gt;
-            &lt;set value-type="java.lang.String"&gt;
-                &lt;value&gt;eidas2&lt;/value&gt;
-            &lt;/set&gt;
-        &lt;/property&gt;
+   &lt;bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient"&gt;
+         &lt;property name="name" value="logUserInfo" /&gt;
+         &lt;property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/&gt;
+         &lt;property name="tokenMethod" value="HEADER"/&gt;
+         &lt;property name="scope"&gt;
+             &lt;set value-type="java.lang.String"&gt;
+                 &lt;value&gt;openid &lt;/value&gt;
+                 &lt;value&gt;profile &lt;/value&gt;
+                 &lt;value&gt;email &lt;/value&gt;
+                 &lt;value&gt;address &lt;/value&gt;
+                 &lt;value&gt;phone &lt;/value&gt;
+             &lt;/set&gt;
+         &lt;/property&gt;
+         &lt;!-- Optional eIDAS management --&gt;
+         &lt;!--
+         &lt;property name="acrValuesSet"&gt;
+             &lt;set value-type="java.lang.String"&gt;
+                 &lt;value&gt;eidas2 &lt;/value&gt;
+             &lt;/set&gt;
+         &lt;/property&gt;
         --&gt;
-    &lt;/bean&gt;
+     &lt;/bean&gt;
 
-&lt;!--    &lt;bean id="franceconnect.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /&gt; --&gt;
-    &lt;bean id="franceconnect.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.JjwtJWTParser" /&gt;
-    
+     &lt;!--     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /&gt; --&gt;
+     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" /&gt;
+        
 
 </pre>  
        </div>        
@@ -118,10 +116,10 @@
                             <code>WEB-INF/conf/config.properties</code> dans la rubrique LOGGERS :
                             <p>                       
                             <div class="source">
-<pre>
-log4j.logger.lutece.franceconnect=DEBUG, Console
-</pre>
-                            </div>
+							<pre>
+							log4j.logger.lutece.oauth2=DEBUG, Console
+							</pre>
+							  </div>
                             </p>
                         </li>
                     </ul>

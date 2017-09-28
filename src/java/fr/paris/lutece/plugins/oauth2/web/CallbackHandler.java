@@ -310,7 +310,7 @@ public class CallbackHandler implements Serializable
     }
 
     /**
-     * check state returned by FranceConnect to the callback uri
+     * check state returned by Oauth2 to the callback uri
      * @param request The HTTP request
      * @return True if the state is valid
      */

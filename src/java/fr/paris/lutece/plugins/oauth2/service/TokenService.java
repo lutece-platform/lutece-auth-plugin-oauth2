@@ -53,8 +53,7 @@ import java.io.IOException;
  */
 public final class TokenService
 {
-    private static final String BEAN_JWT_PARSER = "franceconnect.jwtParser";
-
+  
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
 
     /**

@@ -5,19 +5,14 @@
             <item name="FR" href="/fr/index.html" />
         </links>
         
-        <menu name="Plugin FranceConnect">
+        <menu name="Plugin Oauth2">
             <item name="Home" href="index.html"/>
         </menu>
         
         <menu name="Downloads" inherit="bottom">
-            <item name="Released versions" href="../../stable_builds/plugins/plugin-franceconnect/"/>
-            <item name="Nightly builds" href="../../nightly_builds/plugins/plugin-franceconnect/" />
+            <item name="Released versions" href="../../stable_builds/plugins/plugin-oauth2/"/>
+            <item name="Nightly builds" href="../../nightly_builds/plugins/plugin-oauth2/" />
         </menu>
-
-        <menu name="France Connect links">
-            <item name="Official France Connect site" href="http://www.dev-franceconnect.fr" target="_blank"/>
-        </menu>	    
-        
-        <menu ref="reports" />
+         <menu ref="reports" />
     </body>
 </project>

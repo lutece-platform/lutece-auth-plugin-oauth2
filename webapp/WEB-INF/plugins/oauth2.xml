@@ -22,13 +22,13 @@
     <!-- servlets -->
     <servlets>
         <servlet>
-            <servlet-name>franceconnectAuthCallback</servlet-name>
+            <servlet-name>oauth2AuthCallback</servlet-name>
             <url-pattern>/servlet/plugins/oauth2/callback</url-pattern>
             <servlet-class>fr.paris.lutece.plugins.oauth2.web.OAuthCallbackServlet</servlet-class>
         </servlet>
         
         <servlet>
-            <servlet-name>franceconnectAuthLogout</servlet-name>
+            <servlet-name>oauth2AuthLogout</servlet-name>
             <url-pattern>/servlet/plugins/oauth2/logout</url-pattern>
             <servlet-class>fr.paris.lutece.plugins.oauth2.web.OAuthLogoutServlet</servlet-class>
         </servlet>

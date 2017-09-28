@@ -1,81 +1,82 @@
-![](http://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=franceconnect-plugin-franceconnect-deploy)
-# Plugin FranceConnect
+![](http://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=auth-plugin-oauth2-deploy)
+# Plugin Oauth2
 
-![](http://dev.lutece.paris.fr/plugins/plugin-franceconnect/images/franceconnect.png)
+![](http://dev.lutece.paris.fr/plugins/plugin-oauth2/images/oauth2.png)
 
 ## Introduction
 
-Ce plugin permet d'acceder à des ressources via la plate-forme [FranceConnect](http://www.dev-franceconnect.fr) . Grâce à l'authentification par le biais d'un fournisseur d'identités de laplate-forme FranceConnect, un fournisseur de service peut ensuite accéder à des ressources liées à l'utilisateur (et avec son consentement).L'accès à ces ressources se fait via le protocole [OpenID Connect](http://openid.net/specs/openid-connect-core-1_0.html) .
+Ce plugin permet d'acceder à des ressources via le protocole oauth2. Grâce à l'authentification par le biais d'un fournisseur d'identités Oauth2,un fournisseur de service peut ensuite accéder à des ressources liées à l'utilisateur (et avec son consentement).
 
-Ce plugin propose aux fournisseurs de service une API Java **DataClient** qui permet de créer des services d'accès aux données. Pour plus d'informations surl'utilisation de cette API, reportez-vous à la documentation du [Wiki](wiki.lutece.paris.fr) .
+Ce plugin propose aux fournisseurs de service une API Java **DataClient** qui permet de créer des services d'accès aux données. Pour plus d'informations surl'utilisation de cette API, reportez-vous à la documentation du [Wiki](https://fr.lutece.paris.fr/) .
 
-Ce plugin est également utilisé par le Module [MyLutece FranceConnect](https://github.com/lutece-platform/lutece-auth-module-mylutece-franceconnect) qui permet de faire une authentification Lutece basée sur lesfournisseurs d'identités de FranceConnect.
+Ce plugin est également utilisé par le Module [MyLutece Oauth2](https://github.com/lutece-platform/lutece-auth-module-mylutece-oauth2) qui permet de faire une authentification Lutece basée sur le protocole oauth2.
 
 # Installation
 
 ## Configuration
 
-Configurer le fichier de context du plugin (WEB-INF/conf/plugins/franceconnect_context.xml).
+Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml).
 
 Il faut notamment paramétrer :
  
-* Les adresses des WebServices la plate-forme FranceConnect (end points)
-* Vos identifiants (id, secret) qui vous auront été fournit par FranceConnect
-* L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et associée à votre ID Client auprès FranceConnect.Tout changement de serveur doit faire l'objet d'un nouvel enregistrement)
+* Les adresses des WebServices la plate-forme Oauth2 cible (end points)
+* Vos identifiants (id, secret) qui vous auront été fournit par le service oauth2 utilisé
+* L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et associée à votre ID Client auprès du service Oauth2 utilisé.
 doit ensuite être paramétré avec les informationsdu service client (id, secret et callback) :
 
 
 ```
            
      
-    <bean id="franceconnect.server" class="fr.paris.lutece.plugins.oauth2.oidc.AuthServerConf">
-        <property name="issuer" value="http://fcp.integ01.dev-franceconnect.fr"/>
+    <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
+        <property name="issuer" value=" **** à renseigner **** "/>
         <property name="authorizationEndpointUri"
-                                  value="https://fcp.integ01.dev-franceconnect.fr/api/v1/authorize"/>
-        <property name="tokenEndpointUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/token"/>
+                                  value=" **** à renseigner **** "/>
+        <property name="tokenEndpointUri" value=" **** à renseigner **** "/>
+        <property name="logoutEndpointUri" value=" **** à renseigner **** "/>
+        <property name="enableJwtParser" value="true"  ****True si le serveur utilise JWT ****   >
+        
     </bean> 
     
-    <bean id="franceconnect.client" class="fr.paris.lutece.plugins.oauth2.oidc.AuthClientConf">
+    <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
         <property name="clientId" value=" **** à renseigner **** "/>
         <property name="clientSecret" value=" **** à renseigner **** "/>
         <property name="redirectUri" value=" **** à renseigner **** "/>
     </bean>       
     
-    <bean id="franceconnect.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
-        <property name="authServerConf">
-            <idref>franceconnect.server</idref>
-        </property>
-        <property name="authClientConf">
-            <idref>franceconnect.client</idref>
-        </property>
+    <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
+      ;<property name="authServerConf" ref="oauth2.server">
+       <property name="authClientConf" ref="oauth2.client">
+       <property name="jWTParser" ref="oauth2.jWTParser"">
     </bean>      
     
     <!-- DataClient UserInfo -->
-    <bean id="franceconnect.userInfoClient" class="fr.paris.lutece.plugins.oauth2.oidc.DataClient">
-        <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
-        <property name="tokenMethod" value="HEADER"/>
-        <property name="scope">
-            <set value-type="java.lang.String">
-                <value>openid</value>
-                <value>profile</value>
-                <value>email</value>
-                <value>address</value>
-                <value>phone</value>
-            </set>
-        </property>
-        <!-- Optional eIDAS management -->
-        <!--
-        <property name="acrValuesSet">
-            <set value-type="java.lang.String">
-                <value>eidas2</value>
-            </set>
-        </property>
+   <bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient">
+         <property name="name" value="logUserInfo" />
+         <property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/>
+         <property name="tokenMethod" value="HEADER"/>
+         <property name="scope">
+             <set value-type="java.lang.String">
+                 <value>openid </value>
+                 <value>profile </value>
+                 <value>email </value>
+                 <value>address </value>
+                 <value>phone </value>
+             </set>
+         </property>
+         <!-- Optional eIDAS management -->
+         <!--
+         <property name="acrValuesSet">
+             <set value-type="java.lang.String">
+                 <value>eidas2 </value>
+             </set>
+         </property>
         -->
-    </bean>
+     </bean>
 
-<!--    <bean id="franceconnect.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /> -->
-    <bean id="franceconnect.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.JjwtJWTParser" />
-    
+     <!--     <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /> -->
+     <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" />
+        
 
 
 ```
@@ -89,15 +90,15 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
 
 ```
 
-log4j.logger.lutece.franceconnect=DEBUG, Console
-
+							log4j.logger.lutece.oauth2=DEBUG, Console
+							
 ```
 
 
 
 
 
-[Maven documentation and reports](http://dev.lutece.paris.fr/plugins/plugin-franceconnect/)
+[Maven documentation and reports](http://dev.lutece.paris.fr/plugins/plugin-oauth2/)
 
 
 

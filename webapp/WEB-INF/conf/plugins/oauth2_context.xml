@@ -27,7 +27,7 @@
     <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
         <property name="authServerConf" ref="oauth2.server"/>
         <property name="authClientConf" ref="oauth2.client"/>
-        <property name="jWTParser" ref="oauth2.jWTParser"/>
+        <property name="jWTParser" ref="oauth2.jwtParser"/>
     </bean>      
     
     <bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient">
