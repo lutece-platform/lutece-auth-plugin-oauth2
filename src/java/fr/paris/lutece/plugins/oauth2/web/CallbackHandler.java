@@ -47,6 +47,7 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -144,17 +145,40 @@ public class CallbackHandler implements Serializable
      */
     private void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
     {
-        try
+        DataClient dataClient=null;
+        String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
+        if(!StringUtils.isEmpty( strDataClientName ))
         {
-            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) +
-                    AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
-            url.addParameter( Constants.PARAMETER_ERROR, strError );
-            _logger.info( strError );
-            response.sendRedirect( url.getUrl(  ) );
+            dataClient = DataClientService.instance(  ).getClient( strDataClientName );
         }
-        catch ( IOException ex )
+        if(dataClient==null)
         {
-            _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
+            HttpSession session = request.getSession( true );
+            dataClient = (DataClient) session.getAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT );
+            
+        }
+        
+        if(dataClient!=null)
+        {
+            //handle error of the data client
+             dataClient.handleError( request, response, strError );
+        }
+        else
+        {
+            //default method if there is no dataclient    
+                try
+            {
+                UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) +
+                        AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
+                url.addParameter( Constants.PARAMETER_ERROR, strError );
+                _logger.info( strError );
+                response.sendRedirect( url.getUrl(  ) );
+            }
+            catch ( IOException ex )
+            {
+                
+                _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
+            }
         }
     }
 
@@ -170,6 +194,10 @@ public class CallbackHandler implements Serializable
             HttpSession session = request.getSession( true );
 
             String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
+            String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
+            
+            
+            
             DataClient dataClient = DataClientService.instance(  ).getClient( strDataClientName );
             session.setAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT, dataClient );
 
@@ -181,7 +209,10 @@ public class CallbackHandler implements Serializable
             url.addParameter( Constants.PARAMETER_SCOPE, dataClient.getScopes(  ) );
             url.addParameter( Constants.PARAMETER_STATE, createState( session ) );
             url.addParameter( Constants.PARAMETER_NONCE, createNonce( session ) );
-            
+           if(!StringUtils.isEmpty( strComplementaryParam) && strComplementaryParam.contains( "=" ))
+           {
+                url.addParameter( strComplementaryParam.split( "=" )[0], strComplementaryParam.split( "=" )[1]  );
+           }
             String strAcrValues = dataClient.getAcrValues();
             if( strAcrValues != null )
             {

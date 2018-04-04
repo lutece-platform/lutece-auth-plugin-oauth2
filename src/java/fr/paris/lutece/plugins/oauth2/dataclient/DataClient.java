@@ -132,4 +132,15 @@ public interface DataClient
      * @param response The HTTP response
      */
     void handleToken( Token token , HttpServletRequest  request , HttpServletResponse  response );
+    
+   
+    /**Method call if an error appear
+     * 
+     * @param request HttpServletRequest request
+     * @param response HttpServletResponse response
+     * @param strError String strError
+     */
+    void handleError( HttpServletRequest request, HttpServletResponse response, String strError);
+    
+    
 }

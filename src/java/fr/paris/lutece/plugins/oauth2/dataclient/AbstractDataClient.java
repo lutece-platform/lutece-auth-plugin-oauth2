@@ -36,14 +36,21 @@ package fr.paris.lutece.plugins.oauth2.dataclient;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.BearerTokenAuthenticator;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
+import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -52,6 +59,8 @@ import java.util.Set;
 public abstract class AbstractDataClient implements DataClient
 {
     protected static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+    
+  
     
     private static final char SEPARATOR = '+';
     
@@ -250,4 +259,21 @@ public abstract class AbstractDataClient implements DataClient
 
         return strResponse;
     }
+    
+    public void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
+    {
+        try
+        {
+            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) +
+                    AppPropertiesService.getProperty( Constants.PROPERTY_ERROR_PAGE ) );
+            url.addParameter( Constants.PARAMETER_ERROR, strError );
+            _logger.info( strError );
+            response.sendRedirect( url.getUrl(  ) );
+        }
+        catch ( IOException ex )
+        {
+            _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
+        }
+    }
+    
 }

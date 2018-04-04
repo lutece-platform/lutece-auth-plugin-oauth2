@@ -53,6 +53,8 @@ public final class Constants
     public static final String PARAMETER_RESPONSE_TYPE = "response_type";
     public static final String PARAMETER_ACCESS_TOKEN = "access_token";
     public static final String PARAMETER_DATA_CLIENT = "data_client";
+    public static final String PARAMETER_COMPLEMENTARY_PARAMETER = "complementary_parameter";
+    
     public static final String PARAMETER_HANDLER_NAME = "handler_name";
     public static final String PARAMETER_ACR_VALUES = "acr_values";
     public static final String GRANT_TYPE_CODE = "authorization_code";
@@ -62,6 +64,7 @@ public final class Constants
     public static final String CLAIM_IDP = "idp";
     public static final String CLAIM_ACR = "acr";
     public static final String SESSION_ATTRIBUTE_DATACLIENT = "fc_data_client";
+    public static final String PROPERTY_ERROR_PAGE = "oauth2.error.page";
     
 
 
