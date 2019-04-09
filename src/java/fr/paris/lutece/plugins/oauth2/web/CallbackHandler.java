@@ -289,27 +289,9 @@ public class CallbackHandler implements Serializable
     private Token getToken( String strAuthorizationCode, HttpSession session )
         throws IOException, HttpAccessException, TokenValidationException
     {
-        String strRedirectUri = _authClientConf.getRedirectUri(  );
-        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
-        mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_CODE );
-        mapParameters.put( Constants.PARAMETER_CODE, strAuthorizationCode );
-        mapParameters.put( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId(  ) );
-        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, _authClientConf.getClientSecret(  ) );
-
-        if ( strRedirectUri != null )
-        {
-            mapParameters.put( Constants.PARAMETER_REDIRECT_URI, strRedirectUri );
-        }
-
-        HttpAccess httpAccess = new HttpAccess(  );
-        String strUrl = _authServerConf.getTokenEndpointUri(  );
-
-        _logger.debug( "Posted URL : " + strUrl + "\nParameters :\n" + traceMap( mapParameters ) );
-
-        String strResponse = httpAccess.doPost( strUrl, mapParameters );
-        _logger.debug( "Oauth2 response : " + strResponse );
-
-        return TokenService.parse( strResponse, _authClientConf, _authServerConf, _jWTParser,getStoredNonce( session ) );
+       
+       return TokenService.getToken( _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,getStoredNonce( session ) );
+    
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -407,22 +389,7 @@ public class CallbackHandler implements Serializable
         }
     }
 
-    /**
-     * Utils to trace map content
-     * @param map The map
-     * @return The content
-     */
-    private String traceMap( Map<String, String> map )
-    {
-        StringBuilder sbTrace = new StringBuilder(  );
-
-        for ( Map.Entry entry : map.entrySet(  ) )
-        {
-            sbTrace.append( entry.getKey(  ) ).append( ":[" ).append( entry.getValue(  ) ).append( "]\n" );
-        }
-
-        return sbTrace.toString(  );
-    }
+   
 
     /**
      * get the handler Name

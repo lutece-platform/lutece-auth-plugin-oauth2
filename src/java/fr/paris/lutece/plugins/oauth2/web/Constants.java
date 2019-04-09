@@ -46,6 +46,7 @@ public final class Constants
     public static final String PARAMETER_SCOPE = "scope";
     public static final String PARAMETER_STATE = "state";
     public static final String PARAMETER_NONCE = "nonce";
+    public static final String PARAMETER_REFRESH_TOKEN = "refresh_token";
     public static final String PARAMETER_GRANT_TYPE = "grant_type";
     public static final String PARAMETER_REDIRECT_URI = "redirect_uri";
     public static final String PARAMETER_CLIENT_ID = "client_id";
@@ -57,7 +58,9 @@ public final class Constants
     
     public static final String PARAMETER_HANDLER_NAME = "handler_name";
     public static final String PARAMETER_ACR_VALUES = "acr_values";
-    public static final String GRANT_TYPE_CODE = "authorization_code";
+    public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
+    public static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
+    
     public static final String STATE_SESSION_VARIABLE = "state";
     public static final String NONCE_SESSION_VARIABLE = "nonce";
     public static final String CLAIM_NONCE = "nonce";

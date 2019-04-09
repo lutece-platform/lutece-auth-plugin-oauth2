@@ -40,12 +40,19 @@ import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.util.httpaccess.HttpAccess;
+import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -62,6 +69,84 @@ public final class TokenService
     private TokenService(  )
     {
     }
+    /**
+     * Retieve a token using an authorization code
+     * @param strAuthorizationCode The authorization code
+     * @param session The HTTP session
+     * @return The token
+     * @throws IOException if an error occurs
+     * @throws HttpAccessException if an error occurs
+     * @throws TokenValidationException If the token validation failed
+     */
+   public static Token getToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strAuthorizationCode, HttpSession session ,JWTParser jWTParser,String strStoredNonce)
+        throws IOException, HttpAccessException, TokenValidationException
+    {
+        
+       Token token=null;
+       String strRedirectUri = clientConfig.getRedirectUri(  );
+        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
+        mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_AUTHORIZATION_CODE );
+        mapParameters.put( Constants.PARAMETER_CODE, strAuthorizationCode );
+        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
+        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
+
+        if ( strRedirectUri != null )
+        {
+            mapParameters.put( Constants.PARAMETER_REDIRECT_URI, strRedirectUri );
+        }
+
+        HttpAccess httpAccess = new HttpAccess(  );
+        String strUrl = authServerConf.getTokenEndpointUri(  );
+
+        _logger.debug( "Posted URL : " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
+
+        String strResponse = httpAccess.doPost( strUrl, mapParameters );
+        _logger.debug( "Oauth2 response : " + strResponse );
+        
+        if(!StringUtils.isEmpty( strResponse ))
+        {
+            token = TokenService.parse( strResponse, clientConfig, authServerConf, jWTParser,strStoredNonce );
+        }
+        return token;
+    }
+   /**
+    *
+    * Validate refresh token
+    * @param  clientConfig  ClientConf 
+    * @param authServerConf AutConf
+    * @param strRefreshToken refreshToken
+    * @return true if the refresh token is already good
+    *
+    */
+  public static boolean validateRefreshToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strRefreshToken)
+  {
+
+       Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
+       Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>(  );
+       mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN);
+       mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
+       mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
+       mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
+      
+       HttpAccess httpAccess = new HttpAccess(  );
+       String strUrl = authServerConf.getTokenEndpointUri(  );
+
+       _logger.debug( "Validate Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
+       
+       try
+       {    
+           httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
+        
+           return true;
+       }
+       catch( HttpAccessException e )
+       {
+          
+       }
+     
+       return  false;
+   }
+
 
     /**
      * parse the JSON for a token
@@ -98,4 +183,9 @@ public final class TokenService
     {
         return MapperService.parse( strJson, Token.class );
     }
+    
+  
+    
+    
+
 }

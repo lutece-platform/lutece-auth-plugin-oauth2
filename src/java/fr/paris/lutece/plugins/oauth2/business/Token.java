@@ -50,7 +50,8 @@ public class Token
     @JsonProperty( "id_token" )
     private String _strIdToken;
     private IDToken _idToken;
-
+    @JsonProperty( "refresh_token" )
+    private String _strRefreshToken;
 
     /**
      * Returns the AccessToken
@@ -151,6 +152,23 @@ public class Token
     {
         _idToken = idToken;
     }
+    /**
+     * get Refresh Token
+     * @return get Refresh Token
+     */
+    public String getRefreshToken( )
+    {
+        return _strRefreshToken;
+    }
+    /**
+     * set Refresh Token
+     * @param strRefreshToken the Refresh Token
+     */
+    public void setRefreshToken( String strRefreshToken )
+    {
+        this._strRefreshToken = strRefreshToken;
+    }
+
 
     /**
      * {@inheritDoc }
