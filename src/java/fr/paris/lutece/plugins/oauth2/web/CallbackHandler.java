@@ -290,7 +290,7 @@ public class CallbackHandler implements Serializable
         throws IOException, HttpAccessException, TokenValidationException
     {
        
-       return TokenService.getToken( _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,getStoredNonce( session ) );
+       return TokenService.getService( ).getToken( _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,getStoredNonce( session ) );
     
     }
 
