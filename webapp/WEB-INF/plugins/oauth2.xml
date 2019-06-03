@@ -32,6 +32,7 @@
             <url-pattern>/servlet/plugins/oauth2/logout</url-pattern>
             <servlet-class>fr.paris.lutece.plugins.oauth2.web.OAuthLogoutServlet</servlet-class>
         </servlet>
+        
     </servlets>
-    
+
 </plug-in>

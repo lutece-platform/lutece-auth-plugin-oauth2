@@ -53,6 +53,7 @@ public class OAuthCallbackServlet extends HttpServlet {
 
 	private CallbackHandler _callbackHandler;
 
+
 	/**
 	 * {@inheritDoc }
 	 */
@@ -61,8 +62,14 @@ public class OAuthCallbackServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
     	String strHandlerName=request.getParameter(Constants.PARAMETER_HANDLER_NAME);
-		
-		if(_callbackHandler==null || !StringUtils.isEmpty(strHandlerName) && !_callbackHandler.getHandlerName().equals(strHandlerName) )
+		if(_callbackHandler!=null && StringUtils.isEmpty(strHandlerName) && !StringUtils.isEmpty(_callbackHandler.getHandlerName() ))
+		{
+		    //reint handler for getting the default handler
+		    _callbackHandler=null;
+		    
+		}
+		    
+		if(_callbackHandler==null || !StringUtils.isEmpty(strHandlerName) && !strHandlerName.equals(_callbackHandler.getHandlerName()) )
 		{
 			
 			_callbackHandler=getConfiguration(request,strHandlerName);
@@ -84,8 +91,20 @@ public class OAuthCallbackServlet extends HttpServlet {
         	
         	if(StringUtils.isEmpty(strHandlerName) && callBackList.size()>0)
         	{
-        		
+        		//init default value value
         		callbackHandler=callBackList.get(0);
+        		//get the default handler
+        		//the defaul handler do not have name
+        		
+        		for(CallbackHandler handler:callBackList)
+                 {
+                     if(StringUtils.isEmpty(handler.getHandlerName()))             
+                     {
+                         callbackHandler=handler;
+                         break;
+                     }
+                 
+                 }
         	}
         	else
         	{

@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
@@ -181,7 +182,6 @@ public final class TokenService
        mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
-      
        HttpAccess httpAccess = new HttpAccess(  );
        String strUrl = authServerConf.getTokenEndpointUri(  );
 
@@ -190,7 +190,6 @@ public final class TokenService
        try
        {    
            httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-        
            return true;
        }
        catch( HttpAccessException e )
@@ -201,6 +200,69 @@ public final class TokenService
        return  false;
    }
 
+  /**
+  *
+  * Get new Token using refresh token
+  * @param  clientConfig  ClientConf 
+  * @param authServerConf AutConf
+  * @param strRefreshToken refreshToken
+  * @return true if the refresh token is already good
+  *
+  */
+public Token getTokenByRefreshToken( String strRefreshToken)
+{
+    return getTokenByRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
+}
+  
+  
+  /**
+  *
+  * Get new Token using refresh token
+  * @param  clientConfig  ClientConf 
+  * @param authServerConf AutConf
+  * @param strRefreshToken refreshToken
+  * @return true if the refresh token is already good
+  *
+  */
+public Token getTokenByRefreshToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strRefreshToken)
+{
+
+     Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
+     Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>(  );
+     mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN);
+     mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
+     mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
+     mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
+     Token newToken=null;
+     HttpAccess httpAccess = new HttpAccess(  );
+     String strUrl = authServerConf.getTokenEndpointUri(  );
+
+     _logger.debug( "Get Token By Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
+     
+     try
+     {    
+         String strResponse =  httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
+         newToken=TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null,null );
+      }
+      catch( IOException e )
+      {
+          // TODO Auto-generated catch block
+          _logger.error( "Error getting new Token using refresh token",e );
+      }
+      catch( TokenValidationException e )
+      {
+          // TODO Auto-generated catch block
+          _logger.error( "Error getting new Token using refresh token",e );
+      }
+      catch( HttpAccessException e )
+     {
+        
+     }
+   
+     return  newToken;
+ }
+
+  
 
     /**
      * parse the JSON for a token
