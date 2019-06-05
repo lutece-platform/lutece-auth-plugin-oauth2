@@ -61,18 +61,12 @@ public class OAuthCallbackServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-    	String strHandlerName=request.getParameter(Constants.PARAMETER_HANDLER_NAME);
-		if(_callbackHandler!=null && StringUtils.isEmpty(strHandlerName) && !StringUtils.isEmpty(_callbackHandler.getHandlerName() ))
-		{
-		    //reint handler for getting the default handler
-		    _callbackHandler=null;
-		    
-		}
-		    
-		if(_callbackHandler==null || !StringUtils.isEmpty(strHandlerName) && !strHandlerName.equals(_callbackHandler.getHandlerName()) )
+    	String strHandlerNameParam=request.getParameter(Constants.PARAMETER_HANDLER_NAME);
+	
+    	if(_callbackHandler==null ||(!StringUtils.isEmpty(strHandlerNameParam) && !strHandlerNameParam.equals(_callbackHandler.getHandlerName())|| !_callbackHandler.isDefault( )) )
 		{
 			
-			_callbackHandler=getConfiguration(request,strHandlerName);
+			_callbackHandler=getConfiguration(request,strHandlerNameParam);
 		}
 		_callbackHandler.handle(request, response);
 	}
@@ -89,39 +83,28 @@ public class OAuthCallbackServlet extends HttpServlet {
         	List<CallbackHandler> callBackList=SpringContextService.getBeansOfType( CallbackHandler.class );
         	
         	
-        	if(StringUtils.isEmpty(strHandlerName) && callBackList.size()>0)
-        	{
-        		//init default value value
-        		callbackHandler=callBackList.get(0);
-        		//get the default handler
-        		//the defaul handler do not have name
-        		
-        		for(CallbackHandler handler:callBackList)
-                 {
-                     if(StringUtils.isEmpty(handler.getHandlerName()))             
-                     {
-                         callbackHandler=handler;
-                         break;
-                     }
-                 
-                 }
+        	
+        	if(!StringUtils.isEmpty(strHandlerName) && callBackList.size()>0)
+        	{  
+        	    
+        	    callbackHandler= callBackList.stream( ).filter( x ->   x.getHandlerName( ).equals( strHandlerName)).findFirst( ).orElse(null);
+        	 
         	}
-        	else
+        	
+        	//getDefaultHandler
+        	if(callbackHandler==null)
         	{
-        		
-	        	for(CallbackHandler handler:callBackList)
-	        	{
-	        		if(strHandlerName.equals(handler.getHandlerName()))	        	
-	        		{
-	        			callbackHandler=handler;
-	        			break;
-	        		}
-	        	
-	        	}
+        	    
+        	    callbackHandler= callBackList.stream( ).filter( x ->   x.isDefault( )).findFirst( ).orElse(null);
+                
         	}
-	        return callbackHandler;
+        	
+      	
+        return callbackHandler;
         	
             
             
-        }
+      }
+    
+    
 }

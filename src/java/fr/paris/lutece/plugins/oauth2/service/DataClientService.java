@@ -36,7 +36,12 @@ package fr.paris.lutece.plugins.oauth2.service;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpRequest;
 
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
@@ -95,6 +100,58 @@ public final class DataClientService
     public DataClient getClient( String strName )
     {
         return _mapClients.get( strName );
+    }
+    
+    /**
+     * Gets a DataClient object for a given name
+     * @param strName The Data Client name
+     * @return The Data Client
+     */
+    public DataClient getClient( HttpServletRequest request)
+    {
+        
+        HttpSession session = request.getSession( true );
+        DataClient dataClient=null;
+        String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
+        if(!StringUtils.isEmpty( strDataClientName ))
+        {
+            dataClient=getClient(strDataClientName);
+        }
+        else
+        {
+            session = request.getSession( true );
+            dataClient = (DataClient) session.getAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT );
+     
+       }
+        if(dataClient!=null)
+        {
+            
+         session.setAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT, dataClient );
+            
+        }
+        else
+        {
+
+            //get Default data client
+           dataClient=getDefaultClient( request );
+        }
+        
+        
+       return dataClient;
+    }
+    
+    
+    /**
+     * Gets a DataClient object for a given name
+     * @param strName The Data Client name
+     * @return The Data Client
+     */
+    public DataClient getDefaultClient( HttpServletRequest request)
+    {
+        
+        
+        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x->x.getValue( ) ).findFirst( ).orElse(null);
+          
     }
 
 }

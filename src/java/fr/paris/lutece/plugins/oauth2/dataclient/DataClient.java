@@ -141,6 +141,16 @@ public interface DataClient
      * @param strError String strError
      */
     void handleError( HttpServletRequest request, HttpServletResponse response, String strError);
+    /**
+     * 
+     * @return true if the dataclient is a default data client
+     */
+    boolean isDefault( );
+    /**
+     * 
+     * @param _bDefault  true if the dataclient is a default data client
+     */
+    void setDefault( boolean _bDefault );
     
     
 }

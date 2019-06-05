@@ -70,6 +70,7 @@ public abstract class AbstractDataClient implements DataClient
     private String _strTokenMethod;
     private Set<String> _scope;
     private Set<String> _acrValues;
+    private boolean _bDefault;
 
     /**
      * {@inheritDoc }
@@ -274,6 +275,16 @@ public abstract class AbstractDataClient implements DataClient
         {
             _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
         }
+    }
+
+    public boolean isDefault( )
+    {
+        return _bDefault;
+    }
+
+    public void setDefault( boolean _bDefault )
+    {
+        this._bDefault = _bDefault;
     }
     
 }

@@ -47,9 +47,8 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -66,7 +65,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
 /**
  * CallbackHandler
  */
@@ -74,22 +72,24 @@ public class CallbackHandler implements Serializable
 {
     private static final String PROPERTY_ERROR_PAGE = "oauth2.error.page";
     private static final long serialVersionUID = 1L;
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2);
-    private String _handlerName; 
+    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+    private String _handlerName;
     private AuthServerConf _authServerConf;
     private AuthClientConf _authClientConf;
     private JWTParser _jWTParser;
+    private boolean _bDefault;
 
     /**
      * @return the authServerConf
      */
-    public AuthServerConf getAuthServerConf(  )
+    public AuthServerConf getAuthServerConf( )
     {
         return _authServerConf;
     }
 
     /**
-     * @param authServerConf the authServerConf to set
+     * @param authServerConf
+     *            the authServerConf to set
      */
     public void setAuthServerConf( AuthServerConf authServerConf )
     {
@@ -99,13 +99,14 @@ public class CallbackHandler implements Serializable
     /**
      * @return the authClientConf
      */
-    public AuthClientConf getAuthClientConf(  )
+    public AuthClientConf getAuthClientConf( )
     {
         return _authClientConf;
     }
 
     /**
-     * @param authClientConf the authClientConf to set
+     * @param authClientConf
+     *            the authClientConf to set
      */
     public void setAuthClientConf( AuthClientConf authClientConf )
     {
@@ -114,8 +115,11 @@ public class CallbackHandler implements Serializable
 
     /**
      * Handle the callback
-     * @param request The HTTP request
-     * @param response The HTTP response
+     * 
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
      */
     void handle( HttpServletRequest request, HttpServletResponse response )
     {
@@ -126,66 +130,61 @@ public class CallbackHandler implements Serializable
         {
             handleError( request, response, strError );
         }
-        else if ( strCode != null )
-        {
-            handleAuthorizationCodeResponse( request, response );
-        }
         else
-        {
-            handleAuthorizationRequest( request, response );
-        }
+            if ( strCode != null )
+            {
+                handleAuthorizationCodeResponse( request, response );
+            }
+            else
+            {
+                handleAuthorizationRequest( request, response );
+            }
     }
 
     /**
      * Handle an error
      *
-     * @param request The HTTP request
-     * @param response The HTTP response
-     * @param strError The Error message
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
+     * @param strError
+     *            The Error message
      */
     private void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
     {
-        DataClient dataClient=null;
-        String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
-        if(!StringUtils.isEmpty( strDataClientName ))
+        DataClient dataClient = DataClientService.instance( ).getClient( request );
+
+        if ( dataClient != null )
         {
-            dataClient = DataClientService.instance(  ).getClient( strDataClientName );
-        }
-        if(dataClient==null)
-        {
-            HttpSession session = request.getSession( true );
-            dataClient = (DataClient) session.getAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT );
-            
-        }
-        
-        if(dataClient!=null)
-        {
-            //handle error of the data client
-             dataClient.handleError( request, response, strError );
+            // handle error of the data client
+            dataClient.handleError( request, response, strError );
         }
         else
         {
-            //default method if there is no dataclient    
-                try
+            // default method if there is no dataclient
+            try
             {
-                UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) +
-                        AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
+                UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
                 url.addParameter( Constants.PARAMETER_ERROR, strError );
                 _logger.info( strError );
-                response.sendRedirect( url.getUrl(  ) );
+                response.sendRedirect( url.getUrl( ) );
             }
-            catch ( IOException ex )
+            catch( IOException ex )
             {
-                
-                _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
+
+                _logger.error( "Error redirecting to the error page : " + ex.getMessage( ), ex );
             }
         }
     }
 
     /**
      * Handle an authorization request to obtain an authorization code
-     * @param request The HTTP request
-     * @param response The HTTP response
+     * 
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
      */
     private void handleAuthorizationRequest( HttpServletRequest request, HttpServletResponse response )
     {
@@ -193,39 +192,30 @@ public class CallbackHandler implements Serializable
         {
             HttpSession session = request.getSession( true );
 
-            String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
-            String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
-            
-            
-            
-            DataClient dataClient = DataClientService.instance(  ).getClient( strDataClientName );
-            session.setAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT, dataClient );
+           
+            DataClient dataClient = DataClientService.instance( ).getClient( request );
 
-            UrlItem url = new UrlItem( _authServerConf.getAuthorizationEndpointUri(  ) );
-            url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId(  ) );
+            UrlItem url = new UrlItem( _authServerConf.getAuthorizationEndpointUri( ) );
+            url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
             url.addParameter( Constants.PARAMETER_RESPONSE_TYPE, Constants.RESPONSE_TYPE_CODE );
-            url.addParameter( Constants.PARAMETER_REDIRECT_URI,
-                URLEncoder.encode( _authClientConf.getRedirectUri(  ), "UTF-8" ) );
-            url.addParameter( Constants.PARAMETER_SCOPE, dataClient.getScopes(  ) );
+            url.addParameter( Constants.PARAMETER_REDIRECT_URI, URLEncoder.encode( _authClientConf.getRedirectUri( ), "UTF-8" ) );
+            url.addParameter( Constants.PARAMETER_SCOPE, dataClient.getScopes( ) );
             url.addParameter( Constants.PARAMETER_STATE, createState( session ) );
             url.addParameter( Constants.PARAMETER_NONCE, createNonce( session ) );
-           if(!StringUtils.isEmpty( strComplementaryParam) && strComplementaryParam.contains( "=" ))
-           {
-                url.addParameter( strComplementaryParam.split( "=" )[0], strComplementaryParam.split( "=" )[1]  );
-           }
-            String strAcrValues = dataClient.getAcrValues();
-            if( strAcrValues != null )
+            addComplementaryParameters( url, request );
+            String strAcrValues = dataClient.getAcrValues( );
+            if ( strAcrValues != null )
             {
                 url.addParameter( Constants.PARAMETER_ACR_VALUES, strAcrValues );
             }
 
-            String strUrl = url.getUrl(  );
+            String strUrl = url.getUrl( );
             _logger.debug( "OAuth request : " + strUrl );
             response.sendRedirect( strUrl );
         }
-        catch ( IOException ex )
+        catch( IOException ex )
         {
-            String strError = "Error retrieving an authorization code : " + ex.getMessage(  );
+            String strError = "Error retrieving an authorization code : " + ex.getMessage( );
             _logger.error( strError, ex );
             handleError( request, response, strError );
         }
@@ -234,12 +224,15 @@ public class CallbackHandler implements Serializable
     /**
      * Handle an request that contains an authorization code
      *
-     * @param request The HTTP request
-     * @param response The HTTP response
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
      */
     private void handleAuthorizationCodeResponse( HttpServletRequest request, HttpServletResponse response )
     {
         String strCode = request.getParameter( Constants.PARAMETER_CODE );
+
         _logger.info( "OAuth Authorization code received : " + strCode );
 
         // Check valid state
@@ -252,26 +245,26 @@ public class CallbackHandler implements Serializable
 
         try
         {
-            HttpSession session = request.getSession(  );
+            HttpSession session = request.getSession( );
             Token token = getToken( strCode, session );
-            DataClient dataClient = (DataClient) session.getAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT );
-            dataClient.handleToken( token , request , response );
+            DataClient dataClient = DataClientService.instance( ).getClient( request );
+            dataClient.handleToken( token, request, response );
         }
-        catch ( IOException ex )
+        catch( IOException ex )
         {
-            String strError = "Error retrieving token : " + ex.getMessage(  );
+            String strError = "Error retrieving token : " + ex.getMessage( );
             _logger.error( strError, ex );
             handleError( request, response, strError );
         }
-        catch ( HttpAccessException ex )
+        catch( HttpAccessException ex )
         {
-            String strError = "Error retrieving token : " + ex.getMessage(  );
+            String strError = "Error retrieving token : " + ex.getMessage( );
             _logger.error( strError, ex );
             handleError( request, response, strError );
         }
-        catch ( TokenValidationException ex )
+        catch( TokenValidationException ex )
         {
-            String strError = "Error retrieving token : " + ex.getMessage(  );
+            String strError = "Error retrieving token : " + ex.getMessage( );
             _logger.error( strError, ex );
             handleError( request, response, strError );
         }
@@ -279,19 +272,24 @@ public class CallbackHandler implements Serializable
 
     /**
      * Retieve a token using an authorization code
-     * @param strAuthorizationCode The authorization code
-     * @param session The HTTP session
+     * 
+     * @param strAuthorizationCode
+     *            The authorization code
+     * @param session
+     *            The HTTP session
      * @return The token
-     * @throws IOException if an error occurs
-     * @throws HttpAccessException if an error occurs
-     * @throws TokenValidationException If the token validation failed
+     * @throws IOException
+     *             if an error occurs
+     * @throws HttpAccessException
+     *             if an error occurs
+     * @throws TokenValidationException
+     *             If the token validation failed
      */
-    private Token getToken( String strAuthorizationCode, HttpSession session )
-        throws IOException, HttpAccessException, TokenValidationException
+    private Token getToken( String strAuthorizationCode, HttpSession session ) throws IOException, HttpAccessException, TokenValidationException
     {
-       
-       return TokenService.getService( ).getToken( _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,getStoredNonce( session ) );
-    
+
+        return TokenService.getService( ).getToken( _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser, getStoredNonce( session ) );
+
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -300,12 +298,13 @@ public class CallbackHandler implements Serializable
     /**
      * Create a cryptographically random nonce and store it in the session
      *
-     * @param session The session
+     * @param session
+     *            The session
      * @return The nonce
      */
     private static String createNonce( HttpSession session )
     {
-        String nonce = new BigInteger( 50, new SecureRandom(  ) ).toString( 16 );
+        String nonce = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
         session.setAttribute( Constants.NONCE_SESSION_VARIABLE, nonce );
 
         return nonce;
@@ -314,7 +313,8 @@ public class CallbackHandler implements Serializable
     /**
      * Get the nonce we stored in the session
      *
-     * @param session The session
+     * @param session
+     *            The session
      * @return The stored nonce
      */
     private static String getStoredNonce( HttpSession session )
@@ -324,13 +324,15 @@ public class CallbackHandler implements Serializable
 
     /**
      * check state returned by Oauth2 to the callback uri
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return True if the state is valid
      */
     private boolean checkState( HttpServletRequest request )
     {
         String strState = request.getParameter( Constants.PARAMETER_STATE );
-        HttpSession session = request.getSession(  );
+        HttpSession session = request.getSession( );
         String strStored = getStoredState( session );
         boolean bCheck = ( ( strState == null ) || strState.equals( strStored ) );
 
@@ -345,12 +347,13 @@ public class CallbackHandler implements Serializable
     /**
      * Create a cryptographically random state and store it in the session
      *
-     * @param session The session
+     * @param session
+     *            The session
      * @return The state
      */
     private static String createState( HttpSession session )
     {
-        String strState = new BigInteger( 50, new SecureRandom(  ) ).toString( 16 );
+        String strState = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
         session.setAttribute( Constants.STATE_SESSION_VARIABLE, strState );
 
         return strState;
@@ -359,7 +362,8 @@ public class CallbackHandler implements Serializable
     /**
      * Get the state we stored in the session
      *
-     * @param session The session
+     * @param session
+     *            The session
      * @return The stored state
      */
     private static String getStoredState( HttpSession session )
@@ -368,11 +372,12 @@ public class CallbackHandler implements Serializable
     }
 
     /**
-     * Get the named stored session variable as a string. Return null if not
-     * found or not a string.
+     * Get the named stored session variable as a string. Return null if not found or not a string.
      *
-     * @param session The session
-     * @param strKey The key
+     * @param session
+     *            The session
+     * @param strKey
+     *            The key
      * @return The session string
      */
     private static String getStoredSessionString( HttpSession session, String strKey )
@@ -381,7 +386,7 @@ public class CallbackHandler implements Serializable
 
         if ( ( object != null ) && object instanceof String )
         {
-            return object.toString(  );
+            return object.toString( );
         }
         else
         {
@@ -389,36 +394,79 @@ public class CallbackHandler implements Serializable
         }
     }
 
-   
-
     /**
      * get the handler Name
+     * 
      * @return the handler name
      */
-	public String getHandlerName() {
-		return _handlerName;
-	}
+    public String getHandlerName( )
+    {
+        return _handlerName;
+    }
 
-	/**
-	 * set the handler name
-	 * @param _handlerName specify the handler Name
-	 */
-	public void setHandlerName(String _handlerName) {
-		this._handlerName = _handlerName;
-	}
-	
-	/**
-	 * 
-	 * @return JWTParser
-	 */
-	public JWTParser getJWTParser() {
-		return _jWTParser;
-	}
-	/**
-	 * 
-	 * @param jWTParser set JwtParser 
-	 */
-	public void setJWTParser(JWTParser jWTParser) {
-		this._jWTParser = jWTParser;
-	}
+    /**
+     * set the handler name
+     * 
+     * @param _handlerName
+     *            specify the handler Name
+     */
+    public void setHandlerName( String _handlerName )
+    {
+        this._handlerName = _handlerName;
+    }
+
+    /**
+     * 
+     * @return JWTParser
+     */
+    public JWTParser getJWTParser( )
+    {
+        return _jWTParser;
+    }
+
+    /**
+     * 
+     * @param jWTParser
+     *            set JwtParser
+     */
+    public void setJWTParser( JWTParser jWTParser )
+    {
+        this._jWTParser = jWTParser;
+    }
+
+    /**
+     * 
+     * @return true if the handler is the default handler
+     */
+    public boolean isDefault( )
+    {
+        return _bDefault;
+    }
+
+    /**
+     * 
+     * @param _bDefault
+     *            true if the handler is the default handler
+     */
+    public void setDefault( boolean _bDefault )
+    {
+        this._bDefault = _bDefault;
+    }
+
+    private void addComplementaryParameters( UrlItem url, HttpServletRequest request )
+    {
+        String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
+        if(!StringUtils.isEmpty( strComplementaryParam))
+        {
+            String [ ] tabComplementaryParameters = strComplementaryParam.split( "&" );
+            for ( int i = 0; i < tabComplementaryParameters.length; i++ )
+            {
+                if ( tabComplementaryParameters [i].contains( "=" ) )
+                {
+                    url.addParameter( tabComplementaryParameters [i].split( "=" ) [0], tabComplementaryParameters [i].split( "=" ) [1] );
+                }
+            }
+        }
+
+    }
 }
