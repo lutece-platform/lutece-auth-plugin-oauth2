@@ -87,7 +87,7 @@ public class OAuthCallbackServlet extends HttpServlet {
         	if(!StringUtils.isEmpty(strHandlerName) && callBackList.size()>0)
         	{  
         	    
-        	    callbackHandler= callBackList.stream( ).filter( x ->   x.getHandlerName( ).equals( strHandlerName)).findFirst( ).orElse(null);
+        	    callbackHandler= callBackList.stream( ).filter( x ->   strHandlerName.equals( x.getHandlerName( ))).findFirst( ).orElse(null);
         	 
         	}
         	
