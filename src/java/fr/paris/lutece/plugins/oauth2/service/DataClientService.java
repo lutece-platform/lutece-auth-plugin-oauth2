@@ -150,7 +150,7 @@ public final class DataClientService
     {
         
         
-        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x->x.getValue( ) ).findFirst( ).orElse(null);
+        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x->x.getValue( ) ).findFirst( ).orElse(_mapClients.entrySet( ).stream( ).map( x->x.getValue( ) ).findFirst( ).orElse(null));
           
     }
 

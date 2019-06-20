@@ -95,7 +95,7 @@ public class OAuthCallbackServlet extends HttpServlet {
         	if(callbackHandler==null)
         	{
         	    
-        	    callbackHandler= callBackList.stream( ).filter( x ->   x.isDefault( )).findFirst( ).orElse(null);
+        	    callbackHandler= callBackList.stream( ).filter( x ->   x.isDefault( )).findFirst( ).orElse(callBackList.stream( ).findFirst( ).orElse( null ));
                 
         	}
         	
