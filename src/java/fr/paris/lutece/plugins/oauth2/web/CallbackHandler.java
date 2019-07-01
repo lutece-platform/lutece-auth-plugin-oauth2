@@ -217,7 +217,7 @@ public class CallbackHandler implements Serializable
         {
             String strError = "Error retrieving an authorization code : " + ex.getMessage( );
             _logger.error( strError, ex );
-            handleError( request, response, strError );
+            handleError( request, response, Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE );
         }
     }
 
@@ -238,7 +238,7 @@ public class CallbackHandler implements Serializable
         // Check valid state
         if ( !checkState( request ) )
         {
-            handleError( request, response, "Invalid state returned Oauth server !" );
+            handleError( request, response, Constants.ERROR_TYPE_INVALID_STATE );
 
             return;
         }

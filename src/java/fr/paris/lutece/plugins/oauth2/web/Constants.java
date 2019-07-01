@@ -69,7 +69,9 @@ public final class Constants
     public static final String SESSION_ATTRIBUTE_DATACLIENT = "fc_data_client";
     public static final String PROPERTY_ERROR_PAGE = "oauth2.error.page";
     
-
+    public static final String ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE="ERROR_RETRIEVING_AN_AUTHORIZATION_CODE";
+    public static final String ERROR_TYPE_INVALID_STATE="ERROR_INVALID_STATE";
+  
 
     /** Private constructor */
     private Constants(  )
