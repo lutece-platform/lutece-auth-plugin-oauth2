@@ -33,6 +33,20 @@
  */
 package fr.paris.lutece.plugins.oauth2.web;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
@@ -43,27 +57,8 @@ import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigInteger;
-
-import java.net.URLEncoder;
-
-import java.security.SecureRandom;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * CallbackHandler
@@ -456,17 +451,24 @@ public class CallbackHandler implements Serializable
     private void addComplementaryParameters( UrlItem url, HttpServletRequest request )
     {
         String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
-        if(!StringUtils.isEmpty( strComplementaryParam))
+        String strParamValue;
+        String strParamCode;
+        
+ 
+        if(!StringUtils.isEmpty( strComplementaryParam) && strComplementaryParam.contains( "=" ))
         {
-            String [ ] tabComplementaryParameters = strComplementaryParam.split( "&" );
-            for ( int i = 0; i < tabComplementaryParameters.length; i++ )
+           strParamCode=strComplementaryParam.split( "=" ) [0];
+           strParamValue=strComplementaryParam.substring( strComplementaryParam.indexOf( "=" )+1,strComplementaryParam.length( ));
+           try
             {
-                if ( tabComplementaryParameters [i].contains( "=" ) )
-                {
-                    url.addParameter( tabComplementaryParameters [i].split( "=" ) [0], tabComplementaryParameters [i].split( "=" ) [1] );
-                }
+               strParamValue=URLEncoder.encode( strParamValue, "UTF-8");
             }
+            catch( UnsupportedEncodingException e )
+            {
+                _logger.error( "error during urlEncode of param"+strParamValue, e);
+            }
+            url.addParameter( strParamCode, strParamValue );
         }
-
-    }
+            
+      }
 }
