@@ -33,6 +33,16 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
+
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
@@ -40,20 +50,9 @@ import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpSession;
+import net.sf.json.JSONSerializer;
 
 
 /**
@@ -189,9 +188,12 @@ public final class TokenService
        
        try
        {    
-           httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-           return true;
-       }
+         String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
+         if(!strResponse.contains("\"error\""))
+         {
+             return true;
+         }
+        }
        catch( HttpAccessException e )
        {
           
