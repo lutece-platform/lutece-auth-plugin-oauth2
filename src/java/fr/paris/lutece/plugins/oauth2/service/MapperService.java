@@ -35,8 +35,9 @@ package fr.paris.lutece.plugins.oauth2.service;
 
 
 import java.io.IOException;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JSON Mapper utils
@@ -49,7 +50,8 @@ public final class MapperService
     static
     {
         _mapper = new ObjectMapper(  );
-        _mapper.configure( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+     
     }
     
     /** Private constructor */

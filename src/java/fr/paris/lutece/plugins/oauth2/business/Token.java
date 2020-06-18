@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
