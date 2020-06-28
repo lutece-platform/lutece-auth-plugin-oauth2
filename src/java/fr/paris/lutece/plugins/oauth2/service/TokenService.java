@@ -101,11 +101,12 @@ public final class TokenService
     {
         
       
-        return getToken( _instance._defaultClientConfig,_instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce );
+        return getToken(null, _instance._defaultClientConfig,_instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce );
     }
 
     /**
      * Retieve a token using an authorization code
+     * @param the strRedirectUri
      * @param strAuthorizationCode The authorization code
      * @param session The HTTP session
      * @return The token
@@ -113,12 +114,15 @@ public final class TokenService
      * @throws HttpAccessException if an error occurs
      * @throws TokenValidationException If the token validation failed
      */
-   public  Token getToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strAuthorizationCode, HttpSession session ,JWTParser jWTParser,String strStoredNonce)
+   public  Token getToken( String strRedirectUri,AuthClientConf clientConfig,AuthServerConf authServerConf,String strAuthorizationCode, HttpSession session ,JWTParser jWTParser,String strStoredNonce)
         throws IOException, HttpAccessException, TokenValidationException
     {
         
        Token token=null;
-       String strRedirectUri = clientConfig.getRedirectUri(  );
+       if(strRedirectUri==null)
+    	 {
+    	   strRedirectUri = clientConfig.getRedirectUri(  );
+    	 }
         Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
         mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_AUTHORIZATION_CODE );
         mapParameters.put( Constants.PARAMETER_CODE, strAuthorizationCode );

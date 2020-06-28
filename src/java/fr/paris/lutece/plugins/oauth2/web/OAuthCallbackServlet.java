@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.plugins.oauth2.service.CallbackHandlerService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 /**
@@ -65,46 +66,11 @@ public class OAuthCallbackServlet extends HttpServlet {
 	
     	if(_callbackHandler==null ||(!StringUtils.isEmpty(strHandlerNameParam) && !strHandlerNameParam.equals(_callbackHandler.getHandlerName())|| !_callbackHandler.isDefault( )) )
 		{
-			
-			_callbackHandler=getConfiguration(request,strHandlerNameParam);
+			_callbackHandler=CallbackHandlerService.instance().getCallbackHandler(strHandlerNameParam);
 		}
 		_callbackHandler.handle(request, response);
 	}
 
-	/**
-     * Get CallbackHandler configuration
-     */
-    private CallbackHandler getConfiguration(HttpServletRequest request ,String strHandlerName )
-    {
-        
-        	
-        	CallbackHandler callbackHandler=null;
-
-        	List<CallbackHandler> callBackList=SpringContextService.getBeansOfType( CallbackHandler.class );
-        	
-        	
-        	
-        	if(!StringUtils.isEmpty(strHandlerName) && callBackList.size()>0)
-        	{  
-        	    
-        	    callbackHandler= callBackList.stream( ).filter( x ->   strHandlerName.equals( x.getHandlerName( ))).findFirst( ).orElse(null);
-        	 
-        	}
-        	
-        	//getDefaultHandler
-        	if(callbackHandler==null)
-        	{
-        	    
-        	    callbackHandler= callBackList.stream( ).filter( x ->   x.isDefault( )).findFirst( ).orElse(callBackList.stream( ).findFirst( ).orElse( null ));
-                
-        	}
-        	
-      	
-        return callbackHandler;
-        	
-            
-            
-      }
-    
+	
     
 }

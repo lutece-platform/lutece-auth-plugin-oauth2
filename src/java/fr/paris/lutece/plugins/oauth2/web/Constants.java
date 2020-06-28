@@ -71,7 +71,8 @@ public final class Constants
     
     public static final String ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE="ERROR_RETRIEVING_AN_AUTHORIZATION_CODE";
     public static final String ERROR_TYPE_INVALID_STATE="ERROR_INVALID_STATE";
-  
+    public static final String CALL_BACK_SERVLET_URI="servlet/plugins/oauth2/callback";
+    
 
     /** Private constructor */
     private Constants(  )

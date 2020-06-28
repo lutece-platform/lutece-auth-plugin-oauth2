@@ -19,9 +19,12 @@
       </bean> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
-        <property name="clientId" value="a9a25895f9d76f6c89aa21830575bf34b3f4f684a72a84c13ab1c3810643d859"/>
-        <property name="clientSecret" value="7504f9f0ef08473a4c26873e9c1b898e567a39e6b76b7e60e93a0cb25cae5eb8"/>
-        <property name="redirectUri" value="http://localhost:8084/lutece/servlet/plugins/oauth2/callback"/>
+        <property name="clientId" value=""/>
+        <property name="clientSecret" value=""/>
+        <!--
+        By default the redirect Url is the Oauth2 Servlet URL servlet/plugins/oauth2/callback
+        <property name="redirectUri" value="http/locaclhost:8080/lutece/servlet/plugins/oauth2/callback"/>
+        -->
     </bean>       
     
     <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >

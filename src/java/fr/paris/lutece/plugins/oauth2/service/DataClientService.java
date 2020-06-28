@@ -46,6 +46,8 @@ import org.springframework.http.HttpRequest;
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.util.url.UrlItem;
 
 
 /**
@@ -153,5 +155,26 @@ public final class DataClientService
         return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x->x.getValue( ) ).findFirst( ).orElse(_mapClients.entrySet( ).stream( ).map( x->x.getValue( ) ).findFirst( ).orElse(null));
           
     }
+    
+    /**
+     * Gets the dataclient URL
+     * @param request the httpservlet Request
+     * @param strDataClientName The data client name
+     * @param strHandlerName the HandlerName
+     * @return The URL
+     */
+    public String getDataClientUrl( HttpServletRequest request,String strDataClientName,String strHandlerName )
+    {
+    	String strCallBackUrlUrl= AppPathService.getAbsoluteUrl(request, Constants.CALL_BACK_SERVLET_URI);
+    	
+        UrlItem url = new UrlItem(strCallBackUrlUrl  );
+        url.addParameter( Constants.PARAMETER_DATA_CLIENT, strDataClientName );
+        if(strHandlerName!=null)
+        {
+        	url.addParameter( Constants.PARAMETER_HANDLER_NAME, strHandlerName );
+        }
+        return url.getUrl();
+    }
+
 
 }
