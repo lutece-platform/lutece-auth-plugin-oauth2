@@ -5,6 +5,7 @@
 
 ## Introduction
 
+
 Ce plugin permet d'acceder à des ressources via le protocole oauth2. Grâce à l'authentification par le biais d'un fournisseur d'identités Oauth2,un fournisseur de service peut ensuite accéder à des ressources liées à l'utilisateur (et avec son consentement).
 
 Ce plugin propose aux fournisseurs de service une API Java **DataClient** qui permet de créer des services d'accès aux données. Pour plus d'informations surl'utilisation de cette API, reportez-vous à la documentation du [Wiki](https://fr.lutece.paris.fr/) .
