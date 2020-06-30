@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
 
-
 /**
  * UserInfoDataClient
  */
@@ -51,23 +50,28 @@ public class LogUserInfoDataClient extends AbstractDataClient
      * {@inheritDoc }
      */
     @Override
-    public void handleToken( Token token , HttpServletRequest  request , HttpServletResponse  response )
+    public void handleToken( Token token, HttpServletRequest request, HttpServletResponse response )
     {
-            
-    		String strData=getData( token );
-    		_logger.debug( "UserInfo retrieved  after Authentication " + strData );
-            
-            try {
-				response.getOutputStream().write(strData.getBytes("UTF-8"));
-			} catch (IOException e) {
-			
-				
-			}
-            try {
-				response.flushBuffer();
-			} catch (IOException e) {
-				_logger.error( "Error during flush response " + e);
-			}
-      
+
+        String strData = getData( token );
+        _logger.debug( "UserInfo retrieved  after Authentication " + strData );
+
+        try
+        {
+            response.getOutputStream( ).write( strData.getBytes( "UTF-8" ) );
+        }
+        catch( IOException e )
+        {
+
+        }
+        try
+        {
+            response.flushBuffer( );
+        }
+        catch( IOException e )
+        {
+            _logger.error( "Error during flush response " + e );
+        }
+
     }
 }

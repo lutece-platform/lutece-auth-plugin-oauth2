@@ -37,7 +37,6 @@ import com.nimbusds.jose.Algorithm;
 
 import java.io.Serializable;
 
-
 /**
  * OAuth RegisteredClient
  */
@@ -50,16 +49,19 @@ public class AuthClientConf implements Serializable
 
     /**
      * Returns the ClientId
+     * 
      * @return The ClientId
      */
-    public String getClientId(  )
+    public String getClientId( )
     {
         return _strClientId;
     }
 
     /**
      * Sets the ClientId
-     * @param strClientId The ClientId
+     * 
+     * @param strClientId
+     *            The ClientId
      */
     public void setClientId( String strClientId )
     {
@@ -68,16 +70,19 @@ public class AuthClientConf implements Serializable
 
     /**
      * Returns the ClientSecret
+     * 
      * @return The ClientSecret
      */
-    public String getClientSecret(  )
+    public String getClientSecret( )
     {
         return _strClientSecret;
     }
 
     /**
      * Sets the ClientSecret
-     * @param strClientSecret The ClientSecret
+     * 
+     * @param strClientSecret
+     *            The ClientSecret
      */
     public void setClientSecret( String strClientSecret )
     {
@@ -86,16 +91,19 @@ public class AuthClientConf implements Serializable
 
     /**
      * Returns the RedirectUri
+     * 
      * @return The RedirectUri
      */
-    public String getRedirectUri(  )
+    public String getRedirectUri( )
     {
         return _strRedirectUri;
     }
 
     /**
      * Sets the RedirectUri
-     * @param strRedirectUri The RedirectUri
+     * 
+     * @param strRedirectUri
+     *            The RedirectUri
      */
     public void setRedirectUri( String strRedirectUri )
     {
@@ -104,9 +112,10 @@ public class AuthClientConf implements Serializable
 
     /**
      * Return IDToken signed response Algorithm
+     * 
      * @return The IDToken signed response Algorithm
      */
-    public Algorithm getIdTokenSignedResponseAlg(  )
+    public Algorithm getIdTokenSignedResponseAlg( )
     {
         return null;
     }

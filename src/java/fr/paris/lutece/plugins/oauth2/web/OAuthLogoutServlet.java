@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * AuthLoginServlet
  */
@@ -58,19 +57,18 @@ public class OAuthLogoutServlet extends HttpServlet
      * {@inheritDoc }
      */
     @Override
-    protected void service( HttpServletRequest request, HttpServletResponse response )
-        throws ServletException, IOException
+    protected void service( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
         response.setStatus( HttpServletResponse.SC_OK );
         response.setContentType( "text/html" );
 
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( user != null )
         {
-            SecurityService.getInstance(  ).logoutUser( request );
+            SecurityService.getInstance( ).logoutUser( request );
             // TODO Logout oauth
-            _logger.debug( "Logout successful for user : " + user.getName(  ) );
+            _logger.debug( "Logout successful for user : " + user.getName( ) );
         }
         else
         {

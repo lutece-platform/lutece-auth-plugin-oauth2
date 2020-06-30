@@ -41,14 +41,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpRequest;
 
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
-
 
 /**
  * DataClientService
@@ -57,24 +55,24 @@ public final class DataClientService
 {
     private static DataClientService _singleton;
     private static ConcurrentMap<String, DataClient> _mapClients;
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2);
-  
+    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
 
     /** Private constructor */
-    private DataClientService(  )
+    private DataClientService( )
     {
     }
 
     /**
      * Return the unique instance
+     * 
      * @return The unique instance
      */
-    public static synchronized DataClientService instance(  )
+    public static synchronized DataClientService instance( )
     {
         if ( _singleton == null )
         {
-            _singleton = new DataClientService(  );
-            initClients(  );
+            _singleton = new DataClientService( );
+            initClients( );
         }
 
         return _singleton;
@@ -83,98 +81,105 @@ public final class DataClientService
     /**
      * Init clients
      */
-    private static void initClients(  )
+    private static void initClients( )
     {
-        _mapClients = new ConcurrentHashMap<String, DataClient>(  );
+        _mapClients = new ConcurrentHashMap<>( );
 
         for ( DataClient client : SpringContextService.getBeansOfType( DataClient.class ) )
         {
-            _mapClients.put( client.getName(  ), client );
-            _logger.info( "New Oaut2 Data Client registered : " + client.getName(  ) );
+            _mapClients.put( client.getName( ), client );
+            _logger.info( "New Oaut2 Data Client registered : " + client.getName( ) );
         }
     }
 
     /**
      * Gets a DataClient object for a given name
-     * @param strName The Data Client name
+     * 
+     * @param strName
+     *            The Data Client name
      * @return The Data Client
      */
     public DataClient getClient( String strName )
     {
         return _mapClients.get( strName );
     }
-    
+
     /**
      * Gets a DataClient object for a given name
-     * @param strName The Data Client name
+     * 
+     * @param strName
+     *            The Data Client name
      * @return The Data Client
      */
-    public DataClient getClient( HttpServletRequest request)
+    public DataClient getClient( HttpServletRequest request )
     {
-        
+
         HttpSession session = request.getSession( true );
-        DataClient dataClient=null;
+        DataClient dataClient = null;
         String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
-        if(!StringUtils.isEmpty( strDataClientName ))
+        if ( !StringUtils.isEmpty( strDataClientName ) )
         {
-            dataClient=getClient(strDataClientName);
+            dataClient = getClient( strDataClientName );
         }
         else
         {
             session = request.getSession( true );
             dataClient = (DataClient) session.getAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT );
-     
-       }
-        if(dataClient!=null)
+
+        }
+        if ( dataClient != null )
         {
-            
-         session.setAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT, dataClient );
-            
+
+            session.setAttribute( Constants.SESSION_ATTRIBUTE_DATACLIENT, dataClient );
+
         }
         else
         {
 
-            //get Default data client
-           dataClient=getDefaultClient( request );
+            // get Default data client
+            dataClient = getDefaultClient( request );
         }
-        
-        
-       return dataClient;
-    }
-    
-    
-    /**
-     * Gets a DataClient object for a given name
-     * @param strName The Data Client name
-     * @return The Data Client
-     */
-    public DataClient getDefaultClient( HttpServletRequest request)
-    {
-        
-        
-        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x->x.getValue( ) ).findFirst( ).orElse(_mapClients.entrySet( ).stream( ).map( x->x.getValue( ) ).findFirst( ).orElse(null));
-          
-    }
-    
-    /**
-     * Gets the dataclient URL
-     * @param request the httpservlet Request
-     * @param strDataClientName The data client name
-     * @param strHandlerName the HandlerName
-     * @return The URL
-     */
-    public String getDataClientUrl( HttpServletRequest request,String strDataClientName,String strHandlerName )
-    {
-    	String strCallBackUrlUrl= AppPathService.getAbsoluteUrl(request, Constants.CALL_BACK_SERVLET_URI);
-    	
-        UrlItem url = new UrlItem(strCallBackUrlUrl  );
-        url.addParameter( Constants.PARAMETER_DATA_CLIENT, strDataClientName );
-        if(strHandlerName!=null)
-        {
-        	url.addParameter( Constants.PARAMETER_HANDLER_NAME, strHandlerName );
-        }
-        return url.getUrl();
+
+        return dataClient;
     }
 
+    /**
+     * Gets a DataClient object for a given name
+     * 
+     * @param strName
+     *            The Data Client name
+     * @return The Data Client
+     */
+    public DataClient getDefaultClient( HttpServletRequest request )
+    {
+
+        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x -> x.getValue( ) ).findFirst( )
+                .orElse( _mapClients.entrySet( ).stream( ).map( x -> x.getValue( ) ).findFirst( ).orElse( null ) );
+
+    }
+
+    /**
+     * Gets the dataclient URL
+     * 
+     * @param request
+     *            the httpservlet Request
+     * @param strDataClientName
+     *            The data client name
+     * @param strHandlerName
+     *            the HandlerName
+     * @return The URL
+     */
+    public String getDataClientUrl( HttpServletRequest request, String strDataClientName, String strHandlerName )
+    {
+        String strCallBackUrlUrl = AppPathService.getAbsoluteUrl( request, Constants.CALL_BACK_SERVLET_URI );
+
+        UrlItem url = new UrlItem( strCallBackUrlUrl );
+        url.addParameter( Constants.PARAMETER_DATA_CLIENT, strDataClientName );
+        if ( strHandlerName != null )
+        {
+            url.addParameter( Constants.PARAMETER_HANDLER_NAME, strHandlerName );
+        }
+        return url.getUrl( );
+    }
 
 }

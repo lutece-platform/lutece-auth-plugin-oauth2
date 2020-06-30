@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
-
 /**
  * IDToken : informations provided by a JWT (Json Web Token)
  */
@@ -50,16 +49,19 @@ public class IDToken
 
     /**
      * Returns the Audience
+     * 
      * @return The Audience
      */
-    public String getAudience(  )
+    public String getAudience( )
     {
         return _strAudience;
     }
 
     /**
      * Sets the Audience
-     * @param strAudience The Audience
+     * 
+     * @param strAudience
+     *            The Audience
      */
     public void setAudience( String strAudience )
     {
@@ -68,16 +70,19 @@ public class IDToken
 
     /**
      * Returns the Expiration
+     * 
      * @return The Expiration
      */
-    public String getExpiration(  )
+    public String getExpiration( )
     {
         return _strExpiration;
     }
 
     /**
      * Sets the Expiration
-     * @param strExpiration The Expiration
+     * 
+     * @param strExpiration
+     *            The Expiration
      */
     public void setExpiration( String strExpiration )
     {
@@ -86,16 +91,19 @@ public class IDToken
 
     /**
      * Returns the IssueAt
+     * 
      * @return The IssueAt
      */
-    public String getIssueAt(  )
+    public String getIssueAt( )
     {
         return _strIssueAt;
     }
 
     /**
      * Sets the IssueAt
-     * @param strIssueAt The IssueAt
+     * 
+     * @param strIssueAt
+     *            The IssueAt
      */
     public void setIssueAt( String strIssueAt )
     {
@@ -104,16 +112,19 @@ public class IDToken
 
     /**
      * Returns the Issuer
+     * 
      * @return The Issuer
      */
-    public String getIssuer(  )
+    public String getIssuer( )
     {
         return _strIssuer;
     }
 
     /**
      * Sets the Issuer
-     * @param strIssuer The Issuer
+     * 
+     * @param strIssuer
+     *            The Issuer
      */
     public void setIssuer( String strIssuer )
     {
@@ -122,16 +133,19 @@ public class IDToken
 
     /**
      * Returns the Subject
+     * 
      * @return The Subject
      */
-    public String getSubject(  )
+    public String getSubject( )
     {
         return _strSubject;
     }
 
     /**
      * Sets the Subject
-     * @param strSubject The Subject
+     * 
+     * @param strSubject
+     *            The Subject
      */
     public void setSubject( String strSubject )
     {
@@ -140,16 +154,19 @@ public class IDToken
 
     /**
      * Returns the IdProvider
+     * 
      * @return The IdProvider
      */
-    public String getIdProvider(  )
+    public String getIdProvider( )
     {
         return _strIdProvider;
     }
 
     /**
      * Sets the IdProvider
-     * @param strIdProvider The IdProvider
+     * 
+     * @param strIdProvider
+     *            The IdProvider
      */
     public void setIdProvider( String strIdProvider )
     {
@@ -158,16 +175,19 @@ public class IDToken
 
     /**
      * Returns the Nonce
+     * 
      * @return The Nonce
      */
-    public String getNonce(  )
+    public String getNonce( )
     {
         return _strNonce;
     }
 
     /**
      * Sets the Nonce
-     * @param strNonce The Nonce
+     * 
+     * @param strNonce
+     *            The Nonce
      */
     public void setNonce( String strNonce )
     {
@@ -176,16 +196,19 @@ public class IDToken
 
     /**
      * Returns the Acr
+     * 
      * @return The Acr
      */
-    public String getAcr(  )
+    public String getAcr( )
     {
         return _strAcr;
     }
 
     /**
      * Sets the Acr
-     * @param strAcr The Acr
+     * 
+     * @param strAcr
+     *            The Acr
      */
     public void setAcr( String strAcr )
     {
@@ -196,15 +219,13 @@ public class IDToken
      * {@inheritDoc }
      */
     @Override
-    public String toString(  )
+    public String toString( )
     {
-        StringBuilder sbToken = new StringBuilder(  );
-        sbToken.append( "Token ID infos : \n  aud : " ).append( _strAudience ).append( "\n  exp : " )
-               .append( _strExpiration ).append( "\n  iat : " ).append( _strIssueAt ).append( "\n  iss : " )
-               .append( _strIssuer ).append( "\n  sub : " ).append( _strSubject ).append( "\n  idp : " )
-               .append( _strIdProvider ).append( "\n  nonce : " ).append( _strNonce ).append( "\n  acr : " )
-               .append( _strAcr ).append( "\n\n" );
+        StringBuilder sbToken = new StringBuilder( );
+        sbToken.append( "Token ID infos : \n  aud : " ).append( _strAudience ).append( "\n  exp : " ).append( _strExpiration ).append( "\n  iat : " )
+                .append( _strIssueAt ).append( "\n  iss : " ).append( _strIssuer ).append( "\n  sub : " ).append( _strSubject ).append( "\n  idp : " )
+                .append( _strIdProvider ).append( "\n  nonce : " ).append( _strNonce ).append( "\n  acr : " ).append( _strAcr ).append( "\n\n" );
 
-        return sbToken.toString(  );
+        return sbToken.toString( );
     }
 }

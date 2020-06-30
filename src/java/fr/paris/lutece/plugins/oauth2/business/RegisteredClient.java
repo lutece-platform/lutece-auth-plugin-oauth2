@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 
-
 /**
  * OAuth RegisteredClient
  */
@@ -56,16 +55,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the ClientId
+     * 
      * @return The ClientId
      */
-    public String getClientId(  )
+    public String getClientId( )
     {
         return _strClientId;
     }
 
     /**
      * Sets the ClientId
-     * @param strClientId The ClientId
+     * 
+     * @param strClientId
+     *            The ClientId
      */
     public void setClientId( String strClientId )
     {
@@ -74,16 +76,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the ClientSecret
+     * 
      * @return The ClientSecret
      */
-    public String getClientSecret(  )
+    public String getClientSecret( )
     {
         return _strClientSecret;
     }
 
     /**
      * Sets the ClientSecret
-     * @param strClientSecret The ClientSecret
+     * 
+     * @param strClientSecret
+     *            The ClientSecret
      */
     public void setClientSecret( String strClientSecret )
     {
@@ -92,16 +97,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the TokenEndpointAuthMethod
+     * 
      * @return The TokenEndpointAuthMethod
      */
-    public String getTokenEndpointAuthMethod(  )
+    public String getTokenEndpointAuthMethod( )
     {
         return _strTokenEndpointAuthMethod;
     }
 
     /**
      * Sets the TokenEndpointAuthMethod
-     * @param strTokenEndpointAuthMethod The TokenEndpointAuthMethod
+     * 
+     * @param strTokenEndpointAuthMethod
+     *            The TokenEndpointAuthMethod
      */
     public void setTokenEndpointAuthMethod( String strTokenEndpointAuthMethod )
     {
@@ -110,16 +118,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the Scope
+     * 
      * @return The Scope
      */
-    public Set getScope(  )
+    public Set getScope( )
     {
         return _scope;
     }
 
     /**
      * Sets the Scope
-     * @param scope The Scope
+     * 
+     * @param scope
+     *            The Scope
      */
     public void setScope( Set scope )
     {
@@ -128,16 +139,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the RedirectUri
+     * 
      * @return The RedirectUri
      */
-    public String getRedirectUri(  )
+    public String getRedirectUri( )
     {
         return _strRedirectUri;
     }
 
     /**
      * Sets the RedirectUri
-     * @param strRedirectUri The RedirectUri
+     * 
+     * @param strRedirectUri
+     *            The RedirectUri
      */
     public void setRedirectUri( String strRedirectUri )
     {
@@ -146,16 +160,19 @@ public class RegisteredClient implements Serializable
 
     /**
      * Returns the RedirectUris
+     * 
      * @return The RedirectUris
      */
-    public Set getRedirectUris(  )
+    public Set getRedirectUris( )
     {
         return _redirectUris;
     }
 
     /**
      * Sets the RedirectUris
-     * @param redirectUris The RedirectUris
+     * 
+     * @param redirectUris
+     *            The RedirectUris
      */
     public void setRedirectUris( Set redirectUris )
     {
@@ -164,16 +181,17 @@ public class RegisteredClient implements Serializable
 
     /**
      * Build a string that contains the list of scope separated by a plus
+     * 
      * @return The scopes
      */
-    public String getScopes(  )
+    public String getScopes( )
     {
-        StringBuilder sbScopes = new StringBuilder(  );
+        StringBuilder sbScopes = new StringBuilder( );
 
-        Iterator iterator = _scope.iterator(  );
+        Iterator iterator = _scope.iterator( );
         boolean bFirst = true;
 
-        while ( iterator.hasNext(  ) )
+        while ( iterator.hasNext( ) )
         {
             if ( !bFirst )
             {
@@ -181,17 +199,18 @@ public class RegisteredClient implements Serializable
             }
 
             bFirst = false;
-            sbScopes.append( iterator.next(  ) );
+            sbScopes.append( iterator.next( ) );
         }
 
-        return sbScopes.toString(  );
+        return sbScopes.toString( );
     }
 
     /**
      * Return IDToken signed response Algorithm
+     * 
      * @return The IDToken signed response Algorithm
      */
-    public Algorithm getIdTokenSignedResponseAlg(  )
+    public Algorithm getIdTokenSignedResponseAlg( )
     {
         return null;
     }

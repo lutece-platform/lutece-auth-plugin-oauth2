@@ -52,18 +52,15 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * DataClient
  */
 public abstract class AbstractDataClient implements DataClient
 {
     protected static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
-    
-  
-    
+
     private static final char SEPARATOR = '+';
-    
+
     private String _strName;
     private String _strRedirectUri;
     private String _strDataServerUri;
@@ -76,7 +73,7 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return _strName;
     }
@@ -94,7 +91,7 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public Set getScope(  )
+    public Set getScope( )
     {
         return _scope;
     }
@@ -112,14 +109,14 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public String getScopes(  )
+    public String getScopes( )
     {
-        StringBuilder sbScopes = new StringBuilder(  );
+        StringBuilder sbScopes = new StringBuilder( );
 
-        Iterator iterator = _scope.iterator(  );
+        Iterator iterator = _scope.iterator( );
         boolean bFirst = true;
 
-        while ( iterator.hasNext(  ) )
+        while ( iterator.hasNext( ) )
         {
             if ( !bFirst )
             {
@@ -127,17 +124,17 @@ public abstract class AbstractDataClient implements DataClient
             }
 
             bFirst = false;
-            sbScopes.append( iterator.next(  ) );
+            sbScopes.append( iterator.next( ) );
         }
 
-        return sbScopes.toString(  );
+        return sbScopes.toString( );
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public String getRedirectUri(  )
+    public String getRedirectUri( )
     {
         return _strRedirectUri;
     }
@@ -155,7 +152,7 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public Set getAcrValuesSet(  )
+    public Set getAcrValuesSet( )
     {
         return _acrValues;
     }
@@ -173,19 +170,19 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public String getAcrValues(  )
+    public String getAcrValues( )
     {
-        if( _acrValues==null || _acrValues.isEmpty() )
+        if ( _acrValues == null || _acrValues.isEmpty( ) )
         {
             return null;
         }
-        
-        StringBuilder sbAcrValues = new StringBuilder(  );
 
-        Iterator iterator = _acrValues.iterator(  );
+        StringBuilder sbAcrValues = new StringBuilder( );
+
+        Iterator iterator = _acrValues.iterator( );
         boolean bFirst = true;
 
-        while ( iterator.hasNext(  ) )
+        while ( iterator.hasNext( ) )
         {
             if ( !bFirst )
             {
@@ -193,17 +190,17 @@ public abstract class AbstractDataClient implements DataClient
             }
 
             bFirst = false;
-            sbAcrValues.append( iterator.next(  ) );
+            sbAcrValues.append( iterator.next( ) );
         }
 
-        return sbAcrValues.toString(  );
+        return sbAcrValues.toString( );
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public String getDataServerUri(  )
+    public String getDataServerUri( )
     {
         return _strDataServerUri;
     }
@@ -221,7 +218,7 @@ public abstract class AbstractDataClient implements DataClient
      * {@inheritDoc }
      */
     @Override
-    public String getTokenMethod(  )
+    public String getTokenMethod( )
     {
         return _strTokenMethod;
     }
@@ -237,43 +234,44 @@ public abstract class AbstractDataClient implements DataClient
 
     /**
      * Send an authenticated request with the access token to retreive data
-     * @param token The token
+     * 
+     * @param token
+     *            The token
      * @return The response
      */
     public String getData( Token token )
     {
         String strResponse = null;
-        HttpAccess httpAccess = new HttpAccess(  );
+        HttpAccess httpAccess = new HttpAccess( );
 
         String strUrl = _strDataServerUri;
 
         try
         {
-            RequestAuthenticator authenticator = new BearerTokenAuthenticator( token.getAccessToken(  ) );
+            RequestAuthenticator authenticator = new BearerTokenAuthenticator( token.getAccessToken( ) );
             strResponse = httpAccess.doGet( strUrl, authenticator, null );
             _logger.debug( "Oauth2 response : " + strResponse );
         }
-        catch ( HttpAccessException ex )
+        catch( HttpAccessException ex )
         {
-            _logger.error( "OAuth Login Error" + ex.getMessage(  ), ex );
+            _logger.error( "OAuth Login Error" + ex.getMessage( ), ex );
         }
 
         return strResponse;
     }
-    
+
     public void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
     {
         try
         {
-            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) +
-                    AppPropertiesService.getProperty( Constants.PROPERTY_ERROR_PAGE ) );
+            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( Constants.PROPERTY_ERROR_PAGE ) );
             url.addParameter( Constants.PARAMETER_ERROR, strError );
             _logger.info( strError );
-            response.sendRedirect( url.getUrl(  ) );
+            response.sendRedirect( url.getUrl( ) );
         }
-        catch ( IOException ex )
+        catch( IOException ex )
         {
-            _logger.error( "Error redirecting to the error page : " + ex.getMessage(  ), ex );
+            _logger.error( "Error redirecting to the error page : " + ex.getMessage( ), ex );
         }
     }
 
@@ -286,5 +284,5 @@ public abstract class AbstractDataClient implements DataClient
     {
         this._bDefault = _bDefault;
     }
-    
+
 }

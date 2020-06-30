@@ -49,28 +49,27 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 /**
  * AuthLoginServlet
  */
-public class OAuthCallbackServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public class OAuthCallbackServlet extends HttpServlet
+{
+    private static final long serialVersionUID = 1L;
 
-	private CallbackHandler _callbackHandler;
+    private CallbackHandler _callbackHandler;
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    protected void service( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
 
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-    	String strHandlerNameParam=request.getParameter(Constants.PARAMETER_HANDLER_NAME);
-	
-    	if(_callbackHandler==null ||(!StringUtils.isEmpty(strHandlerNameParam) && !strHandlerNameParam.equals(_callbackHandler.getHandlerName())|| !_callbackHandler.isDefault( )) )
-		{
-			_callbackHandler=CallbackHandlerService.instance().getCallbackHandler(strHandlerNameParam);
-		}
-		_callbackHandler.handle(request, response);
-	}
+        String strHandlerNameParam = request.getParameter( Constants.PARAMETER_HANDLER_NAME );
 
-	
-    
+        if ( _callbackHandler == null || ( !StringUtils.isEmpty( strHandlerNameParam ) && !strHandlerNameParam.equals( _callbackHandler.getHandlerName( ) )
+                || !_callbackHandler.isDefault( ) ) )
+        {
+            _callbackHandler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
+        }
+        _callbackHandler.handle( request, response );
+    }
+
 }

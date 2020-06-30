@@ -41,7 +41,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-
 /**
  * TokenService Test
  */
@@ -51,18 +50,19 @@ public class TokenServiceTest
 
     /**
      * Test of parse method, of class TokenService.
+     * 
      * @throws java.io.IOException
      */
     @Test
-    public void testParseToken(  ) throws IOException
+    public void testParseToken( ) throws IOException
     {
         System.out.println( "parse" );
 
         String strJson = JSON_TOKEN;
         Token token = TokenService.getService( ).parseToken( strJson );
 
-        assertEquals( token.getAccessToken(  ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
-        assertEquals( token.getExpiresIn(  ), 3600 );
-        assertEquals( token.getTokenType(  ), "Bearer" );
+        assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
+        assertEquals( token.getExpiresIn( ), 3600 );
+        assertEquals( token.getTokenType( ), "Bearer" );
     }
 }

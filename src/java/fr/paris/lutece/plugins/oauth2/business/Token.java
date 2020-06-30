@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.oauth2.business;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 /**
  * Token
  */
@@ -58,7 +57,7 @@ public class Token
      *
      * @return The AccessToken
      */
-    public String getAccessToken(  )
+    public String getAccessToken( )
     {
         return _strAccessToken;
     }
@@ -66,7 +65,8 @@ public class Token
     /**
      * Sets the AccessToken
      *
-     * @param strAccessToken The AccessToken
+     * @param strAccessToken
+     *            The AccessToken
      */
     public void setAccessToken( String strAccessToken )
     {
@@ -78,7 +78,7 @@ public class Token
      *
      * @return The TokenType
      */
-    public String getTokenType(  )
+    public String getTokenType( )
     {
         return _strTokenType;
     }
@@ -86,7 +86,8 @@ public class Token
     /**
      * Sets the TokenType
      *
-     * @param strTokenType The TokenType
+     * @param strTokenType
+     *            The TokenType
      */
     public void setTokenType( String strTokenType )
     {
@@ -98,7 +99,7 @@ public class Token
      *
      * @return The ExpiresIn
      */
-    public int getExpiresIn(  )
+    public int getExpiresIn( )
     {
         return _nExpiresIn;
     }
@@ -106,7 +107,8 @@ public class Token
     /**
      * Sets the ExpiresIn
      *
-     * @param nExpiresIn The ExpiresIn
+     * @param nExpiresIn
+     *            The ExpiresIn
      */
     public void setExpiresIn( int nExpiresIn )
     {
@@ -118,7 +120,7 @@ public class Token
      *
      * @return The IdToken
      */
-    public String getIdTokenString(  )
+    public String getIdTokenString( )
     {
         return _strIdToken;
     }
@@ -126,7 +128,8 @@ public class Token
     /**
      * Sets the IdToken
      *
-     * @param strIdToken The IdToken
+     * @param strIdToken
+     *            The IdToken
      */
     public void setIdTokenString( String strIdToken )
     {
@@ -138,7 +141,7 @@ public class Token
      *
      * @return The IdToken
      */
-    public IDToken getIdToken(  )
+    public IDToken getIdToken( )
     {
         return _idToken;
     }
@@ -146,42 +149,46 @@ public class Token
     /**
      * Sets the IdToken
      *
-     * @param idToken The IdToken
+     * @param idToken
+     *            The IdToken
      */
     public void setIdToken( IDToken idToken )
     {
         _idToken = idToken;
     }
+
     /**
      * get Refresh Token
+     * 
      * @return get Refresh Token
      */
     public String getRefreshToken( )
     {
         return _strRefreshToken;
     }
+
     /**
      * set Refresh Token
-     * @param strRefreshToken the Refresh Token
+     * 
+     * @param strRefreshToken
+     *            the Refresh Token
      */
     public void setRefreshToken( String strRefreshToken )
     {
         this._strRefreshToken = strRefreshToken;
     }
 
-
     /**
      * {@inheritDoc }
      */
     @Override
-    public String toString(  )
+    public String toString( )
     {
-        StringBuilder sbToken = new StringBuilder(  );
-        sbToken.append( "Token infos : \n  access_token : " ).append( _strAccessToken ).append( "\n  expires_in : " )
-               .append( _nExpiresIn ).append( "\n  token_type : " ).append( _strTokenType ).append( "\n  id_token : " )
-               .append( _strIdToken ).append( "\n\n" );
+        StringBuilder sbToken = new StringBuilder( );
+        sbToken.append( "Token infos : \n  access_token : " ).append( _strAccessToken ).append( "\n  expires_in : " ).append( _nExpiresIn )
+                .append( "\n  token_type : " ).append( _strTokenType ).append( "\n  id_token : " ).append( _strIdToken ).append( "\n\n" );
 
-        return sbToken.toString(  );
+        return sbToken.toString( );
     }
 
 }

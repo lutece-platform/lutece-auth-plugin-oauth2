@@ -51,7 +51,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Jjwt JWTParser Test
  */
@@ -69,40 +68,41 @@ public class JjwtJWTParserTest
      * Test of parseJWT method, of class JjwtJWTParser.
      */
     @Test
-    public void testParseJWT(  ) throws Exception
+    public void testParseJWT( ) throws Exception
     {
         System.out.println( "parseJWT" );
 
-        Token token = new Token(  );
-        token.setIdTokenString( buildJWT(  ) );
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( ) );
 
-        AuthClientConf clientConfig = new AuthClientConf(  );
+        AuthClientConf clientConfig = new AuthClientConf( );
         clientConfig.setClientSecret( SECRET );
 
         AuthServerConf serverConfig = null;
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
-        JjwtJWTParser instance = new JjwtJWTParser(  );
+        JjwtJWTParser instance = new JjwtJWTParser( );
         instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
 
-        System.out.print( token.getIdToken(  ) );
+        System.out.print( token.getIdToken( ) );
     }
 
     /**
      * Build a JWT String
+     * 
      * @return The JWT String
      */
-    private String buildJWT(  )
+    private String buildJWT( )
     {
-        JwtBuilder builder = Jwts.builder(  );
+        JwtBuilder builder = Jwts.builder( );
 
-        long lNow = new Date(  ).getTime(  );
+        long lNow = new Date( ).getTime( );
         Date dateIssueAt = new Date( lNow );
         Date dateExpiration = new Date( lNow + 300000L );
 
-        //        builder.setIssuedAt( dateIssueAt );
-        //        builder.setExpiration( dateExpiration );
-        Map<String, Object> mapClaims = new HashMap<String, Object>(  );
+        // builder.setIssuedAt( dateIssueAt );
+        // builder.setExpiration( dateExpiration );
+        Map<String, Object> mapClaims = new HashMap<String, Object>( );
         mapClaims.put( Constants.CLAIM_NONCE, NONCE );
         mapClaims.put( Constants.CLAIM_IDP, IDP );
         mapClaims.put( Constants.CLAIM_ACR, ACR );
@@ -114,8 +114,8 @@ public class JjwtJWTParserTest
 
         builder.setClaims( mapClaims );
 
-        builder.signWith( SignatureAlgorithm.HS512, SECRET.getBytes(  ) );
+        builder.signWith( SignatureAlgorithm.HS512, SECRET.getBytes( ) );
 
-        return builder.compact(  );
+        return builder.compact( );
     }
 }

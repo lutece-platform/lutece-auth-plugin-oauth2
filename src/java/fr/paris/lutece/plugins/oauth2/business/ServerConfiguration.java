@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.oauth2.business;
 
 import java.io.Serializable;
 
-
 /**
  * ServerConfiguration
  */
@@ -53,7 +52,7 @@ public class ServerConfiguration implements Serializable
      *
      * @return The Issuer
      */
-    public String getIssuer(  )
+    public String getIssuer( )
     {
         return _strIssuer;
     }
@@ -61,7 +60,8 @@ public class ServerConfiguration implements Serializable
     /**
      * Sets the Issuer
      *
-     * @param strIssuer The Issuer
+     * @param strIssuer
+     *            The Issuer
      */
     public void setIssuer( String strIssuer )
     {
@@ -73,7 +73,7 @@ public class ServerConfiguration implements Serializable
      *
      * @return The AuthorizationEndpointUri
      */
-    public String getAuthorizationEndpointUri(  )
+    public String getAuthorizationEndpointUri( )
     {
         return _strAuthorizationEndpointUri;
     }
@@ -81,7 +81,8 @@ public class ServerConfiguration implements Serializable
     /**
      * Sets the AuthorizationEndpointUri
      *
-     * @param strAuthorizationEndpointUri The AuthorizationEndpointUri
+     * @param strAuthorizationEndpointUri
+     *            The AuthorizationEndpointUri
      */
     public void setAuthorizationEndpointUri( String strAuthorizationEndpointUri )
     {
@@ -93,7 +94,7 @@ public class ServerConfiguration implements Serializable
      *
      * @return The TokenEndpointUri
      */
-    public String getTokenEndpointUri(  )
+    public String getTokenEndpointUri( )
     {
         return _strTokenEndpointUri;
     }
@@ -101,7 +102,8 @@ public class ServerConfiguration implements Serializable
     /**
      * Sets the TokenEndpointUri
      *
-     * @param strTokenEndpointUri The TokenEndpointUri
+     * @param strTokenEndpointUri
+     *            The TokenEndpointUri
      */
     public void setTokenEndpointUri( String strTokenEndpointUri )
     {
@@ -113,7 +115,7 @@ public class ServerConfiguration implements Serializable
      *
      * @return The UserInfoUri
      */
-    public String getUserInfoUri(  )
+    public String getUserInfoUri( )
     {
         return _strUserInfoUri;
     }
@@ -121,7 +123,8 @@ public class ServerConfiguration implements Serializable
     /**
      * Sets the UserInfoUri
      *
-     * @param strUserInfoUri The UserInfoUri
+     * @param strUserInfoUri
+     *            The UserInfoUri
      */
     public void setUserInfoUri( String strUserInfoUri )
     {
@@ -133,7 +136,7 @@ public class ServerConfiguration implements Serializable
      *
      * @return The UserInfoTokenMethod
      */
-    public String getUserInfoTokenMethod(  )
+    public String getUserInfoTokenMethod( )
     {
         return _strUserInfoTokenMethod;
     }
@@ -141,7 +144,8 @@ public class ServerConfiguration implements Serializable
     /**
      * Sets the UserInfoTokenMethod
      *
-     * @param strUserInfoTokenMethod The UserInfoTokenMethod
+     * @param strUserInfoTokenMethod
+     *            The UserInfoTokenMethod
      */
     public void setUserInfoTokenMethod( String strUserInfoTokenMethod )
     {

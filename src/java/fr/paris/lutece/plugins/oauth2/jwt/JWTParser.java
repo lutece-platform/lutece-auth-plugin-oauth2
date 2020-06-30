@@ -39,7 +39,6 @@ import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 
-
 /**
  * JWTParser
  */
@@ -48,13 +47,19 @@ public interface JWTParser
     /**
      * Extract Json Web Token from the token
      *
-     * @param token The token
-     * @param clientConfig The client configuration
-     * @param serverConfig The server configuration
-     * @param strStoredNonce The stored nonce
-     * @param logger The logger
-     * @throws TokenValidationException if an error occurs
+     * @param token
+     *            The token
+     * @param clientConfig
+     *            The client configuration
+     * @param serverConfig
+     *            The server configuration
+     * @param strStoredNonce
+     *            The stored nonce
+     * @param logger
+     *            The logger
+     * @throws TokenValidationException
+     *             if an error occurs
      */
-    void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce,
-        Logger logger ) throws TokenValidationException;
+    void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
+            throws TokenValidationException;
 }

@@ -52,7 +52,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
-
 /**
  * TokenService
  */
@@ -60,262 +59,289 @@ public final class TokenService
 {
     AuthClientConf _defaultClientConfig;
     AuthServerConf _defaultauthServerConfig;
-   
+
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
-    
+
     private static final String BEAN_AUTH_CLIENT_CONF = "oauth2.client";
     private static final String BEAN_AUTH_SERVER_CONF = "oauth2.server";
-   
+
     private static TokenService _instance;
-    
-    
 
     /**
      * private constructor
      */
-    private TokenService(  )
+    private TokenService( )
     {
     }
 
     /**
      * private constructor
      */
-    private TokenService( AuthClientConf defaultClientConfig,  AuthServerConf defaultauthServerConfig )
+    private TokenService( AuthClientConf defaultClientConfig, AuthServerConf defaultauthServerConfig )
     {
-        _defaultClientConfig=defaultClientConfig;
-        _defaultauthServerConfig=defaultauthServerConfig;
-    }
-    
-    
-    /**
-     * Retieve a token using an authorization code
-     * @param strAuthorizationCode The authorization code
-     * @param session The HTTP session
-     * @return The token
-     * @throws IOException if an error occurs
-     * @throws HttpAccessException if an error occurs
-     * @throws TokenValidationException If the token validation failed
-     */
-   public Token getToken( String strAuthorizationCode, HttpSession session ,JWTParser jWTParser,String strStoredNonce)
-        throws IOException, HttpAccessException, TokenValidationException
-    {
-        
-      
-        return getToken(null, _instance._defaultClientConfig,_instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce );
+        _defaultClientConfig = defaultClientConfig;
+        _defaultauthServerConfig = defaultauthServerConfig;
     }
 
     /**
      * Retieve a token using an authorization code
-     * @param the strRedirectUri
-     * @param strAuthorizationCode The authorization code
-     * @param session The HTTP session
+     * 
+     * @param strAuthorizationCode
+     *            The authorization code
+     * @param session
+     *            The HTTP session
      * @return The token
-     * @throws IOException if an error occurs
-     * @throws HttpAccessException if an error occurs
-     * @throws TokenValidationException If the token validation failed
+     * @throws IOException
+     *             if an error occurs
+     * @throws HttpAccessException
+     *             if an error occurs
+     * @throws TokenValidationException
+     *             If the token validation failed
      */
-   public  Token getToken( String strRedirectUri,AuthClientConf clientConfig,AuthServerConf authServerConf,String strAuthorizationCode, HttpSession session ,JWTParser jWTParser,String strStoredNonce)
-        throws IOException, HttpAccessException, TokenValidationException
+    public Token getToken( String strAuthorizationCode, HttpSession session, JWTParser jWTParser, String strStoredNonce )
+            throws IOException, HttpAccessException, TokenValidationException
     {
-        
-       Token token=null;
-       if(strRedirectUri==null)
-    	 {
-    	   strRedirectUri = clientConfig.getRedirectUri(  );
-    	 }
-        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
+
+        return getToken( null, _instance._defaultClientConfig, _instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce );
+    }
+
+    /**
+     * Retieve a token using an authorization code
+     * 
+     * @param the
+     *            strRedirectUri
+     * @param strAuthorizationCode
+     *            The authorization code
+     * @param session
+     *            The HTTP session
+     * @return The token
+     * @throws IOException
+     *             if an error occurs
+     * @throws HttpAccessException
+     *             if an error occurs
+     * @throws TokenValidationException
+     *             If the token validation failed
+     */
+    public Token getToken( String strRedirectUri, AuthClientConf clientConfig, AuthServerConf authServerConf, String strAuthorizationCode, HttpSession session,
+            JWTParser jWTParser, String strStoredNonce ) throws IOException, HttpAccessException, TokenValidationException
+    {
+
+        Token token = null;
+        if ( strRedirectUri == null )
+        {
+            strRedirectUri = clientConfig.getRedirectUri( );
+        }
+        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>( );
         mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_AUTHORIZATION_CODE );
         mapParameters.put( Constants.PARAMETER_CODE, strAuthorizationCode );
-        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
-        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
+        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId( ) );
+        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret( ) );
 
         if ( strRedirectUri != null )
         {
             mapParameters.put( Constants.PARAMETER_REDIRECT_URI, strRedirectUri );
         }
 
-        HttpAccess httpAccess = new HttpAccess(  );
-        String strUrl = authServerConf.getTokenEndpointUri(  );
+        HttpAccess httpAccess = new HttpAccess( );
+        String strUrl = authServerConf.getTokenEndpointUri( );
 
         _logger.debug( "Posted URL : " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
 
         String strResponse = httpAccess.doPost( strUrl, mapParameters );
         _logger.debug( "Oauth2 response : " + strResponse );
-        
-        if(!StringUtils.isEmpty( strResponse ))
+
+        if ( !StringUtils.isEmpty( strResponse ) )
         {
-            token = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, jWTParser,strStoredNonce );
+            token = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, jWTParser, strStoredNonce );
         }
         return token;
     }
-   
-   /**
-   *
-   * Validate refresh token
-   * @param  clientConfig  ClientConf 
-   * @param authServerConf AutConf
-   * @param strRefreshToken refreshToken
-   * @return true if the refresh token is already good
-   *
-   */
- public boolean validateRefreshToken( String strRefreshToken)
- {
 
-     return  validateRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
-  }
-   
-   
-   /**
-    *
-    * Validate refresh token
-    * @param  clientConfig  ClientConf 
-    * @param authServerConf AutConf
-    * @param strRefreshToken refreshToken
-    * @return true if the refresh token is already good
-    *
-    */
-  public  boolean validateRefreshToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strRefreshToken)
-  {
+    /**
+     *
+     * Validate refresh token
+     * 
+     * @param clientConfig
+     *            ClientConf
+     * @param authServerConf
+     *            AutConf
+     * @param strRefreshToken
+     *            refreshToken
+     * @return true if the refresh token is already good
+     *
+     */
+    public boolean validateRefreshToken( String strRefreshToken )
+    {
 
-       Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
-       Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>(  );
-       mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN);
-       mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
-       mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
-       mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
-       HttpAccess httpAccess = new HttpAccess(  );
-       String strUrl = authServerConf.getTokenEndpointUri(  );
+        return validateRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
+    }
 
-       _logger.debug( "Validate Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
-       
-       try
-       {    
-         String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-         if(!strResponse.contains("\"error\""))
-         {
-             return true;
-         }
+    /**
+     *
+     * Validate refresh token
+     * 
+     * @param clientConfig
+     *            ClientConf
+     * @param authServerConf
+     *            AutConf
+     * @param strRefreshToken
+     *            refreshToken
+     * @return true if the refresh token is already good
+     *
+     */
+    public boolean validateRefreshToken( AuthClientConf clientConfig, AuthServerConf authServerConf, String strRefreshToken )
+    {
+
+        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>( );
+        Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>( );
+        mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN );
+        mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
+        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId( ) );
+        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret( ) );
+        HttpAccess httpAccess = new HttpAccess( );
+        String strUrl = authServerConf.getTokenEndpointUri( );
+
+        _logger.debug( "Validate Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
+
+        try
+        {
+            String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
+            if ( !strResponse.contains( "\"error\"" ) )
+            {
+                return true;
+            }
         }
-       catch( HttpAccessException e )
-       {
-          
-       }
-     
-       return  false;
-   }
+        catch( HttpAccessException e )
+        {
 
-  /**
-  *
-  * Get new Token using refresh token
-  * @param  clientConfig  ClientConf 
-  * @param authServerConf AutConf
-  * @param strRefreshToken refreshToken
-  * @return true if the refresh token is already good
-  *
-  */
-public Token getTokenByRefreshToken( String strRefreshToken)
-{
-    return getTokenByRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
-}
-  
-  
-  /**
-  *
-  * Get new Token using refresh token
-  * @param  clientConfig  ClientConf 
-  * @param authServerConf AutConf
-  * @param strRefreshToken refreshToken
-  * @return true if the refresh token is already good
-  *
-  */
-public Token getTokenByRefreshToken( AuthClientConf clientConfig,AuthServerConf authServerConf,String strRefreshToken)
-{
+        }
 
-     Map<String, String> mapParameters = new ConcurrentHashMap<String, String>(  );
-     Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>(  );
-     mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN);
-     mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
-     mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId(  ) );
-     mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret(  ) );
-     Token newToken=null;
-     HttpAccess httpAccess = new HttpAccess(  );
-     String strUrl = authServerConf.getTokenEndpointUri(  );
+        return false;
+    }
 
-     _logger.debug( "Get Token By Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
-     
-     try
-     {    
-         String strResponse =  httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-         newToken=TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null,null );
-      }
-      catch( IOException e )
-      {
-          // TODO Auto-generated catch block
-          _logger.error( "Error getting new Token using refresh token",e );
-      }
-      catch( TokenValidationException e )
-      {
-          // TODO Auto-generated catch block
-          _logger.error( "Error getting new Token using refresh token",e );
-      }
-      catch( HttpAccessException e )
-     {
-        
-     }
-   
-     return  newToken;
- }
+    /**
+     *
+     * Get new Token using refresh token
+     * 
+     * @param clientConfig
+     *            ClientConf
+     * @param authServerConf
+     *            AutConf
+     * @param strRefreshToken
+     *            refreshToken
+     * @return true if the refresh token is already good
+     *
+     */
+    public Token getTokenByRefreshToken( String strRefreshToken )
+    {
+        return getTokenByRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
+    }
 
-  
+    /**
+     *
+     * Get new Token using refresh token
+     * 
+     * @param clientConfig
+     *            ClientConf
+     * @param authServerConf
+     *            AutConf
+     * @param strRefreshToken
+     *            refreshToken
+     * @return true if the refresh token is already good
+     *
+     */
+    public Token getTokenByRefreshToken( AuthClientConf clientConfig, AuthServerConf authServerConf, String strRefreshToken )
+    {
+
+        Map<String, String> mapParameters = new ConcurrentHashMap<String, String>( );
+        Map<String, String> mapResponseHeader = new ConcurrentHashMap<String, String>( );
+        mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_REFRESH_TOKEN );
+        mapParameters.put( Constants.PARAMETER_REFRESH_TOKEN, strRefreshToken );
+        mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId( ) );
+        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret( ) );
+        Token newToken = null;
+        HttpAccess httpAccess = new HttpAccess( );
+        String strUrl = authServerConf.getTokenEndpointUri( );
+
+        _logger.debug( "Get Token By Refresh Token : call URL  " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
+
+        try
+        {
+            String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
+            newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
+        }
+        catch( IOException e )
+        {
+            // TODO Auto-generated catch block
+            _logger.error( "Error getting new Token using refresh token", e );
+        }
+        catch( TokenValidationException e )
+        {
+            // TODO Auto-generated catch block
+            _logger.error( "Error getting new Token using refresh token", e );
+        }
+        catch( HttpAccessException e )
+        {
+
+        }
+
+        return newToken;
+    }
 
     /**
      * parse the JSON for a token
      *
-     * @param strJson The JSON
-     * @param clientConfig The client configuration
-     * @param serverConfig The server configuration
-     * @param strStoredNonce The stored nonce
+     * @param strJson
+     *            The JSON
+     * @param clientConfig
+     *            The client configuration
+     * @param serverConfig
+     *            The server configuration
+     * @param strStoredNonce
+     *            The stored nonce
      * @return The Token
-     * @throws java.io.IOException if an error occurs
-     * @throws TokenValidationException If the token validation failed
+     * @throws java.io.IOException
+     *             if an error occurs
+     * @throws TokenValidationException
+     *             If the token validation failed
      */
-    public Token parse( String strJson, AuthClientConf clientConfig, AuthServerConf serverConfig,JWTParser jwtParser,
-        String strStoredNonce ) throws IOException, TokenValidationException
+    public Token parse( String strJson, AuthClientConf clientConfig, AuthServerConf serverConfig, JWTParser jwtParser, String strStoredNonce )
+            throws IOException, TokenValidationException
     {
         Token token = parseToken( strJson );
 
         _logger.debug( token );
-        
-        if(jwtParser!=null && serverConfig.isEnableJwtParser())
+
+        if ( jwtParser != null && serverConfig.isEnableJwtParser( ) )
         {
-        	jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce, _logger );
-        }	
+            jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce, _logger );
+        }
         return token;
     }
 
     /**
      * Parse the Token from a JSON string
-     * @param strJson The JSON string
+     * 
+     * @param strJson
+     *            The JSON string
      * @return The Token
-     * @throws IOException if an error occurs
+     * @throws IOException
+     *             if an error occurs
      */
     Token parseToken( String strJson ) throws IOException
     {
         return MapperService.parse( strJson, Token.class );
     }
-    
-  
-    
-    public static TokenService getService()
+
+    public static TokenService getService( )
     {
-        if( _instance ==null)
+        if ( _instance == null )
         {
-            
-            _instance=new TokenService( SpringContextService.getBean( BEAN_AUTH_CLIENT_CONF ), SpringContextService.getBean( BEAN_AUTH_SERVER_CONF) );
+
+            _instance = new TokenService( SpringContextService.getBean( BEAN_AUTH_CLIENT_CONF ), SpringContextService.getBean( BEAN_AUTH_SERVER_CONF ) );
         }
         return _instance;
-        
-   
+
     }
 
 }

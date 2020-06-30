@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.oauth2.business;
 
 import java.io.Serializable;
 
-
 /**
  * ServerConfiguration
  */
@@ -48,29 +47,32 @@ public class AuthServerConf implements Serializable
     private String _strTokenEndpointUri;
     private String _strLogoutEndpointUri;
     private boolean _bEnableJwtParser;
-    
-    
+
     /**
      * 
      * @return the servername
      */
-	public String getName() {
-		return _strName;
-	}
-	/**
-	 * 
-	 * @param _strName the servername
-	 */
-	public void setName(String strName) {
-		this._strName = strName;
-	}
+    public String getName( )
+    {
+        return _strName;
+    }
+
+    /**
+     * 
+     * @param _strName
+     *            the servername
+     */
+    public void setName( String strName )
+    {
+        this._strName = strName;
+    }
 
     /**
      * Returns the Issuer
      *
      * @return The Issuer
      */
-    public String getIssuer(  )
+    public String getIssuer( )
     {
         return _strIssuer;
     }
@@ -78,7 +80,8 @@ public class AuthServerConf implements Serializable
     /**
      * Sets the Issuer
      *
-     * @param strIssuer The Issuer
+     * @param strIssuer
+     *            The Issuer
      */
     public void setIssuer( String strIssuer )
     {
@@ -90,7 +93,7 @@ public class AuthServerConf implements Serializable
      *
      * @return The AuthorizationEndpointUri
      */
-    public String getAuthorizationEndpointUri(  )
+    public String getAuthorizationEndpointUri( )
     {
         return _strAuthorizationEndpointUri;
     }
@@ -98,7 +101,8 @@ public class AuthServerConf implements Serializable
     /**
      * Sets the AuthorizationEndpointUri
      *
-     * @param strAuthorizationEndpointUri The AuthorizationEndpointUri
+     * @param strAuthorizationEndpointUri
+     *            The AuthorizationEndpointUri
      */
     public void setAuthorizationEndpointUri( String strAuthorizationEndpointUri )
     {
@@ -110,7 +114,7 @@ public class AuthServerConf implements Serializable
      *
      * @return The TokenEndpointUri
      */
-    public String getTokenEndpointUri(  )
+    public String getTokenEndpointUri( )
     {
         return _strTokenEndpointUri;
     }
@@ -118,19 +122,20 @@ public class AuthServerConf implements Serializable
     /**
      * Sets the TokenEndpointUri
      *
-     * @param strTokenEndpointUri The TokenEndpointUri
+     * @param strTokenEndpointUri
+     *            The TokenEndpointUri
      */
     public void setTokenEndpointUri( String strTokenEndpointUri )
     {
         _strTokenEndpointUri = strTokenEndpointUri;
     }
-    
+
     /**
      * Returns the LogoutEndpointUri
      *
      * @return The LogoutEndpointUri
      */
-    public String getLogoutEndpointUri(  )
+    public String getLogoutEndpointUri( )
     {
         return _strLogoutEndpointUri;
     }
@@ -138,27 +143,31 @@ public class AuthServerConf implements Serializable
     /**
      * Sets the LogoutEndpointUri
      *
-     * @param strLogoutEndpointUri The LogoutEndpointUri
+     * @param strLogoutEndpointUri
+     *            The LogoutEndpointUri
      */
     public void setLogoutEndpointUri( String strLogoutEndpointUri )
     {
         _strLogoutEndpointUri = strLogoutEndpointUri;
     }
+
     /**
      * 
      * @return enable jwt parser
      */
-	public boolean isEnableJwtParser() {
-		return _bEnableJwtParser;
-	}
-	/**
-	 * 
-	 * @param _bEnableJwtParser enable jwt parser
-	 */
-	public void setEnableJwtParser(boolean _bEnableJwtParser) {
-		this._bEnableJwtParser = _bEnableJwtParser;
-	}
+    public boolean isEnableJwtParser( )
+    {
+        return _bEnableJwtParser;
+    }
 
-    
-    
+    /**
+     * 
+     * @param _bEnableJwtParser
+     *            enable jwt parser
+     */
+    public void setEnableJwtParser( boolean _bEnableJwtParser )
+    {
+        this._bEnableJwtParser = _bEnableJwtParser;
+    }
+
 }

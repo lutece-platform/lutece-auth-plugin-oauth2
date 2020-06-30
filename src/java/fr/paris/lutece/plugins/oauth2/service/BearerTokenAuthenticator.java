@@ -41,7 +41,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * BearerToken Authenticator
  *
@@ -53,7 +52,9 @@ public class BearerTokenAuthenticator implements RequestAuthenticator
 
     /**
      * Constructor
-     * @param strAccessToken The access token value
+     * 
+     * @param strAccessToken
+     *            The access token value
      */
     public BearerTokenAuthenticator( String strAccessToken )
     {

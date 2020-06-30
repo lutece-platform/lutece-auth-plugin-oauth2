@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
-
 /**
  * TokenValidationException
  */
@@ -43,7 +42,9 @@ public class TokenValidationException extends Exception
 
     /**
      * Constructor
-     * @param strMessage The message
+     * 
+     * @param strMessage
+     *            The message
      */
     public TokenValidationException( String strMessage )
     {
@@ -52,8 +53,11 @@ public class TokenValidationException extends Exception
 
     /**
      * Constructor
-     * @param strMessage The message
-     * @param throwable The cause exception
+     * 
+     * @param strMessage
+     *            The message
+     * @param throwable
+     *            The cause exception
      */
     public TokenValidationException( String strMessage, Throwable throwable )
     {

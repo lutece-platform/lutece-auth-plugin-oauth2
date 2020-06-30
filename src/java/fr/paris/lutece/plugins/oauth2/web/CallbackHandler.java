@@ -187,18 +187,17 @@ public class CallbackHandler implements Serializable
         {
             HttpSession session = request.getSession( true );
 
-           
             DataClient dataClient = DataClientService.instance( ).getClient( request );
-            
+
             UrlItem url = new UrlItem( _authServerConf.getAuthorizationEndpointUri( ) );
             url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
             url.addParameter( Constants.PARAMETER_RESPONSE_TYPE, Constants.RESPONSE_TYPE_CODE );
-            url.addParameter( Constants.PARAMETER_REDIRECT_URI,  URLEncoder.encode(generateRedirectUrl(request,dataClient), "UTF-8" ) );
+            url.addParameter( Constants.PARAMETER_REDIRECT_URI, URLEncoder.encode( generateRedirectUrl( request, dataClient ), "UTF-8" ) );
             url.addParameter( Constants.PARAMETER_SCOPE, dataClient.getScopes( ) );
             url.addParameter( Constants.PARAMETER_STATE, createState( session ) );
             url.addParameter( Constants.PARAMETER_NONCE, createNonce( session ) );
-           
-             addComplementaryParameters( url, request );
+
+            addComplementaryParameters( url, request );
             String strAcrValues = dataClient.getAcrValues( );
             if ( strAcrValues != null )
             {
@@ -243,8 +242,8 @@ public class CallbackHandler implements Serializable
         {
             HttpSession session = request.getSession( );
             DataClient dataClient = DataClientService.instance( ).getClient( request );
-            String strRedirectUri=generateRedirectUrl(request, dataClient);
-            Token token = getToken( strRedirectUri,strCode, session );
+            String strRedirectUri = generateRedirectUrl( request, dataClient );
+            Token token = getToken( strRedirectUri, strCode, session );
             dataClient.handleToken( token, request, response );
         }
         catch( IOException ex )
@@ -270,7 +269,8 @@ public class CallbackHandler implements Serializable
     /**
      * Retieve a token using an authorization code
      * 
-     * @param the client redirect Uri
+     * @param the
+     *            client redirect Uri
      * @param strAuthorizationCode
      *            The authorization code
      * @param session
@@ -283,10 +283,12 @@ public class CallbackHandler implements Serializable
      * @throws TokenValidationException
      *             If the token validation failed
      */
-    private Token getToken( String strRedirectUri,String strAuthorizationCode, HttpSession session ) throws IOException, HttpAccessException, TokenValidationException
+    private Token getToken( String strRedirectUri, String strAuthorizationCode, HttpSession session )
+            throws IOException, HttpAccessException, TokenValidationException
     {
 
-        return TokenService.getService( ).getToken( strRedirectUri,_authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser, getStoredNonce( session ) );
+        return TokenService.getService( ).getToken( strRedirectUri, _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,
+                getStoredNonce( session ) );
 
     }
 
@@ -300,10 +302,10 @@ public class CallbackHandler implements Serializable
      *            The session
      * @return The nonce
      */
-    private  String createNonce( HttpSession session )
+    private String createNonce( HttpSession session )
     {
         String nonce = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
-        session.setAttribute( getNonceAttributeSessionName(), nonce );
+        session.setAttribute( getNonceAttributeSessionName( ), nonce );
 
         return nonce;
     }
@@ -315,22 +317,20 @@ public class CallbackHandler implements Serializable
      *            The session
      * @return The stored nonce
      */
-    private  String getStoredNonce( HttpSession session )
+    private String getStoredNonce( HttpSession session )
     {
-        return getStoredSessionString( session, getNonceAttributeSessionName() );
+        return getStoredSessionString( session, getNonceAttributeSessionName( ) );
     }
-    
-    
+
     /**
      * 
      * @return the attribute name who store nonced
      */
-    private String getNonceAttributeSessionName()
+    private String getNonceAttributeSessionName( )
     {
-    	
-    	return getHandlerName()==null ?Constants.NONCE_SESSION_VARIABLE:getHandlerName()+Constants.NONCE_SESSION_VARIABLE;
-    }
 
+        return getHandlerName( ) == null ? Constants.NONCE_SESSION_VARIABLE : getHandlerName( ) + Constants.NONCE_SESSION_VARIABLE;
+    }
 
     /**
      * check state returned by Oauth2 to the callback uri
@@ -364,18 +364,19 @@ public class CallbackHandler implements Serializable
     private String createState( HttpSession session )
     {
         String strState = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
-        session.setAttribute(getStateAttributeSessionName() , strState );
+        session.setAttribute( getStateAttributeSessionName( ), strState );
 
         return strState;
     }
+
     /**
      * 
      * @return the attribute name who store the sate
      */
-    private String getStateAttributeSessionName()
+    private String getStateAttributeSessionName( )
     {
-    	
-    	return getHandlerName()==null ?Constants.STATE_SESSION_VARIABLE:getHandlerName()+Constants.STATE_SESSION_VARIABLE;
+
+        return getHandlerName( ) == null ? Constants.STATE_SESSION_VARIABLE : getHandlerName( ) + Constants.STATE_SESSION_VARIABLE;
     }
 
     /**
@@ -387,7 +388,7 @@ public class CallbackHandler implements Serializable
      */
     private String getStoredState( HttpSession session )
     {
-        return getStoredSessionString( session, getStateAttributeSessionName() );
+        return getStoredSessionString( session, getStateAttributeSessionName( ) );
     }
 
     /**
@@ -477,58 +478,60 @@ public class CallbackHandler implements Serializable
         String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
         String strParamValue;
         String strParamCode;
-        
- 
-        if(!StringUtils.isEmpty( strComplementaryParam) && strComplementaryParam.contains( "=" ))
+
+        if ( !StringUtils.isEmpty( strComplementaryParam ) && strComplementaryParam.contains( "=" ) )
         {
-           strParamCode=strComplementaryParam.split( "=" ) [0];
-           strParamValue=strComplementaryParam.substring( strComplementaryParam.indexOf( "=" )+1,strComplementaryParam.length( ));
-           try
+            strParamCode = strComplementaryParam.split( "=" ) [0];
+            strParamValue = strComplementaryParam.substring( strComplementaryParam.indexOf( "=" ) + 1, strComplementaryParam.length( ) );
+            try
             {
-               strParamValue=URLEncoder.encode( strParamValue, "UTF-8");
+                strParamValue = URLEncoder.encode( strParamValue, "UTF-8" );
             }
             catch( UnsupportedEncodingException e )
             {
-                _logger.error( "error during urlEncode of param"+strParamValue, e);
+                _logger.error( "error during urlEncode of param" + strParamValue, e );
             }
             url.addParameter( strParamCode, strParamValue );
         }
-            
-      }
+
+    }
 
     /**
      * Generate Redirect Url
-     * @param request the httpServletRequest
-     * @param dataClient the dataCleint
+     * 
+     * @param request
+     *            the httpServletRequest
+     * @param dataClient
+     *            the dataCleint
      * @return the
      * 
      */
-	private String generateRedirectUrl(HttpServletRequest request,DataClient dataClient) 
+    private String generateRedirectUrl( HttpServletRequest request, DataClient dataClient )
     {
-    	String stRedirectUrl=_authClientConf.getRedirectUri( );
-    	if(stRedirectUrl==null)
-    	{
-    		stRedirectUrl=DataClientService.instance().getDataClientUrl(request, dataClient.getName(),getHandlerName());
-    	}
-    	else
-    	{
-    		//add dataclient and handler name parameter
-    	     if(stRedirectUrl.contains("?"))
-    	     {
-    	    	 stRedirectUrl+="&";   	 
-    	     }
-    	     else
-    	     {
-    	    	 stRedirectUrl+="?";
-    	     }
-    	     
-    		stRedirectUrl+=Constants.PARAMETER_DATA_CLIENT+"="+dataClient.getName();
-    		if(getHandlerName()!=null)
-    		{
-    		  stRedirectUrl+=Constants.PARAMETER_HANDLER_NAME+"="+getHandlerName();
-    		}
-    	}
-    	return stRedirectUrl;
+        String stRedirectUrl = _authClientConf.getRedirectUri( );
+        if ( stRedirectUrl == null )
+        {
+            stRedirectUrl = DataClientService.instance( ).getDataClientUrl( request, dataClient.getName( ), getHandlerName( ) );
+        }
+        else
+        {
+            // add dataclient and handler name parameter
+            if ( stRedirectUrl.contains( "?" ) )
+            {
+                stRedirectUrl += "&";
+            }
+            else
+            {
+                stRedirectUrl += "?";
+            }
+
+            stRedirectUrl += Constants.PARAMETER_DATA_CLIENT + "=" + dataClient.getName( );
+            if ( getHandlerName( ) != null )
+            {
+                stRedirectUrl += Constants.PARAMETER_HANDLER_NAME + "=" + getHandlerName( );
+            }
+        }
+        return stRedirectUrl;
     }
-    
+
 }

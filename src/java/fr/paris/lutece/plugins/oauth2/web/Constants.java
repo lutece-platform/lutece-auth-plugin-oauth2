@@ -33,13 +33,12 @@
  */
 package fr.paris.lutece.plugins.oauth2.web;
 
-
 /**
  * Constants
  */
 public final class Constants
 {
-    public static final String LOGGER_OAUTH2= "lutece.oauth2";
+    public static final String LOGGER_OAUTH2 = "lutece.oauth2";
     public static final String RESPONSE_TYPE_CODE = "code";
     public static final String PARAMETER_CODE = "code";
     public static final String PARAMETER_ERROR = "error";
@@ -55,12 +54,12 @@ public final class Constants
     public static final String PARAMETER_ACCESS_TOKEN = "access_token";
     public static final String PARAMETER_DATA_CLIENT = "data_client";
     public static final String PARAMETER_COMPLEMENTARY_PARAMETER = "complementary_parameter";
-    
+
     public static final String PARAMETER_HANDLER_NAME = "handler_name";
     public static final String PARAMETER_ACR_VALUES = "acr_values";
     public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
     public static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
-    
+
     public static final String STATE_SESSION_VARIABLE = "state";
     public static final String NONCE_SESSION_VARIABLE = "nonce";
     public static final String CLAIM_NONCE = "nonce";
@@ -68,14 +67,13 @@ public final class Constants
     public static final String CLAIM_ACR = "acr";
     public static final String SESSION_ATTRIBUTE_DATACLIENT = "fc_data_client";
     public static final String PROPERTY_ERROR_PAGE = "oauth2.error.page";
-    
-    public static final String ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE="ERROR_RETRIEVING_AN_AUTHORIZATION_CODE";
-    public static final String ERROR_TYPE_INVALID_STATE="ERROR_INVALID_STATE";
-    public static final String CALL_BACK_SERVLET_URI="servlet/plugins/oauth2/callback";
-    
+
+    public static final String ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE = "ERROR_RETRIEVING_AN_AUTHORIZATION_CODE";
+    public static final String ERROR_TYPE_INVALID_STATE = "ERROR_INVALID_STATE";
+    public static final String CALL_BACK_SERVLET_URI = "servlet/plugins/oauth2/callback";
 
     /** Private constructor */
-    private Constants(  )
+    private Constants( )
     {
     }
 }

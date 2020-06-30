@@ -39,118 +39,142 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
 
-
 /**
- * DataClient 
+ * DataClient
  */
 public interface DataClient
 {
     /**
      * @return the DataServerUri
      */
-    String getDataServerUri(  );
+    String getDataServerUri( );
 
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
-    String getName(  );
+    String getName( );
 
     /**
      * Returns the RedirectUri
+     * 
      * @return The RedirectUri
      */
-    String getRedirectUri(  );
+    String getRedirectUri( );
 
     /**
      * Returns the Scopes set
+     * 
      * @return The Scope
      */
-    Set getScope(  );
+    Set getScope( );
 
     /**
      * Build a string that contains the list of scope separated by a plus
+     * 
      * @return The scopes
      */
-    String getScopes(  );
+    String getScopes( );
 
     /**
      * Set ACR values set
-     * @param acrValues The ACR values set
+     * 
+     * @param acrValues
+     *            The ACR values set
      */
     void setAcrValuesSet( Set acrValues );
 
     /**
      * Returns the set of ACR
+     * 
      * @return The set of ACR
      */
-    Set getAcrValuesSet(  );
-    
+    Set getAcrValuesSet( );
+
     /**
      * Returns the set of ACR values
+     * 
      * @return The set of ACR values
      */
-    String getAcrValues(  );
-    
+    String getAcrValues( );
+
     /**
      * @return the TokenMethod
      */
-    String getTokenMethod(  );
+    String getTokenMethod( );
 
     /**
-     * @param strDataServerUri the DataServerUri to set
+     * @param strDataServerUri
+     *            the DataServerUri to set
      */
     void setDataServerUri( String strDataServerUri );
 
     /**
      * Sets the Name
-     * @param strName The Name
+     * 
+     * @param strName
+     *            The Name
      */
     void setName( String strName );
 
     /**
      * Sets the RedirectUri
-     * @param strRedirectUri The RedirectUri
+     * 
+     * @param strRedirectUri
+     *            The RedirectUri
      */
     void setRedirectUri( String strRedirectUri );
 
     /**
      * Sets the Scope
-     * @param scope The Scope
+     * 
+     * @param scope
+     *            The Scope
      */
     void setScope( Set scope );
 
     /**
-     * @param strTokenMethod the TokenMethod to set
+     * @param strTokenMethod
+     *            the TokenMethod to set
      */
     void setTokenMethod( String strTokenMethod );
 
     /**
      * Called by the callback
-     * @param token The retrieved token
-     * @param request The HTTP request
-     * @param response The HTTP response
-     */
-    void handleToken( Token token , HttpServletRequest  request , HttpServletResponse  response );
-    
-   
-    /**Method call if an error appear
      * 
-     * @param request HttpServletRequest request
-     * @param response HttpServletResponse response
-     * @param strError String strError
+     * @param token
+     *            The retrieved token
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
      */
-    void handleError( HttpServletRequest request, HttpServletResponse response, String strError);
+    void handleToken( Token token, HttpServletRequest request, HttpServletResponse response );
+
+    /**
+     * Method call if an error appear
+     * 
+     * @param request
+     *            HttpServletRequest request
+     * @param response
+     *            HttpServletResponse response
+     * @param strError
+     *            String strError
+     */
+    void handleError( HttpServletRequest request, HttpServletResponse response, String strError );
+
     /**
      * 
      * @return true if the dataclient is a default data client
      */
     boolean isDefault( );
+
     /**
      * 
-     * @param _bDefault  true if the dataclient is a default data client
+     * @param _bDefault
+     *            true if the dataclient is a default data client
      */
     void setDefault( boolean _bDefault );
-    
-    
+
 }

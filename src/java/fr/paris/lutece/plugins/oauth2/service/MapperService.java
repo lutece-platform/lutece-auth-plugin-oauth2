@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
-
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -49,25 +48,30 @@ public final class MapperService
 
     static
     {
-        _mapper = new ObjectMapper(  );
+        _mapper = new ObjectMapper( );
         _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
-     
+
     }
-    
+
     /** Private constructor */
-    private MapperService()
+    private MapperService( )
     {
     }
-    
+
     /**
      * parse the JSON for a bean
-     * @param <T> The Bean class
-     * @param strJson The JSON
-     * @param t The bean class
+     * 
+     * @param <T>
+     *            The Bean class
+     * @param strJson
+     *            The JSON
+     * @param t
+     *            The bean class
      * @return The bean
-     * @throws IOException if an error occurs
+     * @throws IOException
+     *             if an error occurs
      */
-    public static <T> T parse( String strJson , Class<T> t ) throws IOException
+    public static <T> T parse( String strJson, Class<T> t ) throws IOException
     {
         return _mapper.readValue( strJson, t );
     }

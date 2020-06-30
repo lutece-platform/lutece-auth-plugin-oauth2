@@ -49,7 +49,6 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
 
-
 /**
  * Jjwt JWTParser
  */
@@ -59,23 +58,23 @@ public class JjwtJWTParser implements JWTParser
      * {@inheritDoc }
      */
     @Override
-    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce,
-        Logger logger ) throws TokenValidationException
+    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
+            throws TokenValidationException
     {
-        String strCompactJwt = token.getIdTokenString(  );
+        String strCompactJwt = token.getIdTokenString( );
 
         try
         {
-            JwtParser parser = Jwts.parser(  );
-            parser.setSigningKey( clientConfig.getClientSecret(  ).getBytes( "UTF-8" ) );
+            JwtParser parser = Jwts.parser( );
+            parser.setSigningKey( clientConfig.getClientSecret( ).getBytes( "UTF-8" ) );
 
             Jwt jwt = parser.parse( strCompactJwt );
-            Claims claims = (Claims) jwt.getBody(  );
+            Claims claims = (Claims) jwt.getBody( );
 
-            IDToken idToken = new IDToken(  );
-            idToken.setAudience( claims.getAudience(  ) );
-            idToken.setIssuer( claims.getIssuer(  ) );
-            idToken.setSubject( claims.getSubject(  ) );
+            IDToken idToken = new IDToken( );
+            idToken.setAudience( claims.getAudience( ) );
+            idToken.setIssuer( claims.getIssuer( ) );
+            idToken.setSubject( claims.getSubject( ) );
 
             // Claims that should be verified
             idToken.setNonce( getVerifiedNonce( claims, strStoredNonce ) );
@@ -90,29 +89,32 @@ public class JjwtJWTParser implements JWTParser
 
             token.setIdToken( idToken );
         }
-        catch ( SignatureException ex )
+        catch( SignatureException ex )
         {
-            throw new TokenValidationException( ex.getMessage(  ), ex );
+            throw new TokenValidationException( ex.getMessage( ), ex );
         }
-        catch ( ExpiredJwtException ex )
+        catch( ExpiredJwtException ex )
         {
-            throw new TokenValidationException( ex.getMessage(  ), ex );
+            throw new TokenValidationException( ex.getMessage( ), ex );
         }
-        catch ( UnsupportedEncodingException ex )
+        catch( UnsupportedEncodingException ex )
         {
-            throw new TokenValidationException( ex.getMessage(  ), ex );
+            throw new TokenValidationException( ex.getMessage( ), ex );
         }
     }
 
     /**
      * Retrieve and check the nonce
-     * @param claims Claims set
-     * @param strStoredNonce The stored nonce
+     * 
+     * @param claims
+     *            Claims set
+     * @param strStoredNonce
+     *            The stored nonce
      * @return The verified nonce
-     * @throws TokenValidationException if the nonce is not valid
+     * @throws TokenValidationException
+     *             if the nonce is not valid
      */
-    private String getVerifiedNonce( Claims claims, String strStoredNonce )
-        throws TokenValidationException
+    private String getVerifiedNonce( Claims claims, String strStoredNonce ) throws TokenValidationException
     {
         // Check nonce
         String strNonce = (String) claims.get( Constants.CLAIM_NONCE );
@@ -132,24 +134,28 @@ public class JjwtJWTParser implements JWTParser
 
     /**
      * Retrieve the expiration date
-     * @param claims Claims set
+     * 
+     * @param claims
+     *            Claims set
      * @return The expiration date
      */
     private String getExpiration( Claims claims )
     {
-        long lExpiration = claims.getExpiration(  ).getTime(  );
+        long lExpiration = claims.getExpiration( ).getTime( );
 
         return String.valueOf( lExpiration / 1000L );
     }
 
     /**
      * Retrieve the issue at date
-     * @param claims Claims set
+     * 
+     * @param claims
+     *            Claims set
      * @return The issue at date
      */
     private String getIssueAt( Claims claims )
     {
-        long lIssueAt = claims.getIssuedAt(  ).getTime(  );
+        long lIssueAt = claims.getIssuedAt( ).getTime( );
 
         return String.valueOf( lIssueAt / 1000L );
     }
