@@ -47,6 +47,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 
 /**
@@ -101,6 +102,13 @@ public class JjwtJWTParser implements JWTParser
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
+        catch (IllegalArgumentException  ex) {
+        	throw new TokenValidationException( ex.getMessage( ), ex );
+		}
+        catch (MalformedJwtException  ex) {
+        	throw new TokenValidationException( ex.getMessage( ), ex );
+		}
+        
     }
 
     /**
