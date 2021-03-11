@@ -268,7 +268,10 @@ public final class TokenService
         try
         {
             String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-            newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
+            if ( !StringUtils.isEmpty( strResponse ) &&  !strResponse.contains( "\"error\"" ) )
+            {
+            	newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
+            }
         }
         catch( IOException e )
         {
