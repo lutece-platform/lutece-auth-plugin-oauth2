@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,13 +102,15 @@ public class JjwtJWTParser implements JWTParser
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
-        catch (IllegalArgumentException  ex) {
-        	throw new TokenValidationException( ex.getMessage( ), ex );
-		}
-        catch (MalformedJwtException  ex) {
-        	throw new TokenValidationException( ex.getMessage( ), ex );
-		}
-        
+        catch( IllegalArgumentException ex )
+        {
+            throw new TokenValidationException( ex.getMessage( ), ex );
+        }
+        catch( MalformedJwtException ex )
+        {
+            throw new TokenValidationException( ex.getMessage( ), ex );
+        }
+
     }
 
     /**

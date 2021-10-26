@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -268,9 +268,9 @@ public final class TokenService
         try
         {
             String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
-            if ( !StringUtils.isEmpty( strResponse ) &&  !strResponse.contains( "\"error\"" ) )
+            if ( !StringUtils.isEmpty( strResponse ) && !strResponse.contains( "\"error\"" ) )
             {
-            	newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
+                newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
             }
         }
         catch( IOException e )
