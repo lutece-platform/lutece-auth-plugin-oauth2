@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.oauth2.service;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
