@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.oauth2.web;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.oauth2.service.CallbackHandlerService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 /**
  * AuthLoginServlet

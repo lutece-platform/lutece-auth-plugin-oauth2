@@ -246,19 +246,7 @@ public class CallbackHandler implements Serializable
             Token token = getToken( strRedirectUri, strCode, session );
             dataClient.handleToken( token, request, response );
         }
-        catch( IOException ex )
-        {
-            String strError = "Error retrieving token : " + ex.getMessage( );
-            _logger.error( strError, ex );
-            handleError( request, response, strError );
-        }
-        catch( HttpAccessException ex )
-        {
-            String strError = "Error retrieving token : " + ex.getMessage( );
-            _logger.error( strError, ex );
-            handleError( request, response, strError );
-        }
-        catch( TokenValidationException ex )
+        catch( IOException | HttpAccessException | TokenValidationException ex )
         {
             String strError = "Error retrieving token : " + ex.getMessage( );
             _logger.error( strError, ex );
