@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +67,7 @@ public class JjwtJWTParser implements JWTParser
         try
         {
             JwtParser parser = Jwts.parser( );
-            parser.setSigningKey( clientConfig.getClientSecret( ).getBytes( "UTF-8" ) );
+            parser.setSigningKey( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) );
 
             Jwt jwt = parser.parse( strCompactJwt );
             Claims claims = (Claims) jwt.getBody( );
@@ -90,27 +90,10 @@ public class JjwtJWTParser implements JWTParser
 
             token.setIdToken( idToken );
         }
-        catch( SignatureException ex )
+        catch( SignatureException | ExpiredJwtException | IllegalArgumentException | MalformedJwtException ex )
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
-        catch( ExpiredJwtException ex )
-        {
-            throw new TokenValidationException( ex.getMessage( ), ex );
-        }
-        catch( UnsupportedEncodingException ex )
-        {
-            throw new TokenValidationException( ex.getMessage( ), ex );
-        }
-        catch( IllegalArgumentException ex )
-        {
-            throw new TokenValidationException( ex.getMessage( ), ex );
-        }
-        catch( MalformedJwtException ex )
-        {
-            throw new TokenValidationException( ex.getMessage( ), ex );
-        }
-
     }
 
     /**

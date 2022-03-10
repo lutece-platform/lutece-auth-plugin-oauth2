@@ -102,7 +102,7 @@ public class JjwtJWTParserTest
 
         // builder.setIssuedAt( dateIssueAt );
         // builder.setExpiration( dateExpiration );
-        Map<String, Object> mapClaims = new HashMap<String, Object>( );
+        Map<String, Object> mapClaims = new HashMap<>( );
         mapClaims.put( Constants.CLAIM_NONCE, NONCE );
         mapClaims.put( Constants.CLAIM_IDP, IDP );
         mapClaims.put( Constants.CLAIM_ACR, ACR );

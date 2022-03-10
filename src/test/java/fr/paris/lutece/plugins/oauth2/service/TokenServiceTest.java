@@ -34,8 +34,7 @@
 package fr.paris.lutece.plugins.oauth2.service;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.service.TokenService;
-import static org.junit.Assert.*;
+import fr.paris.lutece.test.LuteceTestCase;
 
 import org.junit.Test;
 
@@ -44,9 +43,9 @@ import java.io.IOException;
 /**
  * TokenService Test
  */
-public class TokenServiceTest
+public class TokenServiceTest extends LuteceTestCase
 {
-    private static final String JSON_TOKEN = "{\"access_token\":\"608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03\",\"token_type\":\"Bearer\",\"expires_in\":3600,\"id_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vZmNwLmludGVnMDEuZGV2LWZyYW5jZWNvbm5lY3QuZnIiLCJzdWIiOiIwMTI2MzIzNDM2MjFjMjYwMGY0M2I1YWIxOTM2NzQzZGZjOGExOTljZWNhODUxYTciLCJhdWQiOiJhOWEyNTg5NWY5ZDc2ZjZjODlhYTIxODMwNTc1YmYzNGIzZjRmNjg0YTcyYTg0YzEzYWIxYzM4MTA2NDNkODU5IiwiZXhwIjoxNDMyOTM1MTM5LCJpYXQiOjE0MzI5MzE1MzksIm5vbmNlIjoiMTNjMWMyMDk5ODlmMSIsImlkcCI6ImRnZmlwIiwiYWNyIjoiZWlkYXMyIn0.RrzwbO0ygvMbFJYYvzsx530IiJpj3iQ44GQPcpTHIKM\"}";
+    private static final String JSON_TOKEN = "{ \"access_token\" : \"608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03\", \"token_type\" : \"Bearer\", \"expires_in\" : 3600, \"id_token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vZmNwLmludGVnMDEuZGV2LWZyYW5jZWNvbm5lY3QuZnIiLCJzdWIiOiIwMTI2MzIzNDM2MjFjMjYwMGY0M2I1YWIxOTM2NzQzZGZjOGExOTljZWNhODUxYTciLCJhdWQiOiJhOWEyNTg5NWY5ZDc2ZjZjODlhYTIxODMwNTc1YmYzNGIzZjRmNjg0YTcyYTg0YzEzYWIxYzM4MTA2NDNkODU5IiwiZXhwIjoxNDMyOTM1MTM5LCJpYXQiOjE0MzI5MzE1MzksIm5vbmNlIjoiMTNjMWMyMDk5ODlmMSIsImlkcCI6ImRnZmlwIiwiYWNyIjoiZWlkYXMyIn0.RrzwbO0ygvMbFJYYvzsx530IiJpj3iQ44GQPcpTHIKM\" }";
 
     /**
      * Test of parse method, of class TokenService.
@@ -56,10 +55,9 @@ public class TokenServiceTest
     @Test
     public void testParseToken( ) throws IOException
     {
-        System.out.println( "parse" );
+        System.out.println( "parseTokenJson" );
 
-        String strJson = JSON_TOKEN;
-        Token token = TokenService.getService( ).parseToken( strJson );
+        Token token = TokenService.getService( ).parseToken( JSON_TOKEN );
 
         assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
         assertEquals( token.getExpiresIn( ), 3600 );
