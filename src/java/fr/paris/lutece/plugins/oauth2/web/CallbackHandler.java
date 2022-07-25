@@ -198,6 +198,8 @@ public class CallbackHandler implements Serializable
             url.addParameter( Constants.PARAMETER_NONCE, createNonce( session ) );
 
             addComplementaryParameters( url, request );
+            addBackPromptUrl(url, request);
+            
             String strAcrValues = dataClient.getAcrValues( );
             if ( strAcrValues != null )
             {
@@ -495,6 +497,28 @@ public class CallbackHandler implements Serializable
         }
 
     }
+    
+    private void addBackPromptUrl( UrlItem url, HttpServletRequest request )
+    {
+        String strBackPromptUrl= request.getParameter( Constants.PARAMETER_BACK_PROMPT_URL);
+  
+        if ( !StringUtils.isEmpty( strBackPromptUrl) )
+        {
+            try
+            {
+            	
+            	  url.addParameter( Constants.PARAMETER_BACK_PROMPT_URL, URLEncoder.encode( strBackPromptUrl, "UTF-8" ) );
+        
+            }
+            catch( UnsupportedEncodingException e )
+            {
+                _logger.error( "error during urlEncode of param " +Constants.PARAMETER_BACK_PROMPT_URL  + strBackPromptUrl, e );
+            }
+          
+        }
+
+    }
+    
 
     /**
      * Generate Redirect Url
@@ -509,29 +533,43 @@ public class CallbackHandler implements Serializable
     private String generateRedirectUrl( HttpServletRequest request, DataClient dataClient )
     {
         String stRedirectUrl = _authClientConf.getRedirectUri( );
+        UrlItem url = new UrlItem(stRedirectUrl);
+        
         if ( stRedirectUrl == null )
         {
             stRedirectUrl = DataClientService.instance( ).getDataClientUrl( request, dataClient.getName( ), getHandlerName( ) );
+            url=new UrlItem(stRedirectUrl);
+        
         }
         else
         {
+        	
             // add dataclient and handler name parameter
-            if ( stRedirectUrl.contains( "?" ) )
+           url.addParameter(Constants.PARAMETER_DATA_CLIENT, dataClient.getName( ));
+           if ( getHandlerName( ) != null )
             {
-                stRedirectUrl += "&";
-            }
-            else
-            {
-                stRedirectUrl += "?";
-            }
-
-            stRedirectUrl += Constants.PARAMETER_DATA_CLIENT + "=" + dataClient.getName( );
-            if ( getHandlerName( ) != null )
-            {
-                stRedirectUrl += Constants.PARAMETER_HANDLER_NAME + "=" + getHandlerName( );
+        	   url.addParameter(Constants.PARAMETER_HANDLER_NAME,  getHandlerName( ));
+                
             }
         }
-        return stRedirectUrl;
+        
+        String strBackPromptUrl= request.getParameter( Constants.PARAMETER_BACK_PROMPT_URL);
+        
+        if ( !StringUtils.isEmpty( strBackPromptUrl) )
+        {
+        	
+			try {
+				
+				  url.addParameter(Constants.PARAMETER_BACK_PROMPT_URL,URLEncoder.encode(strBackPromptUrl, "UTF-8"));
+			
+			} catch (UnsupportedEncodingException e) {
+				_logger.error(
+						"error during urlEncode of param " + Constants.PARAMETER_BACK_PROMPT_URL + strBackPromptUrl, e);
+			}
+        	
+        }
+        
+        return url.getUrl();
     }
 
 }

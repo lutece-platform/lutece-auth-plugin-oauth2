@@ -54,6 +54,7 @@ public final class Constants
     public static final String PARAMETER_ACCESS_TOKEN = "access_token";
     public static final String PARAMETER_DATA_CLIENT = "data_client";
     public static final String PARAMETER_COMPLEMENTARY_PARAMETER = "complementary_parameter";
+    public static final String PARAMETER_BACK_PROMPT_URL = "bck_prompt_url";
 
     public static final String PARAMETER_HANDLER_NAME = "handler_name";
     public static final String PARAMETER_ACR_VALUES = "acr_values";
