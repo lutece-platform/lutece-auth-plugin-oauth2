@@ -39,6 +39,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -477,26 +481,36 @@ public class CallbackHandler implements Serializable
 
     private void addComplementaryParameters( UrlItem url, HttpServletRequest request )
     {
-        String strComplementaryParam = request.getParameter( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
+        String[] strComplementaryParams = request.getParameterValues( Constants.PARAMETER_COMPLEMENTARY_PARAMETER );
         String strParamValue;
         String strParamCode;
-
-        if ( !StringUtils.isEmpty( strComplementaryParam ) && strComplementaryParam.contains( "=" ) )
+       
+        if ( strComplementaryParams!=null && strComplementaryParams.length > 0  )
         {
-            strParamCode = strComplementaryParam.split( "=" ) [0];
-            strParamValue = strComplementaryParam.substring( strComplementaryParam.indexOf( "=" ) + 1, strComplementaryParam.length( ) );
-            try
-            {
-                strParamValue = URLEncoder.encode( strParamValue, "UTF-8" );
-            }
-            catch( UnsupportedEncodingException e )
-            {
-                _logger.error( "error during urlEncode of param" + strParamValue, e );
-            }
-            url.addParameter( strParamCode, strParamValue );
+        	for (int i = 0; i < strComplementaryParams.length; i++) {
+        	
+        		if(strComplementaryParams[i].contains( "=" )) 
+        		{
+	        		 strParamCode = strComplementaryParams[i].split( "=" ) [0];
+	                 strParamValue = strComplementaryParams[i].substring( strComplementaryParams[i].indexOf( "=" ) + 1, strComplementaryParams[i].length( ) );
+	                 try
+	                 {
+	                     strParamValue = URLEncoder.encode( strParamValue, "UTF-8" );
+	                 }
+	                 catch( UnsupportedEncodingException e )
+	                 {
+	                     _logger.error( "error during urlEncode of param" + strParamValue, e );
+	                 }
+	                 url.addParameter( strParamCode, strParamValue );
+        		}
+        		
+        	}
+        	
         }
 
     }
+    
+    
     
     private void addBackPromptUrl( UrlItem url, HttpServletRequest request )
     {
