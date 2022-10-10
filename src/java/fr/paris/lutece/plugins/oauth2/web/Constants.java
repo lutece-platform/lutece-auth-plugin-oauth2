@@ -55,6 +55,10 @@ public final class Constants
     public static final String PARAMETER_DATA_CLIENT = "data_client";
     public static final String PARAMETER_COMPLEMENTARY_PARAMETER = "complementary_parameter";
     public static final String PARAMETER_BACK_PROMPT_URL = "bck_prompt_url";
+    public static final String PARAMETER_CODE_CHALLENGE = "code_challenge";
+    public static final String PARAMETER_CODE_CHALLENGE_METHOD = "code_challenge_method";
+    public static final String PARAMETER_CODE_VERIFIER = "code_verifier";
+        
 
     public static final String PARAMETER_HANDLER_NAME = "handler_name";
     public static final String PARAMETER_ACR_VALUES = "acr_values";
@@ -63,6 +67,9 @@ public final class Constants
 
     public static final String STATE_SESSION_VARIABLE = "state";
     public static final String NONCE_SESSION_VARIABLE = "nonce";
+    public static final String CODE_VERIFIER_SESSION_VARIABLE = "code_verifier";
+    public static final String CODE_CHALLENGE_SESSION_VARIABLE = "code_challenge";
+    
     public static final String CLAIM_NONCE = "nonce";
     public static final String CLAIM_IDP = "idp";
     public static final String CLAIM_ACR = "acr";

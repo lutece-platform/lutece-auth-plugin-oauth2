@@ -102,7 +102,7 @@ public final class TokenService
             throws IOException, HttpAccessException, TokenValidationException
     {
 
-        return getToken( null, _instance._defaultClientConfig, _instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce );
+        return getToken( null, _instance._defaultClientConfig, _instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce,null );
     }
 
     /**
@@ -123,7 +123,7 @@ public final class TokenService
      *             If the token validation failed
      */
     public Token getToken( String strRedirectUri, AuthClientConf clientConfig, AuthServerConf authServerConf, String strAuthorizationCode, HttpSession session,
-            JWTParser jWTParser, String strStoredNonce ) throws IOException, HttpAccessException, TokenValidationException
+            JWTParser jWTParser, String strStoredNonce,String strCodeVerifier ) throws IOException, HttpAccessException, TokenValidationException
     {
 
         Token token = null;
@@ -135,8 +135,16 @@ public final class TokenService
         mapParameters.put( Constants.PARAMETER_GRANT_TYPE, Constants.GRANT_TYPE_AUTHORIZATION_CODE );
         mapParameters.put( Constants.PARAMETER_CODE, strAuthorizationCode );
         mapParameters.put( Constants.PARAMETER_CLIENT_ID, clientConfig.getClientId( ) );
-        mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret( ) );
-
+        if(!clientConfig.isPublic())
+        {
+        	mapParameters.put( Constants.PARAMETER_CLIENT_SECRET, clientConfig.getClientSecret( ) );
+        }
+        
+        if( clientConfig.isPkce())
+        {
+        	mapParameters.put( Constants.PARAMETER_CODE_VERIFIER, strCodeVerifier );
+        }
+        
         if ( strRedirectUri != null )
         {
             mapParameters.put( Constants.PARAMETER_REDIRECT_URI, strRedirectUri );

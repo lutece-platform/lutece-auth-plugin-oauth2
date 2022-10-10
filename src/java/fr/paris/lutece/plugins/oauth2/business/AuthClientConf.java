@@ -46,6 +46,8 @@ public class AuthClientConf implements Serializable
     private String _strClientId;
     private String _strClientSecret;
     private String _strRedirectUri;
+    private boolean _bPublic;
+    private boolean _bPkce;
 
     /**
      * Returns the ClientId
@@ -119,4 +121,20 @@ public class AuthClientConf implements Serializable
     {
         return null;
     }
+
+	public boolean isPublic() {
+		return _bPublic;
+	}
+
+	public void setPublic(boolean _bPublic) {
+		this._bPublic = _bPublic;
+	}
+
+	public boolean isPkce() {
+		return _bPkce;
+	}
+
+	public void setPkce(boolean _bPKCE) {
+		this._bPkce = _bPKCE;
+	}
 }
