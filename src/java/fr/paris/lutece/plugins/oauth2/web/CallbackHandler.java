@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,9 @@ import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.service.DataClientService;
+import fr.paris.lutece.plugins.oauth2.service.PkceUtil;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
@@ -200,6 +203,16 @@ public class CallbackHandler implements Serializable
             url.addParameter( Constants.PARAMETER_SCOPE, dataClient.getScopes( ) );
             url.addParameter( Constants.PARAMETER_STATE, createState( session ) );
             url.addParameter( Constants.PARAMETER_NONCE, createNonce( session ) );
+            if(_authClientConf.isPkce())
+            {
+            	String strCodeVerifier=createCodeVerifier(session);
+            	String strCodeChallenge=createCodeChallenge(strCodeVerifier, session);
+            	url.addParameter(Constants.PARAMETER_CODE_CHALLENGE,strCodeChallenge);
+            	url.addParameter(Constants.PARAMETER_CODE_CHALLENGE_METHOD,"S256");
+            }
+            
+            
+            
 
             addComplementaryParameters( url, request );
             addBackPromptUrl(url, request);
@@ -294,7 +307,7 @@ public class CallbackHandler implements Serializable
     {
 
         return TokenService.getService( ).getToken( strRedirectUri, _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,
-                getStoredNonce( session ) );
+                getStoredNonce( session ),getStoredCodeVerifier(session) );
 
     }
 
@@ -315,7 +328,83 @@ public class CallbackHandler implements Serializable
 
         return nonce;
     }
+    
+    
+    /**
+     * Create a cryptographically random nonce and store it in the session
+     *
+     * @param session
+     *            The session
+     * @return The nonce
+     */
+    private String createCodeChallenge(String strCodeVerifier,HttpSession session )
+    {
+        
+    	String strChallenge=null;
+		try {
+			if(strCodeVerifier!=null)
+			{
+				strChallenge = PkceUtil.generateCodeChallenge(strCodeVerifier);
+			}
+		} catch (UnsupportedEncodingException|NoSuchAlgorithmException  e) {
+			AppLogService.error(e);
+		}
+    			
+        session.setAttribute( getCodeChallengeAttributeSessionName(), strChallenge );
 
+        return strChallenge;
+    }
+    
+    /**
+     * Create a cryptographically random nonce and store it in the session
+     *
+     * @param session
+     *            The session
+     * @return The nonce
+     */
+    private String createCodeVerifier( HttpSession session )
+    {
+        String StrCodeVerifier=null;
+		try {
+			StrCodeVerifier = PkceUtil.generateCodeVerifier();
+		} catch (UnsupportedEncodingException e) {
+			AppLogService.error(e);
+		}
+        session.setAttribute( getCodeVerifierAttributeSessionName(), StrCodeVerifier );
+
+        return StrCodeVerifier;
+    }
+    
+    
+
+    /**
+     * Get the store code verifier 
+     *
+     * @param session
+     *            The session
+     * @return The stored nonce
+     */
+    private String getStoredCodeVerifier( HttpSession session )
+    {
+        return getStoredSessionString( session, getCodeVerifierAttributeSessionName() );
+    }
+    
+    
+    /**
+     * Get the store code verifier 
+     *
+     * @param session
+     *            The session
+     * @return The stored nonce
+     */
+    private String getStoredCodeChallenge( HttpSession session )
+    {
+        return getStoredSessionString( session, getCodeChallengeAttributeSessionName() );
+    }
+    
+    
+    
+    
     /**
      * Get the nonce we stored in the session
      *
@@ -327,6 +416,8 @@ public class CallbackHandler implements Serializable
     {
         return getStoredSessionString( session, getNonceAttributeSessionName( ) );
     }
+    
+    
 
     /**
      * 
@@ -337,6 +428,30 @@ public class CallbackHandler implements Serializable
 
         return getHandlerName( ) == null ? Constants.NONCE_SESSION_VARIABLE : getHandlerName( ) + Constants.NONCE_SESSION_VARIABLE;
     }
+    
+    /**
+     * 
+     * @return the attribute name who store the verifier code
+     */
+    private String getCodeVerifierAttributeSessionName( )
+    {
+
+        return getHandlerName( ) == null ? Constants.CODE_VERIFIER_SESSION_VARIABLE : getHandlerName( ) + Constants.CODE_VERIFIER_SESSION_VARIABLE;
+    }
+    
+    
+    /**
+     * 
+     * @return the attribute name who store the challenge attribute
+     */
+    private String getCodeChallengeAttributeSessionName( )
+    {
+
+        return getHandlerName( ) == null ? Constants.CODE_CHALLENGE_SESSION_VARIABLE : getHandlerName( ) + Constants.CODE_CHALLENGE_SESSION_VARIABLE;
+    }
+
+    
+    
 
     /**
      * check state returned by Oauth2 to the callback uri

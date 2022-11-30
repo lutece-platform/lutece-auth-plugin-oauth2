@@ -21,6 +21,9 @@
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
         <property name="clientId" value=""/>
         <property name="clientSecret" value=""/>
+        <property name="public" value="false"/>
+        <property name="pkce" value="false"/>
+        
         <!--
         By default the redirect Url is the Oauth2 Servlet URL servlet/plugins/oauth2/callback
         <property name="redirectUri" value="http/locaclhost:8080/lutece/servlet/plugins/oauth2/callback"/>
