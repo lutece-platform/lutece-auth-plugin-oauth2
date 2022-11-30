@@ -33,13 +33,12 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
-import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-
-import org.apache.commons.httpclient.HttpMethodBase;
-
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import fr.paris.lutece.util.signrequest.AuthenticateRequestInformations;
+import fr.paris.lutece.util.signrequest.RequestAuthenticator;
 
 /**
  * BearerToken Authenticator
@@ -70,12 +69,15 @@ public class BearerTokenAuthenticator implements RequestAuthenticator
         return false; // not used
     }
 
+   
+
     /**
      * {@inheritDoc }
      */
-    @Override
-    public void authenticateRequest( HttpMethodBase hmb, List<String> list )
-    {
-        hmb.addRequestHeader( "Authorization", String.format( "Bearer %s", _strAccessToken ) );
-    }
+  
+	@Override
+	public AuthenticateRequestInformations getSecurityInformations(List<String> arg0) {
+		// TODO Auto-generated method stub
+		return new AuthenticateRequestInformations().addSecurityHeader("Authorization", String.format( "Bearer %s", _strAccessToken ) );
+	}
 }
