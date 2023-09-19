@@ -323,7 +323,7 @@ public class CallbackHandler implements Serializable
      */
     private String createNonce( HttpSession session )
     {
-        String nonce = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
+        String nonce = new BigInteger( 128, new SecureRandom( ) ).toString( 16 );
         session.setAttribute( getNonceAttributeSessionName( ), nonce );
 
         return nonce;
@@ -484,7 +484,7 @@ public class CallbackHandler implements Serializable
      */
     private String createState( HttpSession session )
     {
-        String strState = new BigInteger( 50, new SecureRandom( ) ).toString( 16 );
+        String strState = new BigInteger( 128, new SecureRandom( ) ).toString( 16 );
         session.setAttribute( getStateAttributeSessionName( ), strState );
 
         return strState;
