@@ -37,16 +37,20 @@ import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
+import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 import org.apache.log4j.Logger;
 
 import org.junit.Test;
 
+import static org.junit.Assert.fail;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,11 +92,44 @@ public class JjwtJWTParserTest
     }
 
     /**
+     * Test of parseJWT method, of class JjwtJWTParser.
+     */
+    @Test
+    public void testParseJWTInvalidSecret( ) throws Exception
+    {
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( SECRET + "OTHER" ) );
+
+        AuthClientConf clientConfig = new AuthClientConf( );
+        clientConfig.setClientSecret( SECRET );
+
+        AuthServerConf serverConfig = null;
+        String strStoredNonce = NONCE;
+        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+        JjwtJWTParser instance = new JjwtJWTParser( );
+        try
+        {
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+        }
+        catch( TokenValidationException e )
+        {
+            // ok
+            return;
+        }
+        fail( "Validation should have failed" );
+    }
+
+    private String buildJWT( )
+    {
+        return buildJWT( SECRET );
+    }
+
+    /**
      * Build a JWT String
      * 
      * @return The JWT String
      */
-    private String buildJWT( )
+    private String buildJWT( String secret )
     {
         JwtBuilder builder = Jwts.builder( );
 
@@ -112,9 +149,9 @@ public class JjwtJWTParserTest
         mapClaims.put( "aud", AUDIENCE );
         mapClaims.put( "iss", ISSUER );
 
-        builder.setClaims( mapClaims );
+        builder.claims().empty().add(mapClaims).and();
 
-        builder.signWith( SignatureAlgorithm.HS512, SECRET.getBytes( ) );
+        builder.signWith( Keys.hmacShaKeyFor( secret.getBytes( StandardCharsets.UTF_8 ) ), Jwts.SIG.HS512 );
 
         return builder.compact( );
     }

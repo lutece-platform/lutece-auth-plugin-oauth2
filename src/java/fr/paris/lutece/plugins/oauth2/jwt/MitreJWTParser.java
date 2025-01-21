@@ -46,12 +46,14 @@ import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.IDToken;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
+import io.jsonwebtoken.lang.Collections;
 
 import org.apache.log4j.Logger;
 
 import java.text.ParseException;
 
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * MitreJWTParser
@@ -267,7 +269,7 @@ public class MitreJWTParser implements JWTParser
         idToken.setExpiration( String.valueOf( idClaims.getExpirationTime( ).getTime( ) / 1000L ) );
         idToken.setIssueAt( String.valueOf( idClaims.getIssueTime( ).getTime( ) / 1000L ) );
         idToken.setIssuer( idClaims.getIssuer( ) );
-        idToken.setAudience( idClaims.getAudience( ).get( 0 ) );
+        idToken.setAudience( Collections.immutable( new HashSet<>( idClaims.getAudience( ) ) ) );
         idToken.setAcr( strAcr );
         logger.debug( "ID Token retrieved : " + idToken );
 

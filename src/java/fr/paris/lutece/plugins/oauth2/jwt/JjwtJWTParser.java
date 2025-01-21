@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
 
@@ -44,11 +44,13 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 /**
  * Jjwt JWTParser
@@ -66,11 +68,10 @@ public class JjwtJWTParser implements JWTParser
 
         try
         {
-            JwtParser parser = Jwts.parser( );
-            parser.setSigningKey( clientConfig.getClientSecret( ).getBytes( "UTF-8" ) );
+            JwtParser parser = Jwts.parser( ).verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) ).build( );
 
-            Jwt jwt = parser.parse( strCompactJwt );
-            Claims claims = (Claims) jwt.getBody( );
+            Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
+            Claims claims = jws.getPayload( );
 
             IDToken idToken = new IDToken( );
             idToken.setAudience( claims.getAudience( ) );
@@ -98,10 +99,6 @@ public class JjwtJWTParser implements JWTParser
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
-        catch( UnsupportedEncodingException ex )
-        {
-            throw new TokenValidationException( ex.getMessage( ), ex );
-        }
         catch( IllegalArgumentException ex )
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
@@ -110,7 +107,10 @@ public class JjwtJWTParser implements JWTParser
         {
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
-
+        catch( UnsupportedJwtException ex )
+        {
+            throw new TokenValidationException( ex.getMessage( ), ex );
+        }
     }
 
     /**
