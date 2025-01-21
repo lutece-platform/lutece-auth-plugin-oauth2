@@ -33,12 +33,14 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.util.Set;
+
 /**
  * IDToken : informations provided by a JWT (Json Web Token)
  */
 public class IDToken
 {
-    private String _strAudience;
+    private Set<String> _strAudience;
     private String _strExpiration;
     private String _strIssueAt;
     private String _strIssuer;
@@ -52,7 +54,7 @@ public class IDToken
      * 
      * @return The Audience
      */
-    public String getAudience( )
+    public Set<String> getAudience( )
     {
         return _strAudience;
     }
@@ -63,7 +65,7 @@ public class IDToken
      * @param strAudience
      *            The Audience
      */
-    public void setAudience( String strAudience )
+    public void setAudience( Set<String> strAudience )
     {
         _strAudience = strAudience;
     }
