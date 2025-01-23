@@ -47,6 +47,7 @@ public class AuthServerConf implements Serializable
     private String _strTokenEndpointUri;
     private String _strLogoutEndpointUri;
     private boolean _bEnableJwtParser;
+    private String _signatureAlgorithmName;
 
     /**
      * 
@@ -168,6 +169,32 @@ public class AuthServerConf implements Serializable
     public void setEnableJwtParser( boolean _bEnableJwtParser )
     {
         this._bEnableJwtParser = _bEnableJwtParser;
+    }
+
+    /**
+     * The signature algorithm code. If present and if the jwt parser is enabled, the token will be required to have been signed using this algorithm. If
+     * <code>null</code>, the token must not have been signed.
+     * 
+     * @return the signature algorithm code
+     * @since 2.0.0
+     */
+    public String getSignatureAlgorithmName( )
+    {
+        return _signatureAlgorithmName;
+    }
+
+    /**
+     * Sets the signature algorithm code. If not <code>null</code> and if the jwt parser is enabled, the token will be required to have been signed using this
+     * algorithm. If <code>null</code>, the token must not have been signed.
+     * 
+     * @see https://www.rfc-editor.org/rfc/rfc7518.html#section-7.1
+     * @param signatureAlgorithm
+     *            the signature algorithm code
+     * @since 2.0.0
+     */
+    public void setSignatureAlgorithmName( String signatureAlgorithmName )
+    {
+        this._signatureAlgorithmName = signatureAlgorithmName;
     }
 
 }

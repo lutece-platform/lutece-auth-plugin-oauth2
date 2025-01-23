@@ -44,7 +44,9 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -57,6 +59,7 @@ import io.jsonwebtoken.security.SignatureException;
  */
 public class JjwtJWTParser implements JWTParser
 {
+
     /**
      * {@inheritDoc }
      */
@@ -70,8 +73,23 @@ public class JjwtJWTParser implements JWTParser
         {
             JwtParser parser = Jwts.parser( ).verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) ).build( );
 
-            Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
-            Claims claims = jws.getPayload( );
+            Claims claims;
+            if ( serverConfig == null || serverConfig.getSignatureAlgorithmName( ) == null )
+            {
+                // claims should be unsigned
+                Jwt<Header, Claims> jwt = parser.parse( strCompactJwt ).accept( Jwt.UNSECURED_CLAIMS );
+                claims = jwt.getPayload( );
+            }
+            else
+            {
+                // claims should be signed
+                Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
+                if ( !serverConfig.getSignatureAlgorithmName( ).equals( jws.getHeader( ).getAlgorithm( ) ) )
+                {
+                    throw new TokenValidationException( "Expected alg <" + serverConfig.getSignatureAlgorithmName( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
+                }
+                claims = jws.getPayload( );
+            }
 
             IDToken idToken = new IDToken( );
             idToken.setAudience( claims.getAudience( ) );
