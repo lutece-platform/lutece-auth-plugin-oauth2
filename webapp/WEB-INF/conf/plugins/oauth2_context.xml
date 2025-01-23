@@ -16,6 +16,7 @@
         <property name="tokenEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/token"/>
         <property name="logoutEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/logout"/>
         <property name="enableJwtParser" value="true"/>
+        <property name="signatureAlgorithmName" value="HS512"/>
       </bean> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">

@@ -82,13 +82,42 @@ public class JjwtJWTParserTest
         AuthClientConf clientConfig = new AuthClientConf( );
         clientConfig.setClientSecret( SECRET );
 
-        AuthServerConf serverConfig = null;
+        AuthServerConf serverConfig = new AuthServerConf( );
+        serverConfig.setSignatureAlgorithmName( "HS512" );
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
         instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
 
         System.out.print( token.getIdToken( ) );
+    }
+
+    @Test
+    public void testParseJWTWrongAlg( ) throws Exception
+    {
+        System.out.println( "parseJWT" );
+
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( ) );
+
+        AuthClientConf clientConfig = new AuthClientConf( );
+        clientConfig.setClientSecret( SECRET );
+
+        AuthServerConf serverConfig = new AuthServerConf( );
+        serverConfig.setSignatureAlgorithmName( "HS256" );
+        String strStoredNonce = NONCE;
+        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+        JjwtJWTParser instance = new JjwtJWTParser( );
+        try
+        {
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+        }
+        catch( TokenValidationException e )
+        {
+            // ok
+            return;
+        }
+        fail( "Validation should have failed" );
     }
 
     /**
@@ -119,9 +148,43 @@ public class JjwtJWTParserTest
         fail( "Validation should have failed" );
     }
 
+    /**
+     * Test of parseJWT method, of class JjwtJWTParser.
+     */
+    @Test
+    public void testParseJWTNotSigned( ) throws Exception
+    {
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( SECRET, false ) );
+
+        AuthClientConf clientConfig = new AuthClientConf( );
+        clientConfig.setClientSecret( SECRET );
+
+        AuthServerConf serverConfig = new AuthServerConf( );
+        serverConfig.setSignatureAlgorithmName( "HS512" );
+        String strStoredNonce = NONCE;
+        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+        JjwtJWTParser instance = new JjwtJWTParser( );
+        try
+        {
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+        }
+        catch( TokenValidationException e )
+        {
+            // ok
+            return;
+        }
+        fail( "Validation should have failed" );
+    }
+
     private String buildJWT( )
     {
         return buildJWT( SECRET );
+    }
+
+    private String buildJWT( String secret )
+    {
+        return buildJWT( secret, true );
     }
 
     /**
@@ -129,7 +192,7 @@ public class JjwtJWTParserTest
      * 
      * @return The JWT String
      */
-    private String buildJWT( String secret )
+    private String buildJWT( String secret, boolean doSign )
     {
         JwtBuilder builder = Jwts.builder( );
 
@@ -151,7 +214,10 @@ public class JjwtJWTParserTest
 
         builder.claims().empty().add(mapClaims).and();
 
-        builder.signWith( Keys.hmacShaKeyFor( secret.getBytes( StandardCharsets.UTF_8 ) ), Jwts.SIG.HS512 );
+        if ( doSign )
+        {
+            builder.signWith( Keys.hmacShaKeyFor( secret.getBytes( StandardCharsets.UTF_8 ) ), Jwts.SIG.HS512 );
+        }
 
         return builder.compact( );
     }

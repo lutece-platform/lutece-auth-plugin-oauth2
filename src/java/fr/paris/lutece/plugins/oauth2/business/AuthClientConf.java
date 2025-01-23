@@ -112,16 +112,6 @@ public class AuthClientConf implements Serializable
         _strRedirectUri = strRedirectUri;
     }
 
-    /**
-     * Return IDToken signed response Algorithm
-     * 
-     * @return The IDToken signed response Algorithm
-     */
-    public Algorithm getIdTokenSignedResponseAlg( )
-    {
-        return null;
-    }
-
 	public boolean isPublic() {
 		return _bPublic;
 	}

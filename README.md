@@ -1,10 +1,13 @@
-![](http://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=auth-plugin-oauth2-deploy)
+![](https://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=auth-plugin-oauth2-deploy)
+[![Alerte](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-oauth2&metric=alert_status)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-oauth2)
+[![Line of code](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-oauth2&metric=ncloc)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-oauth2)
+[![Coverage](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-oauth2&metric=coverage)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-oauth2)
+
 # Plugin Oauth2
 
-![](http://dev.lutece.paris.fr/plugins/plugin-oauth2/images/oauth2.png)
+![](https://dev.lutece.paris.fr/plugins/plugin-oauth2/images/oauth2.png)
 
 ## Introduction
-
 
 Ce plugin permet d'acceder à des ressources via le protocole oauth2. Grâce à l'authentification par le biais d'un fournisseur d'identités Oauth2,un fournisseur de service peut ensuite accéder à des ressources liées à l'utilisateur (et avec son consentement).
 
@@ -22,6 +25,7 @@ Il faut notamment paramétrer :
  
 * Les adresses des WebServices la plate-forme Oauth2 cible (end points)
 * Vos identifiants (id, secret) qui vous auront été fournit par le service oauth2 utilisé
+* Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre signatureAlgorithmName soit être renseigné. Si les tokens nesont pas signés, alors le paramètre signatureAlgorithmName ne doit pas être renseigné
 * L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et associée à votre ID Client auprès du service Oauth2 utilisé.
 doit ensuite être paramétré avec les informationsdu service client (id, secret et callback) :
 
@@ -35,8 +39,8 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
                                   value=" **** à renseigner **** "/>
         <property name="tokenEndpointUri" value=" **** à renseigner **** "/>
         <property name="logoutEndpointUri" value=" **** à renseigner **** "/>
-        <property name="enableJwtParser" value="true"  ****True si le serveur utilise JWT ****   >
-        
+        <property name="enableJwtParser" value="****true si le serveur utilise JWT ****" />
+        <property name="signatureAlgorithmName" value="HS512"/>
     </bean> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
@@ -99,7 +103,7 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
 
 
 
-[Maven documentation and reports](http://dev.lutece.paris.fr/plugins/plugin-oauth2/)
+[Maven documentation and reports](https://dev.lutece.paris.fr/plugins/plugin-oauth2/)
 
 
 
