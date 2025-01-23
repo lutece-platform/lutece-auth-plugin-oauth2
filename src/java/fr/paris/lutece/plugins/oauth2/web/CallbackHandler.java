@@ -40,11 +40,6 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -64,6 +59,7 @@ import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
 
@@ -247,7 +243,7 @@ public class CallbackHandler implements Serializable
     {
         String strCode = request.getParameter( Constants.PARAMETER_CODE );
 
-        _logger.info( "OAuth Authorization code received : " + strCode );
+        _logger.info( "OAuth Authorization code received : " + SecurityUtil.logForgingProtect( strCode ) );
 
         // Check valid state
         if ( !checkState( request ) )
@@ -469,7 +465,7 @@ public class CallbackHandler implements Serializable
 
         if ( !bCheck )
         {
-            _logger.debug( "Bad state returned by server : " + strState + " while expecting : " + strStored );
+            _logger.debug( "Bad state returned by server : " + SecurityUtil.logForgingProtect( strState ) + " while expecting : " + strStored );
         }
 
         return bCheck;
