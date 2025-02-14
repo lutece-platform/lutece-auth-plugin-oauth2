@@ -26,6 +26,7 @@ Il faut notamment paramétrer :
 * Les adresses des WebServices la plate-forme Oauth2 cible (end points)
 * Vos identifiants (id, secret) qui vous auront été fournit par le service oauth2 utilisé
 * Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre signatureAlgorithmName soit être renseigné. Si les tokens nesont pas signés, alors le paramètre signatureAlgorithmName ne doit pas être renseigné
+* Si le paramètre jwksEndpointUri est renseigné, les clefs de signature des token sont téléchargées depuis cette adresse, qui doit pointer vers un fichier JWKS.
 * L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et associée à votre ID Client auprès du service Oauth2 utilisé.
 doit ensuite être paramétré avec les informationsdu service client (id, secret et callback) :
 
@@ -41,6 +42,7 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
         <property name="logoutEndpointUri" value=" **** à renseigner **** "/>
         <property name="enableJwtParser" value="****true si le serveur utilise JWT ****" />
         <property name="signatureAlgorithmName" value="HS512"/>
+        <property name="jwksEndpointUri" value=" **** à renseigner **** "/>
     </bean> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">

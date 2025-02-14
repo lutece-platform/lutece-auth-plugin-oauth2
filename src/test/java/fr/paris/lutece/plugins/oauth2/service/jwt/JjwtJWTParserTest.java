@@ -132,7 +132,7 @@ public class JjwtJWTParserTest
         AuthClientConf clientConfig = new AuthClientConf( );
         clientConfig.setClientSecret( SECRET );
 
-        AuthServerConf serverConfig = null;
+        AuthServerConf serverConfig = new AuthServerConf( );
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
