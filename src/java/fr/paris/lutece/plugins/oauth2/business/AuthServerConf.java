@@ -48,6 +48,7 @@ public class AuthServerConf implements Serializable
     private String _strLogoutEndpointUri;
     private boolean _bEnableJwtParser;
     private String _signatureAlgorithmName;
+    private String _strJwksEndpointUri;
 
     /**
      * 
@@ -197,4 +198,26 @@ public class AuthServerConf implements Serializable
         this._signatureAlgorithmName = signatureAlgorithmName;
     }
 
+    /**
+     * Gets the JWKS endpoint URI. If not <code>null</code> and if the jwt parser is enabled, the signature keys will be fetched from this URL
+     * 
+     * @return the JWKS endpoint URI
+     * @since 2.0.0
+     */
+    public String getJwksEndpointUri( )
+    {
+        return _strJwksEndpointUri;
+    }
+
+    /**
+     * Sets the JWKS endpoint URI. If not <code>null</code> and if the jwt parser is enabled, the signature keys will be fetched from this URL
+     * 
+     * @param strJwksEndpointUri
+     *            the JWKS endpoint URI
+     * @since 2.0.0
+     */
+    public void setJwksEndpointUri( String strJwksEndpointUri )
+    {
+        this._strJwksEndpointUri = strJwksEndpointUri;
+    }
 }

@@ -48,6 +48,7 @@ import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -71,8 +72,18 @@ public class JjwtJWTParser implements JWTParser
 
         try
         {
-            JwtParser parser = Jwts.parser( ).verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) ).build( );
+            JwtParserBuilder parserBuilder = Jwts.parser( );
 
+            if ( serverConfig.getJwksEndpointUri( ) != null )
+            {
+                parserBuilder.keyLocator( new KeyLocator( serverConfig.getJwksEndpointUri( ) ) );
+            }
+            else
+            {
+                parserBuilder.verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) );
+            }
+
+            JwtParser parser = parserBuilder.build( );
             Claims claims;
             if ( serverConfig == null || serverConfig.getSignatureAlgorithmName( ) == null )
             {
