@@ -69,17 +69,14 @@ public class MitreJWTParser implements JWTParser
      * {@inheritDoc }
      */
     @Override
-    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
-            throws TokenValidationException
+    public <T> T parseJWT( String strCompactJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Class<T> clazz, Logger logger ) throws TokenValidationException
     {
         JWT jwt;
-        IDToken idToken = new IDToken( );
 
         try
         {
-            jwt = com.nimbusds.jwt.JWTParser.parse( token.getIdTokenString( ) );
-        }
-        catch( ParseException ex )
+            jwt = com.nimbusds.jwt.JWTParser.parse( strCompactJwt );
+        } catch ( ParseException ex )
         {
             throw new TokenValidationException( "Unable to parse JWT : " + ex.getMessage( ), ex );
         }
@@ -90,8 +87,7 @@ public class MitreJWTParser implements JWTParser
         try
         {
             idClaims = jwt.getJWTClaimsSet( );
-        }
-        catch( ParseException ex )
+        } catch ( ParseException ex )
         {
             throw new TokenValidationException( "Unable to get Claims set from JWT : " + ex.getMessage( ), ex );
         }
@@ -100,12 +96,9 @@ public class MitreJWTParser implements JWTParser
 
         Algorithm clientAlg = JWSAlgorithm.parse( serverConfig.getSignatureAlgorithmName( ) );
 
-        if ( serverConfig.getSignatureAlgorithmName( ) != null )
+        if ( serverConfig.getSignatureAlgorithmName( ) != null && !clientAlg.equals( tokenAlg ) )
         {
-            if ( !clientAlg.equals( tokenAlg ) )
-            {
-                throw new TokenValidationException( "Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg );
-            }
+            throw new TokenValidationException( "Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg );
         }
 
         if ( jwt instanceof PlainJWT )
@@ -121,93 +114,43 @@ public class MitreJWTParser implements JWTParser
             {
                 throw new TokenValidationException( "Unsigned token received, expected signature with " + tokenAlg );
             }
-        }
-        else
-            if ( jwt instanceof SignedJWT )
-            {
-                logger.debug( "ID token is a signed JWT" );
-
-                /*
-                 * // check the signature JwtSigningAndValidationService jwtValidator = null;
-                 * 
-                 * SignedJWT signedIdToken = (SignedJWT) idToken;
-                 * 
-                 * if (tokenAlg.equals(JWSAlgorithm.HS256) || tokenAlg.equals(JWSAlgorithm.HS384) || tokenAlg.equals(JWSAlgorithm.HS512)) {
-                 * 
-                 * // generate one based on client secret jwtValidator = symmetricCacheService.getSymmetricValidtor( clientConfig.getClient()); } else { //
-                 * otherwise load from the server's public key jwtValidator = validationServices.getValidator( serverConfig.getJwksUri() ); }
-                 * 
-                 * if (jwtValidator != null) { if (!jwtValidator.validateSignature(signedIdToken)) { throw new
-                 * TokenValidationException("Signature validation failed"); } } else {
-                 * _logger.error("No validation service found. Skipping signature validation"); throw new
-                 * TokenValidationException("Unable to find an appropriate signature validator for ID Token."); }
-                 */
-            } // TODO: encrypted id tokens
-
-        // check the issuer
-        if ( idClaims.getIssuer( ) == null )
+        } else if ( jwt instanceof SignedJWT )
         {
-            throw new TokenValidationException( "Id Token Issuer is null" );
-        }
-        else
-            if ( !idClaims.getIssuer( ).equals( serverConfig.getIssuer( ) ) )
-            {
-                throw new TokenValidationException( "Issuers do not match, expected " + serverConfig.getIssuer( ) + " got " + idClaims.getIssuer( ) );
-            }
+            logger.debug( "ID token is a signed JWT" );
 
-        // check expiration
-        if ( idClaims.getExpirationTime( ) == null )
-        {
-            throw new TokenValidationException( "Id Token does not have required expiration claim" );
-        }
-        else
-        {
-            // it's not null, see if it's expired
-            Date now = new Date( System.currentTimeMillis( ) - ( _nTimeSkewAllowance * 1000 ) );
-
-            if ( now.after( idClaims.getExpirationTime( ) ) )
-            {
-                throw new TokenValidationException( "Id Token is expired: " + idClaims.getExpirationTime( ) );
-            }
-        }
-
-        // check not before
-        if ( idClaims.getNotBeforeTime( ) != null )
-        {
-            Date now = new Date( System.currentTimeMillis( ) + ( _nTimeSkewAllowance * 1000 ) );
-
-            if ( now.before( idClaims.getNotBeforeTime( ) ) )
-            {
-                throw new TokenValidationException( "Id Token not valid untill: " + idClaims.getNotBeforeTime( ) );
-            }
-        }
-
-        // check issued at
-        if ( idClaims.getIssueTime( ) == null )
-        {
-            throw new TokenValidationException( "Id Token does not have required issued-at claim" );
-        }
-        else
-        {
-            // since it's not null, see if it was issued in the future
-            Date now = new Date( System.currentTimeMillis( ) + ( _nTimeSkewAllowance * 1000 ) );
-
-            if ( now.before( idClaims.getIssueTime( ) ) )
-            {
-                throw new TokenValidationException( "Id Token was issued in the future: " + idClaims.getIssueTime( ) );
-            }
-        }
+            /*
+             * // check the signature JwtSigningAndValidationService jwtValidator = null;
+             * 
+             * SignedJWT signedIdToken = (SignedJWT) idToken;
+             * 
+             * if (tokenAlg.equals(JWSAlgorithm.HS256) || tokenAlg.equals(JWSAlgorithm.HS384) || tokenAlg.equals(JWSAlgorithm.HS512)) {
+             * 
+             * // generate one based on client secret jwtValidator = symmetricCacheService.getSymmetricValidtor( clientConfig.getClient()); } else { // otherwise load from the server's public key jwtValidator = validationServices.getValidator( serverConfig.getJwksUri() ); }
+             * 
+             * if (jwtValidator != null) { if (!jwtValidator.validateSignature(signedIdToken)) { throw new TokenValidationException("Signature validation failed"); } } else { _logger.error("No validation service found. Skipping signature validation"); throw new TokenValidationException("Unable to find an appropriate signature validator for ID Token."); }
+             */
+        } // TODO: encrypted id tokens
 
         // check audience
         if ( idClaims.getAudience( ) == null )
         {
             throw new TokenValidationException( "Id token audience is null" );
+        } else if ( !idClaims.getAudience( ).contains( clientConfig.getClientId( ) ) )
+        {
+            throw new TokenValidationException( "Audience does not match, expected " + clientConfig.getClientId( ) + " got " + idClaims.getAudience( ) );
         }
-        else
-            if ( !idClaims.getAudience( ).contains( clientConfig.getClientId( ) ) )
-            {
-                throw new TokenValidationException( "Audience does not match, expected " + clientConfig.getClientId( ) + " got " + idClaims.getAudience( ) );
-            }
+
+        return ( T ) idClaims;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public <T> void setIdToken( T value, Token token, String strStoredNonce, Logger logger ) throws TokenValidationException
+    {
+        ReadOnlyJWTClaimsSet idClaims = ( ReadOnlyJWTClaimsSet ) value;
+        IDToken idToken = new IDToken( );
 
         // compare the nonce to our stored claim
         String strNonce = null;
@@ -215,8 +158,7 @@ public class MitreJWTParser implements JWTParser
         try
         {
             strNonce = idClaims.getStringClaim( "nonce" );
-        }
-        catch( ParseException ex )
+        } catch ( ParseException ex )
         {
             throw new TokenValidationException( "ID token did not contain a nonce claim." );
         }
@@ -230,11 +172,11 @@ public class MitreJWTParser implements JWTParser
 
         if ( !strNonce.equals( strStoredNonce ) )
         {
-            logger.error( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session "
-                    + Constants.NONCE_SESSION_VARIABLE + " failed. Expected " + strStoredNonce + " got " + strNonce + "." );
+            logger.error( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session " + Constants.NONCE_SESSION_VARIABLE + " failed. Expected "
+                    + strStoredNonce + " got " + strNonce + "." );
 
-            throw new TokenValidationException( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session "
-                    + Constants.NONCE_SESSION_VARIABLE + " failed. Expected " + strStoredNonce + " got " + strNonce + "." );
+            throw new TokenValidationException( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session " + Constants.NONCE_SESSION_VARIABLE
+                    + " failed. Expected " + strStoredNonce + " got " + strNonce + "." );
         }
 
         logger.debug( "Nonce has been validated" );
@@ -245,8 +187,7 @@ public class MitreJWTParser implements JWTParser
         try
         {
             strIdp = idClaims.getStringClaim( "idp" );
-        }
-        catch( ParseException ex )
+        } catch ( ParseException ex )
         {
             throw new TokenValidationException( "ID token did not contain an idp claim.", ex );
         }
@@ -257,8 +198,7 @@ public class MitreJWTParser implements JWTParser
         try
         {
             strAcr = idClaims.getStringClaim( "acr" );
-        }
-        catch( ParseException ex )
+        } catch ( ParseException ex )
         {
             throw new TokenValidationException( "ID token did not contain an acr claim.", ex );
         }
@@ -275,4 +215,5 @@ public class MitreJWTParser implements JWTParser
 
         token.setIdToken( idToken );
     }
+
 }

@@ -37,7 +37,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
+import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 
 /**
  * DataClient
@@ -76,6 +79,30 @@ public interface DataClient
      * @return The scopes
      */
     String getScopes( );
+    
+    /**
+     * 
+     * @return The AuthServerConf
+     */
+    AuthServerConf getAuthServerConf ( );
+    
+    /**
+     * 
+     * @return The AuthClientConf
+     */
+    AuthClientConf getAuthClientConf ( );
+    
+    /**
+     * 
+     * @return The JWTParser
+     */
+    JWTParser getJWTParser ( );
+    
+    /**
+     * 
+     * @return enable jwt parser
+     */
+    boolean isEnableJwtParser ( );
 
     /**
      * Set ACR values set
@@ -176,5 +203,31 @@ public interface DataClient
      *            true if the dataclient is a default data client
      */
     void setDefault( boolean _bDefault );
+    
+    /**
+     * 
+     * @param authServerConf
+     */
+    void setAuthServerConf ( AuthServerConf authServerConf );
 
+    
+    /**
+     * 
+     * @param authClientConf
+     */
+    void setAuthClientConf ( AuthClientConf authClientConf );
+    
+    
+    /**
+     * 
+     * @param jwtParser
+     */
+    void setJWTParser ( JWTParser jwtParser );
+
+    /**
+     * 
+     * @param bEnableJwtParser 
+     *              true if is enable jwt parser
+     */
+    void setEnableJwtParser ( boolean bEnableJwtParser );
 }

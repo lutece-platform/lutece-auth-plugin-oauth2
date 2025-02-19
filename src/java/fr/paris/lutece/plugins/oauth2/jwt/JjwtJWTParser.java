@@ -44,7 +44,6 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtParser;
@@ -65,10 +64,9 @@ public class JjwtJWTParser implements JWTParser
      * {@inheritDoc }
      */
     @Override
-    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
+    public <T> T parseJWT( String strCompactJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Class<T> clazz, Logger logger )
             throws TokenValidationException
     {
-        String strCompactJwt = token.getIdTokenString( );
 
         try
         {
@@ -84,12 +82,12 @@ public class JjwtJWTParser implements JWTParser
             }
 
             JwtParser parser = parserBuilder.build( );
-            Claims claims;
+
             if ( serverConfig == null || serverConfig.getSignatureAlgorithmName( ) == null )
             {
                 // claims should be unsigned
-                Jwt<Header, Claims> jwt = parser.parse( strCompactJwt ).accept( Jwt.UNSECURED_CLAIMS );
-                claims = jwt.getPayload( );
+                Jwt<?, ?> jwt = parser.parse( strCompactJwt );
+                return ( T ) jwt.getPayload( );
             }
             else
             {
@@ -99,26 +97,9 @@ public class JjwtJWTParser implements JWTParser
                 {
                     throw new TokenValidationException( "Expected alg <" + serverConfig.getSignatureAlgorithmName( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
                 }
-                claims = jws.getPayload( );
+                return ( T ) jws.getPayload( );
             }
 
-            IDToken idToken = new IDToken( );
-            idToken.setAudience( claims.getAudience( ) );
-            idToken.setIssuer( claims.getIssuer( ) );
-            idToken.setSubject( claims.getSubject( ) );
-
-            // Claims that should be verified
-            idToken.setNonce( getVerifiedNonce( claims, strStoredNonce ) );
-            idToken.setExpiration( getExpiration( claims ) );
-            idToken.setIssueAt( getIssueAt( claims ) );
-
-            // Extra claims for Oauth2
-            idToken.setIdProvider( (String) claims.get( Constants.CLAIM_IDP ) );
-            idToken.setAcr( (String) claims.get( Constants.CLAIM_ACR ) );
-
-            logger.debug( "ID Token retrieved by JJWT parser implementation : " + idToken );
-
-            token.setIdToken( idToken );
         }
         catch( SignatureException ex )
         {
@@ -141,6 +122,42 @@ public class JjwtJWTParser implements JWTParser
             throw new TokenValidationException( ex.getMessage( ), ex );
         }
     }
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public <T> void setIdToken( T value,  Token token, String strStoredNonce, Logger logger ) throws TokenValidationException
+    {     
+        try
+        {
+            Claims claims = ( Claims ) value;
+            
+            IDToken idToken = new IDToken( );
+            idToken.setAudience( claims.getAudience( ) );
+            idToken.setIssuer( claims.getIssuer( ) );
+            idToken.setSubject( claims.getSubject( ) );
+    
+            // Claims that should be verified
+            idToken.setNonce( getVerifiedNonce( claims, strStoredNonce ) );
+    
+            idToken.setExpiration( getExpiration( claims ) );
+            idToken.setIssueAt( getIssueAt( claims ) );
+    
+            // Extra claims for Oauth2
+            idToken.setIdProvider( (String) claims.get( Constants.CLAIM_IDP ) );
+            idToken.setAcr( (String) claims.get( Constants.CLAIM_ACR ) );
+    
+            logger.debug( "ID Token retrieved by JJWT parser implementation : " + idToken );
+    
+            token.setIdToken( idToken );
+        }
+        catch ( TokenValidationException ex )
+        {
+            throw new TokenValidationException( ex.getMessage( ), ex );
+        }
+    }
+    
 
     /**
      * Retrieve and check the nonce

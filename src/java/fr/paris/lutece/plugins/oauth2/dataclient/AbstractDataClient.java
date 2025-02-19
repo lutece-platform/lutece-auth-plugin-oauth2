@@ -33,7 +33,11 @@
  */
 package fr.paris.lutece.plugins.oauth2.dataclient;
 
+import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
+import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
+import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.service.BearerTokenAuthenticator;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -42,8 +46,13 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
 import fr.paris.lutece.util.url.UrlItem;
+import io.jsonwebtoken.Claims;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -68,6 +77,10 @@ public abstract class AbstractDataClient implements DataClient
     private Set<String> _scope;
     private Set<String> _acrValues;
     private boolean _bDefault;
+    private AuthServerConf _authServerConf;
+    private AuthClientConf _authClientConf;
+    private JWTParser _jWTParser;
+    private boolean _bEnableJwtParser;
 
     /**
      * {@inheritDoc }
@@ -250,6 +263,12 @@ public abstract class AbstractDataClient implements DataClient
         {
             RequestAuthenticator authenticator = new BearerTokenAuthenticator( token.getAccessToken( ) );
             strResponse = httpAccess.doGet( strUrl, authenticator, null );
+            
+            if ( StringUtils.isNotEmpty( strResponse ) &&_jWTParser != null && _bEnableJwtParser )
+            {                      
+                strResponse = parseJWTResponse( strResponse );
+            }
+            
             _logger.debug( "Oauth2 response : " + strResponse );
         }
         catch( HttpAccessException ex )
@@ -260,6 +279,33 @@ public abstract class AbstractDataClient implements DataClient
         return strResponse;
     }
 
+    /**
+     * Parse JWT response
+     * @param strCompactJWT
+     * @return string
+     */
+    private String parseJWTResponse( String strCompactJWT )
+    {     
+        try
+        {
+            Claims claims =_jWTParser.parseJWT( strCompactJWT, _authClientConf, _authServerConf, Claims.class, _logger );
+            return new ObjectMapper( ).writeValueAsString( claims );           
+        }
+        catch ( TokenValidationException e )
+        {
+            _logger.error( "An error occurred while validating the JWT", e );
+        } catch ( JsonProcessingException e )
+        {
+            _logger.error( "An error occurred while converting Claims to string", e );
+        }
+        
+        return strCompactJWT;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
     {
         try
@@ -285,4 +331,75 @@ public abstract class AbstractDataClient implements DataClient
         this._bDefault = _bDefault;
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public AuthServerConf getAuthServerConf( )
+    {
+        return _authServerConf;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setAuthServerConf( AuthServerConf authServerConf )
+    {
+        this._authServerConf = authServerConf;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public AuthClientConf getAuthClientConf( )
+    {
+        return _authClientConf;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setAuthClientConf( AuthClientConf authClientConf )
+    {
+        this._authClientConf = authClientConf;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public JWTParser getJWTParser( )
+    {
+        return _jWTParser;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setJWTParser( JWTParser jWTParser )
+    {
+        this._jWTParser = jWTParser;
+    }
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean isEnableJwtParser( )
+    {
+        return _bEnableJwtParser;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setEnableJwtParser( boolean bEnableJwtParser )
+    {
+        this._bEnableJwtParser = bEnableJwtParser;
+    }
 }

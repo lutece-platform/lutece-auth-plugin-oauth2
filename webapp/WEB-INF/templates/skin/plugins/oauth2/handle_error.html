@@ -1,0 +1,24 @@
+<@cContainer>
+	<@cBlock class='p-sm-3 forms'>
+		<@row>
+			<@cCol cols='lg-10 col-md-12 col-xs-12'>
+				<@cTitle level=2 class='main-info-color mb-5'>Erreur</@cTitle>
+				<@cAlert title='' dismissible=false class='danger mb-xl'>
+					<@cText class='alert-title'>
+						<p>Une erreur est survenue: <strong>${error!}</strong>.
+						Si le problème persiste, veuillez contacter la ville.</p>
+						<p>Veuillez nous excuser pour la gêne occasionnée</p>
+					</@cText>
+				</@cAlert>
+				<@row>
+					<@cCol cols='12 col-lg-5 col-xl-5'>
+						<a href="" class="btn btn-primary">Retourner sur Mon Paris</a>						
+					</@cCol>
+					<@cCol cols='12 col-lg-5 col-xl-5'>
+						<a href="https://sollicitations.paris.fr/ticketing/jsp/site/Portal.jsp?page=ticket" class="btn btn-primary"  target="_blank">Contacter la Ville</a>						
+					</@cCol>
+				</@row>
+			</@cCol>
+		</@row>
+	</@cBlock>
+</@cContainer>

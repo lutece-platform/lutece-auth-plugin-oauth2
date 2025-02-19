@@ -42,7 +42,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
+import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
+import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -180,6 +183,20 @@ public final class DataClientService
             url.addParameter( Constants.PARAMETER_HANDLER_NAME, strHandlerName );
         }
         return url.getUrl( );
+    }
+    
+    /**
+     * Set data client config
+     * @param dataClient
+     * @param authServerConfig
+     * @param authClientConf
+     * @param jwtParser
+     */
+    public void setDataClientConfig (DataClient dataClient, AuthServerConf authServerConfig, AuthClientConf authClientConf, JWTParser jwtParser )
+    {
+        dataClient.setAuthServerConf( authServerConfig );
+        dataClient.setAuthClientConf( authClientConf );
+        dataClient.setJWTParser( jwtParser );
     }
 
 }

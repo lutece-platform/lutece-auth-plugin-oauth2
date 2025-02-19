@@ -11,10 +11,11 @@
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
     
     <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
-        <property name="issuer" value="http://fcp.integ01.dev-oauth2.fr"/>
-        <property name="authorizationEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/authorize"/>
-        <property name="tokenEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/token"/>
-        <property name="logoutEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/logout"/>
+        <property name="issuer" value="https://fcp-low.integ01.dev-franceconnect.fr"/>
+        <property name="authorizationEndpointUri" value="https://fcp-low.integ01.dev-franceconnect.fr/api/v2/authorize?acr_values=eidas1"/>
+        <property name="tokenEndpointUri" value="https://fcp-low.integ01.dev-franceconnect.fr/api/v2/token"/>
+        <property name="logoutEndpointUri" value="https://fcp-low.integ01.dev-franceconnect.fr/api/v2/logout"/>
+        <property name="jwksEndpointUri" value="https://fcp-low.integ01.dev-franceconnect.fr/api/v2/jwks"/>
         <property name="enableJwtParser" value="true"/>
         <property name="signatureAlgorithmName" value="HS512"/>
       </bean> 
@@ -41,7 +42,8 @@
     
     <bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient">
         <property name="name" value="logUserInfo" />
-        <property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/>
+        <property name="dataServerUri" value="https://fcp-low.integ01.dev-franceconnect.fr/api/v2/userinfo"/>
+        <property name="enableJwtParser" value="true" />
         <property name="tokenMethod" value="HEADER"/>
         <property name="scope">
             <set value-type="java.lang.String">

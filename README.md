@@ -61,6 +61,7 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
    <bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient">
          <property name="name" value="logUserInfo" />
          <property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/>
+         <property name="enableJwtParser" value="****true si le serveur utilise JWT ****" />
          <property name="tokenMethod" value="HEADER"/>
          <property name="scope">
              <set value-type="java.lang.String">

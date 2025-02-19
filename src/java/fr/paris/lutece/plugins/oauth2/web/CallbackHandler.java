@@ -256,9 +256,11 @@ public class CallbackHandler implements Serializable
         try
         {
             HttpSession session = request.getSession( );
-            DataClient dataClient = DataClientService.instance( ).getClient( request );
+            DataClient dataClient = DataClientService.instance( ).getClient( request );            
             String strRedirectUri = generateRedirectUrl( request, dataClient );
             Token token = getToken( strRedirectUri, strCode, session );
+            
+            DataClientService.instance( ).setDataClientConfig( dataClient, _authServerConf, _authClientConf, _jWTParser );
             dataClient.handleToken( token, request, response );
         }
         catch( IOException ex )

@@ -51,6 +51,7 @@ import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
+import io.jsonwebtoken.Claims;
 
 /**
  * TokenService
@@ -325,7 +326,8 @@ public final class TokenService
 
         if ( jwtParser != null && serverConfig.isEnableJwtParser( ) )
         {
-            jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce, _logger );
+            Claims claims = jwtParser.parseJWT( token.getIdTokenString( ), clientConfig, serverConfig, Claims.class, _logger );
+            jwtParser.setIdToken( claims, token, strStoredNonce, _logger );
         }
         return token;
     }

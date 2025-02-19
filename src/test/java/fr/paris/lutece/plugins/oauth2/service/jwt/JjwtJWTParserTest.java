@@ -39,7 +39,7 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
-
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -87,7 +87,8 @@ public class JjwtJWTParserTest
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
-        instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+        Claims claims = instance.parseJWT( token.getIdTokenString( ), clientConfig, serverConfig, Claims.class, logger );
+        instance.setIdToken( claims, token, strStoredNonce, logger );
 
         System.out.print( token.getIdToken( ) );
     }
@@ -110,7 +111,8 @@ public class JjwtJWTParserTest
         JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            Claims claims = instance.parseJWT( token.getIdTokenString( ), clientConfig, serverConfig, Claims.class, logger );
+            instance.setIdToken( claims, token, strStoredNonce, logger );
         }
         catch( TokenValidationException e )
         {
@@ -138,7 +140,8 @@ public class JjwtJWTParserTest
         JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            Claims claims = instance.parseJWT( token.getIdTokenString( ), clientConfig, serverConfig, Claims.class, logger );
+            instance.setIdToken( claims, token, strStoredNonce, logger );
         }
         catch( TokenValidationException e )
         {
@@ -167,7 +170,8 @@ public class JjwtJWTParserTest
         JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            Claims claims = instance.parseJWT( token.getIdTokenString( ), clientConfig, serverConfig, Claims.class, logger );
+            instance.setIdToken( claims, token, strStoredNonce, logger );
         }
         catch( TokenValidationException e )
         {
