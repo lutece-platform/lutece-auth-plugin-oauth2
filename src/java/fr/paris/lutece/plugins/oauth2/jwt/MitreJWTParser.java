@@ -98,13 +98,13 @@ public class MitreJWTParser implements JWTParser
 
         Algorithm tokenAlg = jwt.getHeader( ).getAlgorithm( );
 
-        Algorithm clientAlg = JWSAlgorithm.parse( serverConfig.getSignatureAlgorithmName( ) );
-
-        if ( serverConfig.getSignatureAlgorithmName( ) != null )
+        if ( serverConfig.getSignatureAlgorithmNames( ) != null )
         {
-            if ( !clientAlg.equals( tokenAlg ) )
+            if ( serverConfig.getSignatureAlgorithmNames( ).stream( ).map( algName -> JWSAlgorithm.parse( algName ) )
+                    .noneMatch( alg -> tokenAlg.equals( alg ) ) )
             {
-                throw new TokenValidationException( "Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg );
+                throw new TokenValidationException(
+                        "Token algorithm " + tokenAlg + " does not match any expected algorithm " + serverConfig.getSignatureAlgorithmNames( ) );
             }
         }
 
@@ -112,7 +112,7 @@ public class MitreJWTParser implements JWTParser
         {
             logger.debug( "ID token is a Plain JWT" );
 
-            if ( serverConfig.getSignatureAlgorithmName( ) != null )
+            if ( serverConfig.getSignatureAlgorithmNames( ) != null )
             {
                 throw new TokenValidationException( "Unsigned ID tokens can only be used if explicitly configured in client." );
             }
