@@ -85,7 +85,7 @@ public class JjwtJWTParser implements JWTParser
 
             JwtParser parser = parserBuilder.build( );
             Claims claims;
-            if ( serverConfig == null || serverConfig.getSignatureAlgorithmName( ) == null )
+            if ( serverConfig == null || serverConfig.getSignatureAlgorithmNames( ) == null )
             {
                 // claims should be unsigned
                 Jwt<Header, Claims> jwt = parser.parse( strCompactJwt ).accept( Jwt.UNSECURED_CLAIMS );
@@ -95,9 +95,9 @@ public class JjwtJWTParser implements JWTParser
             {
                 // claims should be signed
                 Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
-                if ( !serverConfig.getSignatureAlgorithmName( ).equals( jws.getHeader( ).getAlgorithm( ) ) )
+                if ( !serverConfig.getSignatureAlgorithmNames( ).contains( jws.getHeader( ).getAlgorithm( ) ) )
                 {
-                    throw new TokenValidationException( "Expected alg <" + serverConfig.getSignatureAlgorithmName( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
+                    throw new TokenValidationException( "Expected alg is one of <" + serverConfig.getSignatureAlgorithmNames( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
                 }
                 claims = jws.getPayload( );
             }

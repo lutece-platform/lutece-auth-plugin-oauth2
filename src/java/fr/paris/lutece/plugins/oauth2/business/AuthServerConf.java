@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.oauth2.business;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * ServerConfiguration
@@ -47,7 +49,7 @@ public class AuthServerConf implements Serializable
     private String _strTokenEndpointUri;
     private String _strLogoutEndpointUri;
     private boolean _bEnableJwtParser;
-    private String _signatureAlgorithmName;
+    private Set<String> _signatureAlgorithmNames;
     private String _strJwksEndpointUri;
 
     /**
@@ -179,9 +181,9 @@ public class AuthServerConf implements Serializable
      * @return the signature algorithm code
      * @since 2.0.0
      */
-    public String getSignatureAlgorithmName( )
+    public Set<String> getSignatureAlgorithmNames( )
     {
-        return _signatureAlgorithmName;
+        return _signatureAlgorithmNames;
     }
 
     /**
@@ -195,7 +197,21 @@ public class AuthServerConf implements Serializable
      */
     public void setSignatureAlgorithmName( String signatureAlgorithmName )
     {
-        this._signatureAlgorithmName = signatureAlgorithmName;
+        this._signatureAlgorithmNames = Collections.singleton( signatureAlgorithmName );
+    }
+
+    /**
+     * Sets the signature algorithm code set. If not <code>null</code> and if the jwt parser is enabled, the token will be required to have been signed using
+     * one of these algorithms. If <code>null</code>, the token must not have been signed.
+     * 
+     * @see https://www.rfc-editor.org/rfc/rfc7518.html#section-7.1
+     * @param signatureAlgorithm
+     *            the signature algorithm code
+     * @since 2.0.0
+     */
+    public void setSignatureAlgorithmNames( Set<String> signatureAlgorithmNames )
+    {
+        this._signatureAlgorithmNames = signatureAlgorithmNames;
     }
 
     /**
