@@ -51,10 +51,18 @@ public class KeyLocator extends LocatorAdapter<Key>
     private final String _strJwksEndpointUri;
     private final HttpAccess _httpAccess;
 
-    public KeyLocator( String strJwksEndpointUri )
+    /**
+     * Constructs a Key Locator
+     * 
+     * @param strJwksEndpointUri
+     *            the URI of the JKWS resource
+     * @param httpAccess
+     *            the httpAccess for fetching the file
+     */
+    public KeyLocator( String strJwksEndpointUri, HttpAccess httpAccess )
     {
         _strJwksEndpointUri = strJwksEndpointUri;
-        _httpAccess = new HttpAccess( );
+        _httpAccess = httpAccess;
     }
 
     @Override

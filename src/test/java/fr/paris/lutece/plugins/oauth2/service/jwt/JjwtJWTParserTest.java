@@ -39,13 +39,14 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
-
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import org.apache.log4j.Logger;
-
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
@@ -68,6 +69,14 @@ public class JjwtJWTParserTest
     private static final String IDP = "dgfip";
     private static final String NONCE = "12344354597459";
     private static final String ACR = "eidas2";
+
+    @BeforeClass
+    public static void initLutece( )
+    {
+        // fake initialization
+        AppPathService.init( "" );
+        AppPropertiesService.init( "" );
+    }
 
     /**
      * Test of parseJWT method, of class JjwtJWTParser.

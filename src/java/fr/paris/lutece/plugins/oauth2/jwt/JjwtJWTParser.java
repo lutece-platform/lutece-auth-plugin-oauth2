@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.oauth2.jwt;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +43,11 @@ import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.IDToken;
 import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.service.CachingHttpAccessService;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
+import fr.paris.lutece.util.httpaccess.HttpAccess;
+import fr.paris.lutece.util.httpaccess.HttpAccessService;
+import fr.paris.lutece.util.httpaccess.PropertiesHttpClientConfiguration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
@@ -60,6 +66,19 @@ import io.jsonwebtoken.security.SignatureException;
  */
 public class JjwtJWTParser implements JWTParser
 {
+    private final Map<String, KeyLocator> _keyLocatorsMap = new ConcurrentHashMap<>( );
+    private final HttpAccess _httpAccess;
+
+    public JjwtJWTParser( )
+    {
+        HttpAccessService accessService = new CachingHttpAccessService( new PropertiesHttpClientConfiguration( ) );
+        this._httpAccess = new HttpAccess( accessService );
+    }
+
+    private KeyLocator getKeyLocator( String strwksEndpointUri )
+    {
+        return _keyLocatorsMap.computeIfAbsent( strwksEndpointUri, uri -> new KeyLocator( uri, _httpAccess ) );
+    }
 
     /**
      * {@inheritDoc }
@@ -76,7 +95,7 @@ public class JjwtJWTParser implements JWTParser
 
             if ( serverConfig.getJwksEndpointUri( ) != null )
             {
-                parserBuilder.keyLocator( new KeyLocator( serverConfig.getJwksEndpointUri( ) ) );
+                parserBuilder.keyLocator( getKeyLocator( serverConfig.getJwksEndpointUri( ) ) );
             }
             else
             {
