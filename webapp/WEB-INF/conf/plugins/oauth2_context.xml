@@ -9,15 +9,21 @@
        http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
-    
-    <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
+
+    <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf">
+        <property name="issuer" value="${oauth2.issuer} "/>
+    </bean> 
+
+    <!-- <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
         <property name="issuer" value="http://fcp.integ01.dev-oauth2.fr"/>
         <property name="authorizationEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/authorize"/>
         <property name="tokenEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/token"/>
         <property name="logoutEndpointUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/logout"/>
         <property name="enableJwtParser" value="true"/>
-        <property name="signatureAlgorithmName" value="HS512"/>
-      </bean> 
+        <property name="IDTokenSignatureAlgorithmNames">
+            <set><value>HS512<value></set>
+        </property>
+      </bean> --> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
         <property name="clientId" value=""/>
