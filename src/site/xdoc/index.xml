@@ -32,16 +32,38 @@
         <section name="Installation">
         <subsection name="Configuration">
        <p>
-           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml).
+           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml). 
+        </p>
+        <p>Pour la configuration client, utilisez une configuration du type</p>
+        <div class="source">
+<pre>           
+    &lt;bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf"&gt;
+        &lt;property name="clientId" value=" **** à renseigner **** "/&gt;
+        &lt;property name="clientSecret" value=" **** à renseigner **** "/&gt;
+        &lt;property name="redirectUri" value=" **** à renseigner **** "/&gt;
+    &lt;/bean&gt;       
+</pre>
+</div>
+    <p>
+           Pour la configuration serveur, si le serveur OAuth supporte OpenID Connect, alors
+           seul le paramètre <code>issuer</code> est requis, en utilisant la class de configuration
+           <code>fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf</code>
        </p>
+       <div class="source">
+<pre>
+    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf"&gt;
+        &lt;property name="issuer" value="${oauth2.issuer} "/&gt;
+    &lt;/bean&gt; 
+</pre>
+        </div>
+        <p>La variable <code>oauth2.issuer</code> peut être définie dans un fichier de properties afin d'être adaptée aux différents environnements.</p>
         <p>   
-           Il faut notamment paramétrer :
+           Une configuration directe est également possible, en utilisant la classe <code>fr.paris.lutece.plugins.oauth2.business.AuthServerConf</code> : 
             <ul>
                 <li>Les adresses des WebServices la plate-forme Oauth2 cible (end points)</li>
-                <li>Vos identifiants  (id, secret) qui vous auront été fournit par le service oauth2 utilisé</li>
                 <li>Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre
-                signatureAlgorithmName soit être renseigné. Si les tokens ne
-                sont pas signés, alors le paramètre signatureAlgorithmName ne doit pas être renseigné</li>
+                IDTokenSignatureAlgorithmNames soit être renseigné. Si les tokens ne
+                sont pas signés, alors le paramètre IDTokenSignatureAlgorithmNames ne doit pas être renseigné</li>
                 <li>Si le paramètre jwksEndpointUri est renseigné, les clefs de signature des token sont
                 téléchargées depuis cette adresse, qui doit pointer vers un fichier JWKS.</li>
                 <li>L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et 
@@ -63,18 +85,14 @@
         &lt;property name="tokenEndpointUri" value=" **** à renseigner **** "/&gt;
         &lt;property name="logoutEndpointUri" value=" **** à renseigner **** "/&gt;
         &lt;property name="enableJwtParser" value="****true si le serveur utilise JWT ****" /&gt;
-        &lt;property name="signatureAlgorithmName" value="HS512"/&gt;
+        &lt;property name="IDTokenSignatureAlgorithmNames"&gt;
+            &lt;set&gt;&lt;value&gt;HS512&lt;value&gt;&lt;/set&gt;
+        &lt;/property&gt;
         &lt;property name="jwksEndpointUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt; 
-    
-    &lt;bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf"&gt;
-        &lt;property name="clientId" value=" **** à renseigner **** "/&gt;
-        &lt;property name="clientSecret" value=" **** à renseigner **** "/&gt;
-        &lt;property name="redirectUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt;       
+    &lt;/bean&gt;  
     
     &lt;bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" &gt;
-      ;&lt;property name="authServerConf" ref="oauth2.server"&gt;
+       &lt;property name="authServerConf" ref="oauth2.server"&gt;
        &lt;property name="authClientConf" ref="oauth2.client"&gt;
        &lt;property name="jWTParser" ref="oauth2.jWTParser""&gt;
     &lt;/bean&gt;      

@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.oauth2.business;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -49,7 +48,7 @@ public class AuthServerConf implements Serializable
     private String _strTokenEndpointUri;
     private String _strLogoutEndpointUri;
     private boolean _bEnableJwtParser;
-    private Set<String> _signatureAlgorithmNames;
+    private Set<String> _idTokenSignatureAlgorithmNames;
     private String _strJwksEndpointUri;
 
     /**
@@ -175,43 +174,29 @@ public class AuthServerConf implements Serializable
     }
 
     /**
-     * The signature algorithm code. If present and if the jwt parser is enabled, the token will be required to have been signed using this algorithm. If
-     * <code>null</code>, the token must not have been signed.
+     * The signature algorithm code for ID Token. If present and if the jwt parser is enabled, the token will be required to have been signed using this
+     * algorithm. If <code>null</code>, the token must not have been signed.
      * 
      * @return the signature algorithm code
      * @since 2.0.0
      */
-    public Set<String> getSignatureAlgorithmNames( )
+    public Set<String> getIDTokenSignatureAlgorithmNames( )
     {
-        return _signatureAlgorithmNames;
+        return _idTokenSignatureAlgorithmNames;
     }
 
     /**
-     * Sets the signature algorithm code. If not <code>null</code> and if the jwt parser is enabled, the token will be required to have been signed using this
-     * algorithm. If <code>null</code>, the token must not have been signed.
+     * Sets the signature algorithm code set for ID Token. If not <code>null</code> and if the jwt parser is enabled, the token will be required to have been
+     * signed using one of these algorithms. If <code>null</code>, the token must not have been signed.
      * 
      * @see https://www.rfc-editor.org/rfc/rfc7518.html#section-7.1
      * @param signatureAlgorithm
      *            the signature algorithm code
      * @since 2.0.0
      */
-    public void setSignatureAlgorithmName( String signatureAlgorithmName )
+    public void setIDTokenSignatureAlgorithmNames( Set<String> signatureAlgorithmNames )
     {
-        this._signatureAlgorithmNames = Collections.singleton( signatureAlgorithmName );
-    }
-
-    /**
-     * Sets the signature algorithm code set. If not <code>null</code> and if the jwt parser is enabled, the token will be required to have been signed using
-     * one of these algorithms. If <code>null</code>, the token must not have been signed.
-     * 
-     * @see https://www.rfc-editor.org/rfc/rfc7518.html#section-7.1
-     * @param signatureAlgorithm
-     *            the signature algorithm code
-     * @since 2.0.0
-     */
-    public void setSignatureAlgorithmNames( Set<String> signatureAlgorithmNames )
-    {
-        this._signatureAlgorithmNames = signatureAlgorithmNames;
+        this._idTokenSignatureAlgorithmNames = signatureAlgorithmNames;
     }
 
     /**

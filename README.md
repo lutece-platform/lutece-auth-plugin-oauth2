@@ -21,11 +21,34 @@ Ce plugin est également utilisé par le Module [MyLutece Oauth2](https://github
 
 Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml).
 
-Il faut notamment paramétrer :
+Pour la configuration client, utilisez une configuration du type
+
+```
+           
+    <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
+        <property name="clientId" value=" **** à renseigner **** "/>
+        <property name="clientSecret" value=" **** à renseigner **** "/>
+        <property name="redirectUri" value=" **** à renseigner **** "/>
+    </bean>       
+
+```
+
+Pour la configuration serveur, si le serveur OAuth supporte OpenID Connect, alors seul le paramètre `issuer` est requis, en utilisant la class de configuration `fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf` 
+
+```
+
+    <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf">
+        <property name="issuer" value="${oauth2.issuer} "/>
+    </bean> 
+
+```
+
+La variable `oauth2.issuer` peut être définie dans un fichier de properties afin d'être adaptée aux différents environnements.
+
+Une configuration directe est également possible, en utilisant la classe `fr.paris.lutece.plugins.oauth2.business.AuthServerConf` :
  
 * Les adresses des WebServices la plate-forme Oauth2 cible (end points)
-* Vos identifiants (id, secret) qui vous auront été fournit par le service oauth2 utilisé
-* Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre signatureAlgorithmName soit être renseigné. Si les tokens nesont pas signés, alors le paramètre signatureAlgorithmName ne doit pas être renseigné
+* Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre IDTokenSignatureAlgorithmNames soit être renseigné. Si les tokens nesont pas signés, alors le paramètre IDTokenSignatureAlgorithmNames ne doit pas être renseigné
 * Si le paramètre jwksEndpointUri est renseigné, les clefs de signature des token sont téléchargées depuis cette adresse, qui doit pointer vers un fichier JWKS.
 * L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et associée à votre ID Client auprès du service Oauth2 utilisé.
 doit ensuite être paramétré avec les informationsdu service client (id, secret et callback) :
@@ -41,18 +64,14 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
         <property name="tokenEndpointUri" value=" **** à renseigner **** "/>
         <property name="logoutEndpointUri" value=" **** à renseigner **** "/>
         <property name="enableJwtParser" value="****true si le serveur utilise JWT ****" />
-        <property name="signatureAlgorithmName" value="HS512"/>
+        <property name="IDTokenSignatureAlgorithmNames">
+            <set><value>HS512<value></set>
+        </property>
         <property name="jwksEndpointUri" value=" **** à renseigner **** "/>
-    </bean> 
-    
-    <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
-        <property name="clientId" value=" **** à renseigner **** "/>
-        <property name="clientSecret" value=" **** à renseigner **** "/>
-        <property name="redirectUri" value=" **** à renseigner **** "/>
-    </bean>       
+    </bean>  
     
     <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
-      ;<property name="authServerConf" ref="oauth2.server">
+       <property name="authServerConf" ref="oauth2.server">
        <property name="authClientConf" ref="oauth2.client">
        <property name="jWTParser" ref="oauth2.jWTParser"">
     </bean>      

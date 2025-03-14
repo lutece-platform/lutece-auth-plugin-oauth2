@@ -54,6 +54,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Jjwt JWTParser Test
@@ -83,7 +84,7 @@ public class JjwtJWTParserTest
         clientConfig.setClientSecret( SECRET );
 
         AuthServerConf serverConfig = new AuthServerConf( );
-        serverConfig.setSignatureAlgorithmName( "HS512" );
+        serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
@@ -104,7 +105,7 @@ public class JjwtJWTParserTest
         clientConfig.setClientSecret( SECRET );
 
         AuthServerConf serverConfig = new AuthServerConf( );
-        serverConfig.setSignatureAlgorithmName( "HS256" );
+        serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS256" ) );
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
@@ -161,7 +162,7 @@ public class JjwtJWTParserTest
         clientConfig.setClientSecret( SECRET );
 
         AuthServerConf serverConfig = new AuthServerConf( );
-        serverConfig.setSignatureAlgorithmName( "HS512" );
+        serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
         String strStoredNonce = NONCE;
         Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
