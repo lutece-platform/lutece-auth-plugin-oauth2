@@ -34,26 +34,22 @@
 package fr.paris.lutece.plugins.oauth2.web;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
 import fr.paris.lutece.plugins.oauth2.service.CallbackHandlerService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 /**
  * AuthLoginServlet
  */
 public class OAuthCallbackServlet extends HttpServlet
 {
-    private static final long serialVersionUID = 1L;
-
-    private CallbackHandler _callbackHandler;
+    private static final long serialVersionUID = 2L;
 
     /**
      * {@inheritDoc }
@@ -61,15 +57,20 @@ public class OAuthCallbackServlet extends HttpServlet
     @Override
     protected void service( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-
         String strHandlerNameParam = request.getParameter( Constants.PARAMETER_HANDLER_NAME );
 
-        if ( _callbackHandler == null || ( !StringUtils.isEmpty( strHandlerNameParam ) && !strHandlerNameParam.equals( _callbackHandler.getHandlerName( ) )
-                || !_callbackHandler.isDefault( ) ) )
+        CallbackHandler handler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
+
+        if ( handler == null )
         {
-            _callbackHandler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
+            AppLogService.error(
+                    "OAuthCallbackServlet: No handler found and no default handler for following name. Please check the configuration.{}",
+                    SecurityUtil.logForgingProtect( strHandlerNameParam ) );
+            response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+            return;
         }
-        _callbackHandler.handle( request, response );
+
+        handler.handle( request, response );
     }
 
 }
