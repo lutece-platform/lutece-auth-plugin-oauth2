@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
  * JSON Mapper utils
@@ -74,6 +75,26 @@ public final class MapperService
     public static <T> T parse( String strJson, Class<T> t ) throws IOException
     {
         return _mapper.readValue( strJson, t );
+    }
+
+    /**
+     * parse the JSON for an existing bean
+     * 
+     * @param <T>
+     *            The Bean class
+     * @param strJson
+     *            The JSON
+     * @param bean
+     *            The bean
+     * @return The bean
+     * @throws IOException
+     *             if an error occurs
+     * @since 2.0.0
+     */
+    public static <T> T parse( String strJson, T bean ) throws IOException
+    {
+        ObjectReader reader = _mapper.readerForUpdating( bean );
+        return reader.readValue( strJson );
     }
 
 }
