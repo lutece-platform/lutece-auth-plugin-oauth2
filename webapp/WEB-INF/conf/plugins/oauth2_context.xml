@@ -11,7 +11,7 @@
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
     <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf">
-        <property name="issuer" value="${oauth2.issuer} "/>
+        <property name="issuer" value="${oauth2.issuer}"/>
     </bean> 
 
     <!-- <bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf">
@@ -26,14 +26,14 @@
       </bean> --> 
     
     <bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf">
-        <property name="clientId" value=""/>
-        <property name="clientSecret" value=""/>
+        <property name="clientId" value="${oauth2.clientId}"/>
+        <property name="clientSecret" value="${oauth2.clientSecret}"/>
         <property name="public" value="false"/>
         <property name="pkce" value="false"/>
         
         <!--
         By default the redirect Url is the Oauth2 Servlet URL servlet/plugins/oauth2/callback
-        <property name="redirectUri" value="http/locaclhost:8080/lutece/servlet/plugins/oauth2/callback"/>
+        <property name="redirectUri" value="http://localhost:8080/lutece/servlet/plugins/oauth2/callback"/>
         -->
     </bean>
 
