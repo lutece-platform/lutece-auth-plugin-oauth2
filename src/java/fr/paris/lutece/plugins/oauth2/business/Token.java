@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -51,6 +53,28 @@ public class Token
     private IDToken _idToken;
     @JsonProperty( "refresh_token" )
     private String _strRefreshToken;
+
+    private final Instant _creationTime;
+
+    /**
+     * Constructs a token
+     */
+    public Token( )
+    {
+        _creationTime = Instant.now( );
+    }
+
+    /**
+     * Constructs a token with a specific creation time
+     * 
+     * @param creationTime
+     *            the token creation time
+     * @since 2.0.0
+     */
+    public Token( Instant creationTime )
+    {
+        _creationTime = creationTime;
+    }
 
     /**
      * Returns the AccessToken
@@ -179,6 +203,28 @@ public class Token
     }
 
     /**
+     * Access the token creation time
+     * 
+     * @return the token creation time
+     * @since 2.0.0
+     */
+    public Instant getCreationTime( )
+    {
+        return _creationTime;
+    }
+
+    /**
+     * Is the token expired
+     * 
+     * @return <code>true</code> if the token is expired
+     * @since 2.0.0
+     */
+    public boolean isExpired( )
+    {
+        return _creationTime.plusSeconds( _nExpiresIn ).isBefore( Instant.now( ) );
+    }
+
+    /**
      * {@inheritDoc }
      */
     @Override
@@ -186,7 +232,8 @@ public class Token
     {
         StringBuilder sbToken = new StringBuilder( );
         sbToken.append( "Token infos : \n  access_token : " ).append( _strAccessToken ).append( "\n  expires_in : " ).append( _nExpiresIn )
-                .append( "\n  token_type : " ).append( _strTokenType ).append( "\n  id_token : " ).append( _strIdToken ).append( "\n\n" );
+                .append( "\n  token_type : " ).append( _strTokenType ).append( "\n  id_token : " ).append( _strIdToken )
+                .append( "\n creation time: " ).append( _creationTime ).append( "\n\n" );
 
         return sbToken.toString( );
     }

@@ -34,35 +34,53 @@
 package fr.paris.lutece.plugins.oauth2.service;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.service.TokenService;
+import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * TokenService Test
  */
 public class TokenServiceTest
 {
-    private static final String JSON_TOKEN = "{\"access_token\":\"608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03\",\"token_type\":\"Bearer\",\"expires_in\":3600,\"id_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vZmNwLmludGVnMDEuZGV2LWZyYW5jZWNvbm5lY3QuZnIiLCJzdWIiOiIwMTI2MzIzNDM2MjFjMjYwMGY0M2I1YWIxOTM2NzQzZGZjOGExOTljZWNhODUxYTciLCJhdWQiOiJhOWEyNTg5NWY5ZDc2ZjZjODlhYTIxODMwNTc1YmYzNGIzZjRmNjg0YTcyYTg0YzEzYWIxYzM4MTA2NDNkODU5IiwiZXhwIjoxNDMyOTM1MTM5LCJpYXQiOjE0MzI5MzE1MzksIm5vbmNlIjoiMTNjMWMyMDk5ODlmMSIsImlkcCI6ImRnZmlwIiwiYWNyIjoiZWlkYXMyIn0.RrzwbO0ygvMbFJYYvzsx530IiJpj3iQ44GQPcpTHIKM\"}";
+    private static final int TOKEN_TTL = 3600;
+    private static final String JSON_TOKEN = "{\"access_token\":\"608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03\",\"token_type\":\"Bearer\",\"expires_in\":" + TOKEN_TTL + ",\"id_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vZmNwLmludGVnMDEuZGV2LWZyYW5jZWNvbm5lY3QuZnIiLCJzdWIiOiIwMTI2MzIzNDM2MjFjMjYwMGY0M2I1YWIxOTM2NzQzZGZjOGExOTljZWNhODUxYTciLCJhdWQiOiJhOWEyNTg5NWY5ZDc2ZjZjODlhYTIxODMwNTc1YmYzNGIzZjRmNjg0YTcyYTg0YzEzYWIxYzM4MTA2NDNkODU5IiwiZXhwIjoxNDMyOTM1MTM5LCJpYXQiOjE0MzI5MzE1MzksIm5vbmNlIjoiMTNjMWMyMDk5ODlmMSIsImlkcCI6ImRnZmlwIiwiYWNyIjoiZWlkYXMyIn0.RrzwbO0ygvMbFJYYvzsx530IiJpj3iQ44GQPcpTHIKM\"}";
 
     /**
      * Test of parse method, of class TokenService.
      * 
      * @throws java.io.IOException
+     * @throws TokenValidationException 
      */
     @Test
-    public void testParseToken( ) throws IOException
+    public void testParseToken( ) throws IOException, TokenValidationException
     {
         System.out.println( "parse" );
 
         String strJson = JSON_TOKEN;
-        Token token = TokenService.getService( ).parseToken( strJson );
+        Token token = new TokenService( null, null).parse( strJson, null, null, null, null );
+        System.out.println( token );
 
         assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
-        assertEquals( token.getExpiresIn( ), 3600 );
+        assertEquals( token.getExpiresIn( ), TOKEN_TTL );
         assertEquals( token.getTokenType( ), "Bearer" );
+        assertFalse( token.isExpired( ) );
+    }
+
+    @Test
+    public void testExpiredToken( ) throws IOException, TokenValidationException
+    {
+        String strJson = JSON_TOKEN;
+        Token token = new TokenService( null, null).parse( strJson, Instant.now( ).minusSeconds( TOKEN_TTL + 1 ), null, null, null, null );
+        System.out.println( token );
+
+        assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
+        assertEquals( token.getExpiresIn( ), TOKEN_TTL );
+        assertEquals( token.getTokenType( ), "Bearer" );
+        assertTrue( token.isExpired( ) );
     }
 }

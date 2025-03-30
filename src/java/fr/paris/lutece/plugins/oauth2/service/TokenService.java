@@ -34,9 +34,11 @@
 package fr.paris.lutece.plugins.oauth2.service;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,34 +59,33 @@ import fr.paris.lutece.util.httpaccess.HttpAccessException;
  */
 public final class TokenService
 {
-    AuthClientConf _defaultClientConfig;
-    AuthServerConf _defaultauthServerConfig;
+    private final AuthClientConf _defaultClientConfig;
+    private final AuthServerConf _defaultauthServerConfig;
 
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
 
     private static final String BEAN_AUTH_CLIENT_CONF = "oauth2.client";
     private static final String BEAN_AUTH_SERVER_CONF = "oauth2.server";
-
-    private static TokenService _instance;
-
-    /**
-     * private constructor
-     */
-    private TokenService( )
-    {
-    }
+    private static final String BEAN_TOKEN_SERVICE = "oauth2.tokenService";
 
     /**
-     * private constructor
+     * Constructs a TokenService
+     * 
+     * @param defaultClientConfig
+     *            default client config
+     * @param defaultauthServerConfig
+     *            default server config
+     * 
      */
-    private TokenService( AuthClientConf defaultClientConfig, AuthServerConf defaultauthServerConfig )
+    public TokenService( @Named( BEAN_AUTH_CLIENT_CONF ) AuthClientConf defaultClientConfig,
+            @Named( BEAN_AUTH_SERVER_CONF ) AuthServerConf defaultauthServerConfig )
     {
         _defaultClientConfig = defaultClientConfig;
         _defaultauthServerConfig = defaultauthServerConfig;
     }
 
     /**
-     * Retieve a token using an authorization code
+     * Retrieve a token using an authorization code
      * 
      * @param strAuthorizationCode
      *            The authorization code
@@ -102,11 +103,11 @@ public final class TokenService
             throws IOException, HttpAccessException, TokenValidationException
     {
 
-        return getToken( null, _instance._defaultClientConfig, _instance._defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce,null );
+        return getToken( null, _defaultClientConfig, _defaultauthServerConfig, strAuthorizationCode, session, jWTParser, strStoredNonce,null );
     }
 
     /**
-     * Retieve a token using an authorization code
+     * Retrieve a token using an authorization code
      * 
      * @param the
      *            strRedirectUri
@@ -155,12 +156,13 @@ public final class TokenService
 
         _logger.debug( "Posted URL : " + strUrl + "\nParameters :\n" + OauthUtils.traceMap( mapParameters ) );
 
+        Instant tokenCreationTime = Instant.now( ); // record the creation time before the request to account for the round trip time
         String strResponse = httpAccess.doPost( strUrl, mapParameters );
         _logger.debug( "Oauth2 response : " + strResponse );
 
         if ( !StringUtils.isEmpty( strResponse ) )
         {
-            token = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, jWTParser, strStoredNonce );
+            token = parse( strResponse, tokenCreationTime, clientConfig, authServerConf, jWTParser, strStoredNonce );
         }
         return token;
     }
@@ -181,7 +183,7 @@ public final class TokenService
     public boolean validateRefreshToken( String strRefreshToken )
     {
 
-        return validateRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
+        return validateRefreshToken( _defaultClientConfig, _defaultauthServerConfig, strRefreshToken );
     }
 
     /**
@@ -242,7 +244,7 @@ public final class TokenService
      */
     public Token getTokenByRefreshToken( String strRefreshToken )
     {
-        return getTokenByRefreshToken( _instance._defaultClientConfig, _instance._defaultauthServerConfig, strRefreshToken );
+        return getTokenByRefreshToken( _defaultClientConfig, _defaultauthServerConfig, strRefreshToken );
     }
 
     /**
@@ -275,10 +277,11 @@ public final class TokenService
 
         try
         {
+            Instant tokenCreationTime = Instant.now( ); // record the creation time before the request to account for the round trip time
             String strResponse = httpAccess.doPost( strUrl, mapParameters, null, null, mapResponseHeader );
             if ( !StringUtils.isEmpty( strResponse ) && !strResponse.contains( "\"error\"" ) )
             {
-                newToken = TokenService.getService( ).parse( strResponse, clientConfig, authServerConf, null, null );
+                newToken = parse( strResponse, tokenCreationTime, clientConfig, authServerConf, null, null );
             }
         }
         catch( IOException e )
@@ -316,10 +319,36 @@ public final class TokenService
      * @throws TokenValidationException
      *             If the token validation failed
      */
-    public Token parse( String strJson, AuthClientConf clientConfig, AuthServerConf serverConfig, JWTParser jwtParser, String strStoredNonce )
-            throws IOException, TokenValidationException
+    public Token parse( String strJson, AuthClientConf clientConfig, AuthServerConf serverConfig, JWTParser jwtParser,
+            String strStoredNonce ) throws IOException, TokenValidationException
     {
-        Token token = parseToken( strJson );
+        return parse( strJson, Instant.now( ), clientConfig, serverConfig, jwtParser, strStoredNonce );
+    }
+
+    /**
+     * parse the JSON for a token
+     *
+     * @param strJson
+     *            The JSON
+     * @param creationTime
+     *            The creation time of the token
+     * @param clientConfig
+     *            The client configuration
+     * @param serverConfig
+     *            The server configuration
+     * @param strStoredNonce
+     *            The stored nonce
+     * @return The Token
+     * @throws java.io.IOException
+     *             if an error occurs
+     * @throws TokenValidationException
+     *             If the token validation failed
+     * @since 2.0.0
+     */
+    public Token parse( String strJson, Instant creationTime, AuthClientConf clientConfig, AuthServerConf serverConfig,
+            JWTParser jwtParser, String strStoredNonce ) throws IOException, TokenValidationException
+    {
+        Token token = MapperService.parse( strJson, new Token( creationTime ) );
 
         _logger.debug( token );
 
@@ -331,28 +360,14 @@ public final class TokenService
     }
 
     /**
-     * Parse the Token from a JSON string
+     * The token service instance
      * 
-     * @param strJson
-     *            The JSON string
-     * @return The Token
-     * @throws IOException
-     *             if an error occurs
+     * @return the token service instance
+     * @deprecated use dependency injection instead
      */
-    Token parseToken( String strJson ) throws IOException
-    {
-        return MapperService.parse( strJson, Token.class );
-    }
-
     public static TokenService getService( )
     {
-        if ( _instance == null )
-        {
-
-            _instance = new TokenService( SpringContextService.getBean( BEAN_AUTH_CLIENT_CONF ), SpringContextService.getBean( BEAN_AUTH_SERVER_CONF ) );
-        }
-        return _instance;
-
+        return SpringContextService.getBean( BEAN_TOKEN_SERVICE );
     }
 
 }

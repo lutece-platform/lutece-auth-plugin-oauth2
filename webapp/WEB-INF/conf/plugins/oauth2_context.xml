@@ -35,7 +35,9 @@
         By default the redirect Url is the Oauth2 Servlet URL servlet/plugins/oauth2/callback
         <property name="redirectUri" value="http/locaclhost:8080/lutece/servlet/plugins/oauth2/callback"/>
         -->
-    </bean>       
+    </bean>
+
+    <bean id="oauth2.tokenService" class="fr.paris.lutece.plugins.oauth2.service.TokenService" />
     
     <bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" >
         <property name="authServerConf" ref="oauth2.server"/>
