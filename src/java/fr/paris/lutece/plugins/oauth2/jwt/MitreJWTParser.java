@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
@@ -274,5 +276,30 @@ public class MitreJWTParser implements JWTParser
         logger.debug( "ID Token retrieved : " + idToken );
 
         token.setIdToken( idToken );
+    }
+
+    @Override
+    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Logger logger ) throws TokenValidationException
+    {
+        JWT jwt;
+        String strClaims;
+        
+        try
+        {
+            jwt = com.nimbusds.jwt.JWTParser.parse( strJwt );
+        }
+        catch( ParseException ex )
+        {
+            throw new TokenValidationException( "Unable to parse JWT : " + ex.getMessage( ), ex );
+        }
+        try
+        {            
+            strClaims = new ObjectMapper( ).writeValueAsString( jwt.getJWTClaimsSet( ) );
+        }
+        catch( ParseException | JsonProcessingException ex )
+        {
+            throw new TokenValidationException( "Unable to get Claims set from JWT : " + ex.getMessage( ), ex );
+        }
+        return strClaims;
     }
 }

@@ -34,5 +34,13 @@
         </servlet>
         
     </servlets>
+    
+    <!-- XPage -->
+    <applications>
+         <application>
+            <application-id>oauth2HandleError</application-id>
+            <application-class>fr.paris.lutece.plugins.oauth2.web.Oauth2HandleErrorXPage</application-class>
+        </application>
+    </applications>
 
 </plug-in>

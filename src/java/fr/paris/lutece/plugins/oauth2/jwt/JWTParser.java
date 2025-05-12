@@ -62,4 +62,22 @@ public interface JWTParser
      */
     void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
             throws TokenValidationException;
+   
+    /**
+     * Extract Claims from the jwt
+     *
+     * @param strJwt
+     *            The jwt
+     * @param clientConfig
+     *            The client configuration
+     * @param serverConfig
+     *            The server configuration
+     * @param logger
+     *            The logger
+     * @throws TokenValidationException
+     *             if an error occurs
+     */
+    String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Logger logger )
+            throws TokenValidationException;
+    
 }
