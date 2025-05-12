@@ -39,6 +39,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
 import fr.paris.lutece.plugins.oauth2.business.IDToken;
@@ -91,35 +94,7 @@ public class JjwtJWTParser implements JWTParser
 
         try
         {
-            JwtParserBuilder parserBuilder = Jwts.parser( );
-
-            if ( serverConfig.getJwksEndpointUri( ) != null )
-            {
-                parserBuilder.keyLocator( getKeyLocator( serverConfig.getJwksEndpointUri( ) ) );
-            }
-            else
-            {
-                parserBuilder.verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) );
-            }
-
-            JwtParser parser = parserBuilder.build( );
-            Claims claims;
-            if ( serverConfig == null || serverConfig.getIDTokenSignatureAlgorithmNames( ) == null )
-            {
-                // claims should be unsigned
-                Jwt<Header, Claims> jwt = parser.parse( strCompactJwt ).accept( Jwt.UNSECURED_CLAIMS );
-                claims = jwt.getPayload( );
-            }
-            else
-            {
-                // claims should be signed
-                Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
-                if ( !serverConfig.getIDTokenSignatureAlgorithmNames( ).contains( jws.getHeader( ).getAlgorithm( ) ) )
-                {
-                    throw new TokenValidationException( "Expected alg is one of <" + serverConfig.getIDTokenSignatureAlgorithmNames( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
-                }
-                claims = jws.getPayload( );
-            }
+            Claims claims = getClaims( strCompactJwt, clientConfig, serverConfig );
 
             IDToken idToken = new IDToken( );
             idToken.setAudience( claims.getAudience( ) );
@@ -216,5 +191,65 @@ public class JjwtJWTParser implements JWTParser
         long lIssueAt = claims.getIssuedAt( ).getTime( );
 
         return String.valueOf( lIssueAt / 1000L );
+    }
+
+    @Override
+    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Logger logger ) throws TokenValidationException
+    {
+        String strClaims;
+
+        try
+        {
+            Claims claims = getClaims( strJwt, clientConfig, serverConfig );
+            strClaims = new ObjectMapper( ).writeValueAsString( claims );
+        } catch ( TokenValidationException | JsonProcessingException e )
+        {
+            throw new TokenValidationException( e.getMessage( ), e );
+        }
+
+        return strClaims;
+    }
+    
+    /**
+     * Get claims
+     * @param strCompactJwt
+     * @param clientConfig
+     * @param serverConfig
+     * @return claims
+     * @throws TokenValidationException
+     */
+    private Claims getClaims ( String strCompactJwt, AuthClientConf clientConfig, AuthServerConf serverConfig) throws TokenValidationException
+    {
+        JwtParserBuilder parserBuilder = Jwts.parser( );
+
+        if ( serverConfig.getJwksEndpointUri( ) != null )
+        {
+            parserBuilder.keyLocator( getKeyLocator( serverConfig.getJwksEndpointUri( ) ) );
+        }
+        else
+        {
+            parserBuilder.verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) );
+        }
+
+        JwtParser parser = parserBuilder.build( );
+        Claims claims;
+        if ( serverConfig == null || serverConfig.getIDTokenSignatureAlgorithmNames( ) == null )
+        {
+            // claims should be unsigned
+            Jwt<Header, Claims> jwt = parser.parse( strCompactJwt ).accept( Jwt.UNSECURED_CLAIMS );
+            claims = jwt.getPayload( );
+        }
+        else
+        {
+            // claims should be signed
+            Jws<Claims> jws = parser.parse( strCompactJwt ).accept( Jws.CLAIMS );
+            if ( !serverConfig.getIDTokenSignatureAlgorithmNames( ).contains( jws.getHeader( ).getAlgorithm( ) ) )
+            {
+                throw new TokenValidationException( "Expected alg is one of <" + serverConfig.getIDTokenSignatureAlgorithmNames( ) + "> but got <" + jws.getHeader( ).getAlgorithm( ) + ">" );
+            }
+            claims = jws.getPayload( );
+        }
+        
+        return claims;
     }
 }
