@@ -64,7 +64,7 @@ public class OAuthCallbackServlet extends HttpServlet
         if ( handler == null )
         {
             AppLogService.error(
-                    "OAuthCallbackServlet: No handler found and no default handler for following name. Please check the configuration.{}",
+                    "OAuthCallbackServlet: No handler found and no default handler for following name. Please check the configuration." + 
                     SecurityUtil.logForgingProtect( strHandlerNameParam ) );
             response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
             return;
