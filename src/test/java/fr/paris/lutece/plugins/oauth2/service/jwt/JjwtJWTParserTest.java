@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
+import fr.paris.lutece.portal.service.init.LuteceInitException;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import io.jsonwebtoken.JwtBuilder;
@@ -71,7 +72,7 @@ public class JjwtJWTParserTest
     private static final String ACR = "eidas2";
 
     @BeforeClass
-    public static void initLutece( )
+    public static void initLutece( ) throws LuteceInitException
     {
         // fake initialization
         AppPathService.init( "" );
