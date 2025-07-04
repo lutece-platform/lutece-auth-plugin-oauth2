@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -148,7 +149,7 @@ public class OIDCAuthServerConf extends AuthServerConf
             res.validate( issuer );
             return res;
         }
-        catch( HttpAccessException | JsonProcessingException e )
+        catch( HttpAccessException | IOException e )
         {
             throw new AppException( e.getMessage( ), e );
         }
