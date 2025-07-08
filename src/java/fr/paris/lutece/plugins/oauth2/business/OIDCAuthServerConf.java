@@ -33,10 +33,10 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -148,7 +148,7 @@ public class OIDCAuthServerConf extends AuthServerConf
             res.validate( issuer );
             return res;
         }
-        catch( HttpAccessException | JsonProcessingException e )
+        catch( HttpAccessException | IOException e )
         {
             throw new AppException( e.getMessage( ), e );
         }
