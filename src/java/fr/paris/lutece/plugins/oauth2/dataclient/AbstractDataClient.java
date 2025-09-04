@@ -68,7 +68,10 @@ public abstract class AbstractDataClient implements DataClient
     private Set<String> _scope;
     private Set<String> _acrValues;
     private boolean _bDefault;
+    private String _strPostLogoutRedirectUri;
 
+  
+    
     /**
      * {@inheritDoc }
      */
@@ -231,6 +234,23 @@ public abstract class AbstractDataClient implements DataClient
     {
         _strTokenMethod = strTokenMethod;
     }
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public String getPostLogoutRedirectUri() {
+        return _strPostLogoutRedirectUri;
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setPostLogoutRedirectUri(String _strPostLogoutRedirectUri) {
+        this._strPostLogoutRedirectUri = _strPostLogoutRedirectUri;
+    }
+
 
     /**
      * Send an authenticated request with the access token to retreive data

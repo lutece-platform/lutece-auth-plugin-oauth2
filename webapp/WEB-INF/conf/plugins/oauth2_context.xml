@@ -35,6 +35,12 @@
         By default the redirect Url is the Oauth2 Servlet URL servlet/plugins/oauth2/callback
         <property name="redirectUri" value="http://localhost:8080/lutece/servlet/plugins/oauth2/callback"/>
         -->
+        <!--
+        By default the postLogoutRedirectUri is the Lutece home page http://localhost:8080/lutece  
+        <property name="postLogoutRedirectUri" value="http://localhost:8080/lutece"/>
+        -->
+       
+
     </bean>
 
     <bean id="oauth2.tokenService" class="fr.paris.lutece.plugins.oauth2.service.TokenService" />

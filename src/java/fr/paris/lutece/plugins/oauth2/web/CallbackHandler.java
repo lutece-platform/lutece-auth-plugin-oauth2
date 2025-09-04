@@ -139,6 +139,32 @@ public class CallbackHandler implements Serializable
             }
     }
 
+    /*** Logout the user */
+    void logout( HttpServletRequest request, HttpServletResponse response )
+    {
+        DataClient dataClient = DataClientService.instance( ).getClient( request );
+        UrlItem url = new UrlItem( _authServerConf.getLogoutEndpointUri());
+        url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
+        try {
+            url.addParameter( Constants.PARAMETER_POST_LOGOUT_REDIRECT_URI, URLEncoder.encode( generatePostLogoutRedirectUri(request, dataClient), "UTF-8" ));
+        } catch (UnsupportedEncodingException e) {
+                _logger.error( "error during urlEncode of param" + Constants.PARAMETER_POST_LOGOUT_REDIRECT_URI, e );
+        }
+        String strIdTokenInt = request.getParameter( Constants.PARAMETER_ID_TOKEN_HINT );
+        if(strIdTokenInt!=null)
+        {
+        	url.addParameter( Constants.PARAMETER_ID_TOKEN_HINT, strIdTokenInt );
+        }
+        try
+        {
+            response.sendRedirect( url.getUrl( ) );
+        }
+        catch( IOException ex )
+        {
+            _logger.error( "Error redirecting to the logout page : " + ex.getMessage( ), ex );
+        }
+    }
+
     /**
      * Handle an error
      *
@@ -694,6 +720,24 @@ public class CallbackHandler implements Serializable
         	
         }
         
+        return url.getUrl();
+    }
+
+
+        /**
+     * Generate Post Logout Redirect Uri
+     * 
+     * @param request
+     *            the httpServletRequest
+     * @param dataClient
+     *            the dataCleint
+     * @return the
+     * 
+     */
+    private String generatePostLogoutRedirectUri( HttpServletRequest request, DataClient dataClient )
+    {
+        String strPostLogoutRedirectUri = _authClientConf.getPostLogoutRedirectUri( );
+        UrlItem url = new UrlItem(strPostLogoutRedirectUri!=null && StringUtils.isNotEmpty(strPostLogoutRedirectUri)?strPostLogoutRedirectUri:AppPathService.getBaseUrl( request ) );
         return url.getUrl();
     }
 

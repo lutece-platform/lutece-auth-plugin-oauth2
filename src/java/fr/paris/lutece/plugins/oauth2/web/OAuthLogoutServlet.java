@@ -33,10 +33,9 @@
  */
 package fr.paris.lutece.plugins.oauth2.web;
 
-import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.security.SecurityService;
-
-import org.apache.log4j.Logger;
+import fr.paris.lutece.plugins.oauth2.service.CallbackHandlerService;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 import java.io.IOException;
 
@@ -51,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 public class OAuthLogoutServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
 
     /**
      * {@inheritDoc }
@@ -59,20 +57,22 @@ public class OAuthLogoutServlet extends HttpServlet
     @Override
     protected void service( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-        response.setStatus( HttpServletResponse.SC_OK );
-        response.setContentType( "text/html" );
+        
+        String strHandlerNameParam = request.getParameter( Constants.PARAMETER_HANDLER_NAME );
 
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+        CallbackHandler handler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
 
-        if ( user != null )
+        if ( handler == null )
         {
-            SecurityService.getInstance( ).logoutUser( request );
-            // TODO Logout oauth
-            _logger.debug( "Logout successful for user : " + user.getName( ) );
+            AppLogService.error(
+                    "OAuthCallbackServlet: No handler found and no default handler for following name. Please check the configuration.\n" +
+                    SecurityUtil.logForgingProtect( strHandlerNameParam ) );
+            response.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+            return;
         }
-        else
-        {
-            _logger.debug( "No user to logout" );
-        }
+        
+
+        handler.logout( request, response );
+        
     }
 }

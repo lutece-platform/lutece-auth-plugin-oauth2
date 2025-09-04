@@ -33,8 +33,6 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
-import com.nimbusds.jose.Algorithm;
-
 import java.io.Serializable;
 
 /**
@@ -48,6 +46,7 @@ public class AuthClientConf implements Serializable
     private String _strRedirectUri;
     private boolean _bPublic;
     private boolean _bPkce;
+    private String _strPostLogoutRedirectUri;
 
     /**
      * Returns the ClientId
@@ -102,6 +101,16 @@ public class AuthClientConf implements Serializable
     }
 
     /**
+     * Returns the PostLogoutRedirectUri
+     * 
+     * @return The PostLogoutRedirectUri
+     */
+    public String getPostLogoutRedirectUri( )
+    {
+        return _strPostLogoutRedirectUri;
+    }
+
+    /**
      * Sets the RedirectUri
      * 
      * @param strRedirectUri
@@ -127,4 +136,12 @@ public class AuthClientConf implements Serializable
 	public void setPkce(boolean _bPKCE) {
 		this._bPkce = _bPKCE;
 	}
+    /**
+     * Sets the PostLogoutRedirectUri
+     * @param strPostLogoutRedirectUri The PostLogoutRedirectUri
+     */
+    public void setPostLogoutRedirectUri( String strPostLogoutRedirectUri )
+    {
+        _strPostLogoutRedirectUri = strPostLogoutRedirectUri;
+    }
 }

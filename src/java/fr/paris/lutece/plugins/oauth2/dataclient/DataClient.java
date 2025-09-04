@@ -64,6 +64,15 @@ public interface DataClient
     String getRedirectUri( );
 
     /**
+     * Returns the PostLogoutRedirectUri
+     * 
+     * @return The PostLogoutRedirectUri
+     */
+    String getPostLogoutRedirectUri( );
+
+ 
+
+    /**
      * Returns the Scopes set
      * 
      * @return The Scope
@@ -125,6 +134,14 @@ public interface DataClient
      *            The RedirectUri
      */
     void setRedirectUri( String strRedirectUri );
+
+       /**
+     * Sets the PostLogoutRedirectUri
+     * 
+     * @param strPostLogoutRedirectUri
+     *            The PostLogoutRedirectUri
+     */
+    void setPostLogoutRedirectUri( String strPostLogoutRedirectUri );
 
     /**
      * Sets the Scope
