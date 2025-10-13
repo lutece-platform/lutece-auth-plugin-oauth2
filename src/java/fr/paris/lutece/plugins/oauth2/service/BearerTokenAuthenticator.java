@@ -35,7 +35,7 @@ package fr.paris.lutece.plugins.oauth2.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.util.signrequest.AuthenticateRequestInformations;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;

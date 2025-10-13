@@ -43,11 +43,15 @@ import fr.paris.lutece.portal.web.xpages.XPage;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * France Connect XPage Application
  */
+@RequestScoped
+@Named( "oauth2.xpage.oauth2HandleError" )
 @Controller( xpageName = "oauth2HandleError", pagePathI18nKey = "oauth2.xpage.oauth2HandleErrorPath", pageTitleI18nKey = "oauth2.xpage.oauth2HandleErrorTitle" )
 public class Oauth2HandleErrorXPage extends MVCApplication
 {

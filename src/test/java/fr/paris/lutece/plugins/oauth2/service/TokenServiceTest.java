@@ -35,9 +35,10 @@ package fr.paris.lutece.plugins.oauth2.service;
 
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
-import static org.junit.Assert.*;
+import fr.paris.lutece.test.LuteceTestCase;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -62,12 +63,13 @@ public class TokenServiceTest
         System.out.println( "parse" );
 
         String strJson = JSON_TOKEN;
-        Token token = new TokenService( null, null).parse( strJson, null, null, null, null );
+        TokenService service = new TokenService( );
+        Token token = service.parse( strJson, null, null, null, null );
         System.out.println( token );
 
-        assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
-        assertEquals( token.getExpiresIn( ), TOKEN_TTL );
-        assertEquals( token.getTokenType( ), "Bearer" );
+        assertEquals( "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03", token.getAccessToken( ) );
+        assertEquals( TOKEN_TTL, token.getExpiresIn( ) );
+        assertEquals( "Bearer", token.getTokenType( ) );
         assertFalse( token.isExpired( ) );
     }
 
@@ -75,12 +77,13 @@ public class TokenServiceTest
     public void testExpiredToken( ) throws IOException, TokenValidationException
     {
         String strJson = JSON_TOKEN;
-        Token token = new TokenService( null, null).parse( strJson, Instant.now( ).minusSeconds( TOKEN_TTL + 1 ), null, null, null, null );
+        TokenService service = new TokenService( );
+        Token token = service.parse( strJson, Instant.now( ).minusSeconds( TOKEN_TTL + 1 ), null, null, null, null );
         System.out.println( token );
 
-        assertEquals( token.getAccessToken( ), "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03" );
-        assertEquals( token.getExpiresIn( ), TOKEN_TTL );
-        assertEquals( token.getTokenType( ), "Bearer" );
+        assertEquals( "608c2c4c250f9dcd118dc087cb23b2c4db2a848161044b03", token.getAccessToken( ) );
+        assertEquals( TOKEN_TTL, token.getExpiresIn( ) );
+        assertEquals( "Bearer", token.getTokenType( ) );
         assertTrue( token.isExpired( ) );
     }
 }

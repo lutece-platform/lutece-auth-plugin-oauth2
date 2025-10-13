@@ -42,22 +42,22 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * DataClient
  */
 public abstract class AbstractDataClient implements DataClient
 {
-    protected static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+    protected static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
 
     private static final char SEPARATOR = '+';
 

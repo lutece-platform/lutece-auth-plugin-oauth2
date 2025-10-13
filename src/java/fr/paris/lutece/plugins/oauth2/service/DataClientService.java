@@ -36,11 +36,12 @@ package fr.paris.lutece.plugins.oauth2.service;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
@@ -55,7 +56,7 @@ public final class DataClientService
 {
     private static DataClientService _singleton;
     private static ConcurrentMap<String, DataClient> _mapClients;
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+    private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
 
     /** Private constructor */
     private DataClientService( )

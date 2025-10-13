@@ -133,7 +133,7 @@ public abstract class AbstractJWTDataClient extends AbstractDataClient
             
             if ( StringUtils.isNotEmpty( strResponse )  )
             {                      
-                strResponse = _jWTParser.parseJWT( strResponse, _authClientConf, _authServerConf, _logger );
+                strResponse = _jWTParser.parseJWT( strResponse, _authClientConf, _authServerConf );
             }
             
             _logger.debug( "Oauth2 response : " + strResponse );

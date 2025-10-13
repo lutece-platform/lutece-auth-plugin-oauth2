@@ -37,7 +37,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,7 +64,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-
 /**
  * Jjwt JWTParser
  */
@@ -71,6 +71,7 @@ public class JjwtJWTParser implements JWTParser
 {
     private final Map<String, KeyLocator> _keyLocatorsMap = new ConcurrentHashMap<>( );
     private final HttpAccess _httpAccess;
+    private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
 
     public JjwtJWTParser( )
     {
@@ -87,7 +88,7 @@ public class JjwtJWTParser implements JWTParser
      * {@inheritDoc }
      */
     @Override
-    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
+    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce )
             throws TokenValidationException
     {
         String strCompactJwt = token.getIdTokenString( );
@@ -110,7 +111,7 @@ public class JjwtJWTParser implements JWTParser
             idToken.setIdProvider( (String) claims.get( Constants.CLAIM_IDP ) );
             idToken.setAcr( (String) claims.get( Constants.CLAIM_ACR ) );
 
-            logger.debug( "ID Token retrieved by JJWT parser implementation : " + idToken );
+            _logger.debug( "ID Token retrieved by JJWT parser implementation : " + idToken );
 
             token.setIdToken( idToken );
         }
@@ -194,7 +195,7 @@ public class JjwtJWTParser implements JWTParser
     }
 
     @Override
-    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Logger logger ) throws TokenValidationException
+    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig ) throws TokenValidationException
     {
         String strClaims;
 

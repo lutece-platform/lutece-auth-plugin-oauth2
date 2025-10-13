@@ -50,7 +50,8 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import io.jsonwebtoken.lang.Collections;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
 
@@ -66,12 +67,14 @@ public class MitreJWTParser implements JWTParser
 {
     // Allow for time sync issues by having a window of X seconds.
     private int _nTimeSkewAllowance = 300;
+    private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
+    
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce, Logger logger )
+    public void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce )
             throws TokenValidationException
     {
         JWT jwt;
@@ -112,7 +115,7 @@ public class MitreJWTParser implements JWTParser
 
         if ( jwt instanceof PlainJWT )
         {
-            logger.debug( "ID token is a Plain JWT" );
+            _logger.debug( "ID token is a Plain JWT" );
 
             if ( serverConfig.getIDTokenSignatureAlgorithmNames( ) != null )
             {
@@ -127,7 +130,7 @@ public class MitreJWTParser implements JWTParser
         else
             if ( jwt instanceof SignedJWT )
             {
-                logger.debug( "ID token is a signed JWT" );
+                _logger.debug( "ID token is a signed JWT" );
 
                 /*
                  * // check the signature JwtSigningAndValidationService jwtValidator = null;
@@ -225,21 +228,21 @@ public class MitreJWTParser implements JWTParser
 
         if ( ( strNonce == null ) || strNonce.equals( "" ) )
         {
-            logger.error( "ID token did not contain a nonce claim." );
+            _logger.error( "ID token did not contain a nonce claim." );
 
             throw new TokenValidationException( "ID token did not contain a nonce claim." );
         }
 
         if ( !strNonce.equals( strStoredNonce ) )
         {
-            logger.error( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session "
+            _logger.error( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session "
                     + Constants.NONCE_SESSION_VARIABLE + " failed. Expected " + strStoredNonce + " got " + strNonce + "." );
 
             throw new TokenValidationException( "Possible replay attack detected! The comparison of the nonce in the returned " + "ID Token to the session "
                     + Constants.NONCE_SESSION_VARIABLE + " failed. Expected " + strStoredNonce + " got " + strNonce + "." );
         }
 
-        logger.debug( "Nonce has been validated" );
+        _logger.debug( "Nonce has been validated" );
 
         // Get IDP
         String strIdp;
@@ -273,13 +276,13 @@ public class MitreJWTParser implements JWTParser
         idToken.setIssuer( idClaims.getIssuer( ) );
         idToken.setAudience( Collections.immutable( new HashSet<>( idClaims.getAudience( ) ) ) );
         idToken.setAcr( strAcr );
-        logger.debug( "ID Token retrieved : " + idToken );
+        _logger.debug( "ID Token retrieved : " + idToken );
 
         token.setIdToken( idToken );
     }
 
     @Override
-    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig, Logger logger ) throws TokenValidationException
+    public String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig) throws TokenValidationException
     {
         JWT jwt;
         String strClaims;

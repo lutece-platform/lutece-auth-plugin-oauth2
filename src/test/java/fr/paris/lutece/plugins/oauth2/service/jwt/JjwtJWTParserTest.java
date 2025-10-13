@@ -39,17 +39,22 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
+import fr.paris.lutece.portal.service.init.LuteceInitException;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.test.LuteceTestCase;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-import org.apache.log4j.Logger;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -70,14 +75,14 @@ public class JjwtJWTParserTest
     private static final String NONCE = "12344354597459";
     private static final String ACR = "eidas2";
 
-    @BeforeClass
-    public static void initLutece( )
+    @BeforeEach
+    public void initLutece( )
     {
         // fake initialization
         try
         {
-            AppPathService.init( "" );
-            AppPropertiesService.init( "" );
+            //AppPathService.init( "" );
+            //AppPropertiesService.init( "" );
         }
         catch ( Exception e )
         {
@@ -102,11 +107,10 @@ public class JjwtJWTParserTest
         AuthServerConf serverConfig = new AuthServerConf( );
         serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
         String strStoredNonce = NONCE;
-        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
-        instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+        instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce);
 
-        System.out.print( token.getIdToken( ) );
+        assertNotNull( token.getIdToken( ) );
     }
 
     @Test
@@ -123,11 +127,10 @@ public class JjwtJWTParserTest
         AuthServerConf serverConfig = new AuthServerConf( );
         serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS256" ) );
         String strStoredNonce = NONCE;
-        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
-        JjwtJWTParser instance = new JjwtJWTParser( );
+         JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce);
         }
         catch( TokenValidationException e )
         {
@@ -151,11 +154,10 @@ public class JjwtJWTParserTest
 
         AuthServerConf serverConfig = new AuthServerConf( );
         String strStoredNonce = NONCE;
-        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
-        JjwtJWTParser instance = new JjwtJWTParser( );
+       JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce );
         }
         catch( TokenValidationException e )
         {
@@ -180,11 +182,10 @@ public class JjwtJWTParserTest
         AuthServerConf serverConfig = new AuthServerConf( );
         serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
         String strStoredNonce = NONCE;
-        Logger logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
         JjwtJWTParser instance = new JjwtJWTParser( );
         try
         {
-            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce, logger );
+            instance.parseJWT( token, clientConfig, serverConfig, strStoredNonce);
         }
         catch( TokenValidationException e )
         {

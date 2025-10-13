@@ -38,11 +38,14 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Named;
-import javax.servlet.http.HttpSession;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
@@ -50,38 +53,35 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
 import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
 /**
  * TokenService
  */
+@ApplicationScoped
+@Named( "oauth2.tokenService" )
 public final class TokenService
 {
-    private final AuthClientConf _defaultClientConfig;
-    private final AuthServerConf _defaultauthServerConfig;
+    @Inject
+    @Named( BEAN_AUTH_CLIENT_CONF )
+    private AuthClientConf _defaultClientConfig;
+    
+    @Inject
+    @Named( BEAN_AUTH_SERVER_CONF )
+    private AuthServerConf _defaultauthServerConfig;
 
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+   private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
 
     private static final String BEAN_AUTH_CLIENT_CONF = "oauth2.client";
     private static final String BEAN_AUTH_SERVER_CONF = "oauth2.server";
-    private static final String BEAN_TOKEN_SERVICE = "oauth2.tokenService";
 
     /**
-     * Constructs a TokenService
-     * 
-     * @param defaultClientConfig
-     *            default client config
-     * @param defaultauthServerConfig
-     *            default server config
-     * 
+     * Default constructor for CDI
      */
-    public TokenService( @Named( BEAN_AUTH_CLIENT_CONF ) AuthClientConf defaultClientConfig,
-            @Named( BEAN_AUTH_SERVER_CONF ) AuthServerConf defaultauthServerConfig )
+    public TokenService( )
     {
-        _defaultClientConfig = defaultClientConfig;
-        _defaultauthServerConfig = defaultauthServerConfig;
+        // CDI will inject dependencies
     }
 
     /**
@@ -354,7 +354,7 @@ public final class TokenService
 
         if ( jwtParser != null && serverConfig.isEnableJwtParser( ) )
         {
-            jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce, _logger );
+            jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce);
         }
         return token;
     }
@@ -365,9 +365,10 @@ public final class TokenService
      * @return the token service instance
      * @deprecated use dependency injection instead
      */
+    @Deprecated
     public static TokenService getService( )
     {
-        return SpringContextService.getBean( BEAN_TOKEN_SERVICE );
+        return jakarta.enterprise.inject.spi.CDI.current( ).select( TokenService.class ).get( );
     }
 
 }

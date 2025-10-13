@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2025, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,48 +31,35 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.oauth2.jwt;
+package fr.paris.lutece.plugins.oauth2.service;
 
-import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
-import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * JWTParser
+ * CDI Producer for OAuth2 Server-related beans
  */
-public interface JWTParser
+@ApplicationScoped
+public class Oauth2ServerBeansProducer
 {
     /**
-     * Extract Json Web Token from the token
-     *
-     * @param token
-     *            The token
-     * @param clientConfig
-     *            The client configuration
-     * @param serverConfig
-     *            The server configuration
-     * @param strStoredNonce
-     *            The stored nonce
-     * @throws TokenValidationException
-     *             if an error occurs
+     * Produces the OAuth2 server configuration bean
+     * 
+     * @param issuer The OAuth2 issuer URL
+     * @return The AuthServerConf instance
      */
-    void parseJWT( Token token, AuthClientConf clientConfig, AuthServerConf serverConfig, String strStoredNonce )
-            throws TokenValidationException;
-   
-    /**
-     * Extract Claims from the jwt
-     *
-     * @param strJwt
-     *            The jwt
-     * @param clientConfig
-     *            The client configuration
-     * @param serverConfig
-     *            The server configuration
-
-     * @throws TokenValidationException
-     *             if an error occurs
-     */
-    String parseJWT( String strJwt, AuthClientConf clientConfig, AuthServerConf serverConfig )
-            throws TokenValidationException;
-    
+    @Produces
+    @ApplicationScoped
+    @Named( "oauth2.server" )
+    public AuthServerConf produceAuthServerConf( 
+        @ConfigProperty( name = "oauth2.issuer" ) String issuer )
+    {
+        OIDCAuthServerConf conf = new OIDCAuthServerConf( );
+        conf.setIssuer( issuer );
+        return conf;
+    }
 }

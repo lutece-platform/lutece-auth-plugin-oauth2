@@ -39,14 +39,16 @@ import fr.paris.lutece.util.http.SecurityUtil;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * AuthLoginServlet
+ * OAuth Logout Servlet - Handles OAuth2 logout
  */
+@WebServlet( name = "oauth2AuthLogout", urlPatterns = { "/servlet/plugins/oauth2/logout" } )
 public class OAuthLogoutServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;

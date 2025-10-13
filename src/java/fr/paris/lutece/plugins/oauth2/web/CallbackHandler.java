@@ -40,12 +40,11 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
 import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
@@ -62,6 +61,8 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * CallbackHandler
@@ -70,7 +71,7 @@ public class CallbackHandler implements Serializable
 {
     private static final String PROPERTY_ERROR_PAGE = "oauth2.error.page";
     private static final long serialVersionUID = 1L;
-    private static Logger _logger = Logger.getLogger( Constants.LOGGER_OAUTH2 );
+    private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
     private String _handlerName;
     private AuthServerConf _authServerConf;
     private AuthClientConf _authClientConf;

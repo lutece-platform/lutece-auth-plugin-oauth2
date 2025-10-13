@@ -35,18 +35,20 @@ package fr.paris.lutece.plugins.oauth2.web;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.oauth2.service.CallbackHandlerService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.http.SecurityUtil;
 
 /**
- * AuthLoginServlet
+ * OAuth Callback Servlet - Handles OAuth2 authorization callback
  */
+@WebServlet( name = "oauth2AuthCallback", urlPatterns = { "/servlet/plugins/oauth2/callback" } )
 public class OAuthCallbackServlet extends HttpServlet
 {
     private static final long serialVersionUID = 2L;
