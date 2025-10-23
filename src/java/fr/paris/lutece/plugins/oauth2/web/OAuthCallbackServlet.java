@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.oauth2.web;
 
 import java.io.IOException;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -49,9 +51,12 @@ import fr.paris.lutece.util.http.SecurityUtil;
  * OAuth Callback Servlet - Handles OAuth2 authorization callback
  */
 @WebServlet( name = "oauth2AuthCallback", urlPatterns = { "/servlet/plugins/oauth2/callback" } )
+@ApplicationScoped
 public class OAuthCallbackServlet extends HttpServlet
 {
     private static final long serialVersionUID = 2L;
+    @Inject
+    private CallbackHandlerService _callbackHandlerService;
 
     /**
      * {@inheritDoc }
@@ -61,7 +66,7 @@ public class OAuthCallbackServlet extends HttpServlet
     {
         String strHandlerNameParam = request.getParameter( Constants.PARAMETER_HANDLER_NAME );
 
-        CallbackHandler handler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
+        CallbackHandler handler = _callbackHandlerService.getCallbackHandler( strHandlerNameParam );
 
         if ( handler == null )
         {

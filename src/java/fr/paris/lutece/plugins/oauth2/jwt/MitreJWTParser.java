@@ -49,6 +49,8 @@ import fr.paris.lutece.plugins.oauth2.business.IDToken;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import io.jsonwebtoken.lang.Collections;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,6 +65,9 @@ import java.util.HashSet;
  *
  * Some parts of the code come from the MITRE project and especialy from the class : com.plec.artistes.security.CustomOIDCAuthenticationFilter
  */
+@ApplicationScoped
+@Named( "oauth2.mitreJWTParser" )
+
 public class MitreJWTParser implements JWTParser
 {
     // Allow for time sync issues by having a window of X seconds.

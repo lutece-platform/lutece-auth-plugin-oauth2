@@ -60,8 +60,7 @@ import fr.paris.lutece.util.httpaccess.HttpAccessException;
  * TokenService
  */
 @ApplicationScoped
-@Named( "oauth2.tokenService" )
-public final class TokenService
+public class TokenService
 {
     @Inject
     @Named( BEAN_AUTH_CLIENT_CONF )
@@ -357,18 +356,6 @@ public final class TokenService
             jwtParser.parseJWT( token, clientConfig, serverConfig, strStoredNonce);
         }
         return token;
-    }
-
-    /**
-     * The token service instance
-     * 
-     * @return the token service instance
-     * @deprecated use dependency injection instead
-     */
-    @Deprecated
-    public static TokenService getService( )
-    {
-        return jakarta.enterprise.inject.spi.CDI.current( ).select( TokenService.class ).get( );
     }
 
 }

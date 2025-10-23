@@ -39,6 +39,8 @@ import fr.paris.lutece.util.http.SecurityUtil;
 
 import java.io.IOException;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -49,9 +51,12 @@ import jakarta.servlet.http.HttpServletResponse;
  * OAuth Logout Servlet - Handles OAuth2 logout
  */
 @WebServlet( name = "oauth2AuthLogout", urlPatterns = { "/servlet/plugins/oauth2/logout" } )
+@ApplicationScoped
 public class OAuthLogoutServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
+     @Inject
+    private CallbackHandlerService _callbackHandlerService;
 
     /**
      * {@inheritDoc }
@@ -62,7 +67,7 @@ public class OAuthLogoutServlet extends HttpServlet
         
         String strHandlerNameParam = request.getParameter( Constants.PARAMETER_HANDLER_NAME );
 
-        CallbackHandler handler = CallbackHandlerService.instance( ).getCallbackHandler( strHandlerNameParam );
+        CallbackHandler handler = _callbackHandlerService.getCallbackHandler( strHandlerNameParam );
 
         if ( handler == null )
         {

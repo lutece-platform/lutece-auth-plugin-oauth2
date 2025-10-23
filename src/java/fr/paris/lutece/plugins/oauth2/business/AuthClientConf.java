@@ -48,6 +48,21 @@ public class AuthClientConf implements Serializable
     private boolean _bPkce;
     private String _strPostLogoutRedirectUri;
 
+   public AuthClientConf( )
+    {
+    }
+
+
+    public AuthClientConf( String strClientId, String strClientSecret, String strRedirectUri, boolean bPublic, boolean bPkce, String strPostLogoutRedirectUri )
+    {
+        _strClientId = strClientId;
+        _strClientSecret = strClientSecret;
+        _strRedirectUri = strRedirectUri;
+        _bPublic = bPublic;
+        _bPkce = bPkce;
+        _strPostLogoutRedirectUri = strPostLogoutRedirectUri;
+    }
+
     /**
      * Returns the ClientId
      * 

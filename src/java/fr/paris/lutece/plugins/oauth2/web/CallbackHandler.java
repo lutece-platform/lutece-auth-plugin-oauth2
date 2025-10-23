@@ -40,6 +40,8 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -77,7 +79,35 @@ public class CallbackHandler implements Serializable
     private AuthClientConf _authClientConf;
     private JWTParser _jWTParser;
     private boolean _bDefault;
+   
+    private DataClientService _dataClientService;
+    
+    private TokenService _tokenService;
 
+
+    public CallbackHandler( )
+    {
+    }
+    /**constructor
+     * @param strHandlerName handler name
+     * @param authServerConf   authServerConf
+     * @param authClientConf authClientConf
+     * @param jWTParser jwtParser
+     * @param bDefault true if the handler is the default handler
+     */
+    public CallbackHandler( String strHandlerName, AuthServerConf authServerConf, AuthClientConf authClientConf, JWTParser jWTParser,boolean bDefault, DataClientService dataClientService, TokenService tokenService )
+    {
+        _authServerConf = authServerConf;
+        _authClientConf = authClientConf;
+        _jWTParser = jWTParser;
+        _bDefault = bDefault;
+        _dataClientService = dataClientService;
+        _tokenService = tokenService;
+        _handlerName=strHandlerName;
+    }
+
+
+    
     /**
      * @return the authServerConf
      */
@@ -143,7 +173,7 @@ public class CallbackHandler implements Serializable
     /*** Logout the user */
     void logout( HttpServletRequest request, HttpServletResponse response )
     {
-        DataClient dataClient = DataClientService.instance( ).getClient( request );
+        DataClient dataClient = _dataClientService.getClient( request );
         UrlItem url = new UrlItem( _authServerConf.getLogoutEndpointUri());
         url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
         try {
@@ -178,7 +208,7 @@ public class CallbackHandler implements Serializable
      */
     private void handleError( HttpServletRequest request, HttpServletResponse response, String strError )
     {
-        DataClient dataClient = DataClientService.instance( ).getClient( request );
+        DataClient dataClient = _dataClientService.getClient( request );
 
         if ( dataClient != null )
         {
@@ -217,7 +247,7 @@ public class CallbackHandler implements Serializable
         {
             HttpSession session = request.getSession( true );
 
-            DataClient dataClient = DataClientService.instance( ).getClient( request );
+            DataClient dataClient = _dataClientService.getClient( request );
 
             UrlItem url = new UrlItem( _authServerConf.getAuthorizationEndpointUri( ) );
             url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
@@ -283,7 +313,7 @@ public class CallbackHandler implements Serializable
         try
         {
             HttpSession session = request.getSession( );
-            DataClient dataClient = DataClientService.instance( ).getClient( request );
+            DataClient dataClient = _dataClientService.getClient( request );
             String strRedirectUri = generateRedirectUrl( request, dataClient );
             Token token = getToken( strRedirectUri, strCode, session );
             dataClient.handleToken( token, request, response );
@@ -329,7 +359,7 @@ public class CallbackHandler implements Serializable
             throws IOException, HttpAccessException, TokenValidationException
     {
 
-        return TokenService.getService( ).getToken( strRedirectUri, _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,
+        return _tokenService.getToken( strRedirectUri, _authClientConf, _authServerConf, strAuthorizationCode, session, _jWTParser,
                 getStoredNonce( session ),getStoredCodeVerifier(session) );
 
     }
@@ -689,7 +719,7 @@ public class CallbackHandler implements Serializable
         
         if ( stRedirectUrl == null )
         {
-            stRedirectUrl = DataClientService.instance( ).getDataClientUrl( request, dataClient.getName( ), getHandlerName( ) );
+            stRedirectUrl = _dataClientService.getDataClientUrl( request, dataClient.getName( ), getHandlerName( ) );
             url=new UrlItem(stRedirectUrl);
         
         }

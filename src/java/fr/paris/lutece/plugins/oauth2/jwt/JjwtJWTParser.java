@@ -64,9 +64,14 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 /**
  * Jjwt JWTParser
  */
+
+@ApplicationScoped
+@Named( "oauth2.jjwtJWTParser" )
 public class JjwtJWTParser implements JWTParser
 {
     private final Map<String, KeyLocator> _keyLocatorsMap = new ConcurrentHashMap<>( );

@@ -38,6 +38,12 @@ import fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -54,12 +60,52 @@ public class Oauth2ServerBeansProducer
      */
     @Produces
     @ApplicationScoped
-    @Named( "oauth2.server" )
-    public AuthServerConf produceAuthServerConf( 
-        @ConfigProperty( name = "oauth2.issuer" ) String issuer )
+    @Named( "oauth2.oIDCServer" )
+    public AuthServerConf produceOIDCAuthServerConf( 
+        @ConfigProperty( name = "oauth2.oIDCServer.issuer" ) Optional<String> issuer )
     {
         OIDCAuthServerConf conf = new OIDCAuthServerConf( );
-        conf.setIssuer( issuer );
+        conf.setName("oauth2.oIDCServer");
+        if ( issuer.isPresent( ) )
+        {
+            conf.setIssuer( issuer.get( ) );
+        }
         return conf;
+    }
+
+
+     /**
+     * Produces the OAuth2 server configuration bean
+     * 
+     * @param issuer The OAuth2 issuer URL
+     * @return The AuthServerConf instance
+     */
+    @Produces
+    @ApplicationScoped
+    @Named( "oauth2.server" )
+    public AuthServerConf produceAuthServerConf( 
+        @ConfigProperty( name = "oauth2.server.issuer" ) Optional<String> issuer,
+        @ConfigProperty( name = "oauth2.server.authorizationEndpointUri" ) Optional<String> authorizationEndpointUri,
+        @ConfigProperty( name = "oauth2.server.tokenEndpointUri" ) Optional<String> tokenEndpointUri,
+        @ConfigProperty( name = "oauth2.server.logoutEndpointUri" ) Optional<String> logoutEndpointUri,
+        @ConfigProperty( name = "oauth2.server.enableJwtParser", defaultValue = "false" ) boolean enableJwtParser,
+        @ConfigProperty( name = "oauth2.server.iDTokenSignatureAlgorithmNames" ) Optional<String> idTokenSignatureAlgorithmNames )
+    {
+        Set<String> algorithms = idTokenSignatureAlgorithmNames
+            .map( names -> Stream.of( names.split( "," ) )
+                .map( String::trim )
+                .collect( Collectors.toSet( ) ) )
+            .orElse( Set.of( ) );
+
+        return new AuthServerConf(
+            "oauth2.server",
+            issuer.orElse( "" ),
+            authorizationEndpointUri.orElse( "" ),
+            tokenEndpointUri.orElse( "" ),
+            logoutEndpointUri.orElse( "" ),
+            enableJwtParser,
+            algorithms,
+            logoutEndpointUri.orElse( "" )
+        );
     }
 }

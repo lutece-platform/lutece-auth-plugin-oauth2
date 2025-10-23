@@ -33,42 +33,34 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.oauth2.web.CallbackHandler;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 /**
  * 
  * CallbackHandlerService
  *
  */
+
+@ApplicationScoped
 public class CallbackHandlerService
 {
 
-    private static CallbackHandlerService _singleton;
+
+   @Inject  
+   private Instance<CallbackHandler>  _handlers;
    
 
     /** Private constructor */
-    private CallbackHandlerService( )
+    public CallbackHandlerService( )
     {
     }
 
-    /**
-     * Return the unique instance
-     * 
-     * @return The unique instance
-     */
-    public static synchronized CallbackHandlerService instance( )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = new CallbackHandlerService( );
-        }
-
-        return _singleton;
-    }
+    
 
     /**
      * Return Handler by name return the default handler if no name match
@@ -82,20 +74,19 @@ public class CallbackHandlerService
 
         CallbackHandler callbackHandler = null;
 
-        List<CallbackHandler> callBackList = SpringContextService.getBeansOfType( CallbackHandler.class );
 
-        if ( !StringUtils.isEmpty( name ) && callBackList.size( ) > 0 )
+        if ( !StringUtils.isEmpty( name ) && _handlers != null  )
         {
 
-            callbackHandler = callBackList.stream( ).filter( x -> name.equals( x.getHandlerName( ) ) ).findFirst( ).orElse( null );
+            callbackHandler = _handlers.stream( ).filter( x -> name.equals( x.getHandlerName( ) ) ).findFirst( ).orElse( null );
 
         }
 
         // getDefaultHandler
-        if ( callbackHandler == null )
+        if ( callbackHandler == null && _handlers != null  )
         {
 
-            callbackHandler = callBackList.stream( ).filter( x -> x.isDefault( ) ).findFirst( ).orElse( callBackList.stream( ).findFirst( ).orElse( null ) );
+            callbackHandler = _handlers.stream( ).filter( x -> x.isDefault( ) ).findFirst( ).orElse( _handlers.stream( ).findFirst( ).orElse( null ) );
 
         }
 

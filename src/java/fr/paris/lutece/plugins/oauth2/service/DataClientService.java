@@ -33,78 +33,34 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
 
 /**
  * DataClientService
  */
-public final class DataClientService
+@ApplicationScoped
+public class DataClientService
 {
-    private static DataClientService _singleton;
-    private static ConcurrentMap<String, DataClient> _mapClients;
-    private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
+   
+   @Inject  
+   private Instance<DataClient>  _dataClients;
 
-    /** Private constructor */
-    private DataClientService( )
+
+public DataClientService( )
     {
     }
 
-    /**
-     * Return the unique instance
-     * 
-     * @return The unique instance
-     */
-    public static synchronized DataClientService instance( )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = new DataClientService( );
-            initClients( );
-        }
-
-        return _singleton;
-    }
-
-    /**
-     * Init clients
-     */
-    private static void initClients( )
-    {
-        _mapClients = new ConcurrentHashMap<>( );
-
-        for ( DataClient client : SpringContextService.getBeansOfType( DataClient.class ) )
-        {
-            _mapClients.put( client.getName( ), client );
-            _logger.info( "New Oaut2 Data Client registered : " + client.getName( ) );
-        }
-    }
-
-    /**
-     * Gets a DataClient object for a given name
-     * 
-     * @param strName
-     *            The Data Client name
-     * @return The Data Client
-     */
-    public DataClient getClient( String strName )
-    {
-        return _mapClients.get( strName );
-    }
-
+   
     /**
      * Gets a DataClient object for a given name
      * 
@@ -144,6 +100,26 @@ public final class DataClientService
         return dataClient;
     }
 
+
+
+     /**
+     * Gets a DataClient object for a given name
+     * 
+     * @param strName
+     *            The Data Client name
+     * @return The Data Client
+     */
+    private DataClient getClient( String strName )
+    {
+        return _dataClients.stream()
+                .filter( dataClient -> StringUtils.equals ( dataClient.getName( ), strName ) )
+                .findFirst( )
+                .orElseThrow( () -> new IllegalArgumentException( "No DataClient found with name: " + strName ) );   
+        
+        
+    }
+
+
     /**
      * Gets a DataClient object for a given name
      * 
@@ -154,8 +130,8 @@ public final class DataClientService
     public DataClient getDefaultClient( HttpServletRequest request )
     {
 
-        return _mapClients.entrySet( ).stream( ).filter( x -> x.getValue( ).isDefault( ) ).map( x -> x.getValue( ) ).findFirst( )
-                .orElse( _mapClients.entrySet( ).stream( ).map( x -> x.getValue( ) ).findFirst( ).orElse( null ) );
+        return _dataClients.stream( ).filter( x -> x.isDefault( )).findFirst( )
+                .orElse( _dataClients.stream(   ).findFirst( ).orElse( null ) );
 
     }
 

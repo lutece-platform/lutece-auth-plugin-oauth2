@@ -34,17 +34,12 @@
 package fr.paris.lutece.plugins.oauth2.service;
 
 import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
-import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
-import fr.paris.lutece.plugins.oauth2.jwt.JWTParser;
-import fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser;
-import fr.paris.lutece.plugins.oauth2.web.CallbackHandler;
-import fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import java.util.Set;
+import java.util.Optional;
 
 /**
  * CDI Producer for OAuth2 Client-related beans
@@ -59,87 +54,33 @@ public class Oauth2ClientBeansProducer
      * @param clientSecret The OAuth2 client secret
      * @param isPublic Whether the client is public
      * @param isPkce Whether PKCE is enabled
+     * @param redirectUri The OAuth2 client redirect URI
+     * @param postLogoutRedirectUri The OAuth2 client post logout redirect URI
      * @return The AuthClientConf instance
      */
     @Produces
     @ApplicationScoped
     @Named( "oauth2.client" )
     public AuthClientConf produceAuthClientConf(
-        @ConfigProperty( name = "oauth2.clientId" ) String clientId,
-        @ConfigProperty( name = "oauth2.clientSecret" ) String clientSecret,
+        @ConfigProperty( name = "oauth2.client.clientId" ) Optional<String> clientId,
+        @ConfigProperty( name = "oauth2.client.clientSecret" ) Optional<String> clientSecret,
         @ConfigProperty( name = "oauth2.client.public", defaultValue = "false" ) boolean isPublic,
-        @ConfigProperty( name = "oauth2.client.pkce", defaultValue = "false" ) boolean isPkce )
+        @ConfigProperty( name = "oauth2.client.pkce", defaultValue = "false" ) boolean isPkce,
+        @ConfigProperty( name = "oauth2.client.redirectUri" ) Optional<String> redirectUri,
+        @ConfigProperty( name = "oauth2.client.postLogoutRedirectUri" ) Optional<String> postLogoutRedirectUri )
     {
-        AuthClientConf conf = new AuthClientConf( );
-        conf.setClientId( clientId );
-        conf.setClientSecret( clientSecret );
-        conf.setPublic( isPublic );
-        conf.setPkce( isPkce );
-        return conf;
+        return new AuthClientConf(
+            clientId.orElse( "" ),
+            clientSecret.orElse( "" ),
+            redirectUri.orElse( "" ),
+            isPublic,
+            isPkce,
+            postLogoutRedirectUri.orElse( "" )
+        );
     }
 
-    /**
-     * Produces the JWT parser bean
-     * 
-     * @return The JWTParser instance
-     */
-    @Produces
-    @ApplicationScoped
-    @Named( "oauth2.jwtParser" )
-    public JWTParser produceJWTParser( )
-    {
-        return new JjwtJWTParser( );
-    }
+   
 
-    /**
-     * Produces the callback handler bean
-     * 
-     * @param authServerConf The auth server configuration
-     * @param authClientConf The auth client configuration
-     * @param jwtParser The JWT parser
-     * @return The CallbackHandler instance
-     */
-    @Produces
-    @ApplicationScoped
-    @Named( "oauth2.callbackHandler" )
-    public CallbackHandler produceCallbackHandler(
-        @Named( "oauth2.server" ) AuthServerConf authServerConf,
-        @Named( "oauth2.client" ) AuthClientConf authClientConf,
-        @Named( "oauth2.jwtParser" ) JWTParser jwtParser )
-    {
-        CallbackHandler handler = new CallbackHandler( );
-        handler.setAuthServerConf( authServerConf );
-        handler.setAuthClientConf( authClientConf );
-        handler.setJWTParser( jwtParser );
-        handler.setDefault( true );
-        return handler;
-    }
-
-    /**
-     * Produces the LogUserInfoDataClient bean
-     * 
-     * @param name The dataclient name
-     * @param dataServerUri The data server URI
-     * @param tokenMethod The token method
-     * @param scopes The scopes as comma-separated string
-     * @return The LogUserInfoDataClient instance
-     */
-    @Produces
-    @ApplicationScoped
-    @Named( "oauth2.logUserInfoDataClient" )
-    public LogUserInfoDataClient produceLogUserInfoDataClient(
-        @ConfigProperty( name = "oauth2.dataclient.logUserInfo.name", defaultValue = "logUserInfo" ) String name,
-        @ConfigProperty( name = "oauth2.dataclient.logUserInfo.dataServerUri" ) String dataServerUri,
-        @ConfigProperty( name = "oauth2.dataclient.logUserInfo.tokenMethod", defaultValue = "HEADER" ) String tokenMethod,
-        @ConfigProperty( name = "oauth2.dataclient.logUserInfo.scopes", defaultValue = "openid,profile,email,address,phone" ) String scopes )
-    {
-        LogUserInfoDataClient client = new LogUserInfoDataClient( );
-        client.setName( name );
-        client.setDataServerUri( dataServerUri );
-        client.setTokenMethod( tokenMethod );
-        // Convert comma-separated scopes to Set
-        Set<String> scopeSet = Set.of( scopes.split( "," ) );
-        client.setScope( scopeSet );
-        return client;
-    }
+   
+   
 }

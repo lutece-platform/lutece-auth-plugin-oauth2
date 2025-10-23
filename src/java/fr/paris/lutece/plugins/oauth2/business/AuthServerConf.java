@@ -51,6 +51,22 @@ public class AuthServerConf implements Serializable
     private Set<String> _idTokenSignatureAlgorithmNames;
     private String _strJwksEndpointUri;
 
+    public AuthServerConf( )
+    {
+    }
+    public AuthServerConf( String strName, String strIssuer, String strAuthorizationEndpointUri, String strTokenEndpointUri,
+            String strLogoutEndpointUri, boolean bEnableJwtParser, Set<String> idTokenSignatureAlgorithmNames, String strJwksEndpointUri )
+    {
+        _strName = strName;
+        _strIssuer = strIssuer;
+        _strAuthorizationEndpointUri = strAuthorizationEndpointUri;
+        _strTokenEndpointUri = strTokenEndpointUri;
+        _strLogoutEndpointUri = strLogoutEndpointUri;
+        _bEnableJwtParser = bEnableJwtParser;
+        _idTokenSignatureAlgorithmNames = idTokenSignatureAlgorithmNames;
+        _strJwksEndpointUri = strJwksEndpointUri;
+    }
+
     /**
      * 
      * @return the servername
