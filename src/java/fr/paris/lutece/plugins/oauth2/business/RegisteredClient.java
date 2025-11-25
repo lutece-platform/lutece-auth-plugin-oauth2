@@ -33,8 +33,6 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
-import com.nimbusds.jose.Algorithm;
-
 import java.io.Serializable;
 
 import java.util.Iterator;
@@ -205,13 +203,4 @@ public class RegisteredClient implements Serializable
         return sbScopes.toString( );
     }
 
-    /**
-     * Return IDToken signed response Algorithm
-     * 
-     * @return The IDToken signed response Algorithm
-     */
-    public Algorithm getIdTokenSignedResponseAlg( )
-    {
-        return null;
-    }
 }

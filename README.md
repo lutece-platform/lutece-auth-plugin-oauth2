@@ -100,7 +100,6 @@ doit ensuite être paramétré avec les informationsdu service client (id, secre
         -->
      </bean>
 
-     <!--     <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /> -->
      <bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" />
         
 

@@ -121,7 +121,6 @@
         --&gt;
      &lt;/bean&gt;
 
-     &lt;!--     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /&gt; --&gt;
      &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" /&gt;
         
 

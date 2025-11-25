@@ -34,13 +34,6 @@
             <artifactId>library-httpaccess</artifactId>
             <version>[3.0.3-SNAPSHOT,3.9.9)</version>
         </dependency>
-        
-        <!-- Used by MITRE JWT Parser implementation -->
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>3.10</version>
-        </dependency>
 
         <!-- Used by JJWT JWT Parser implementation -->
         <dependency>
