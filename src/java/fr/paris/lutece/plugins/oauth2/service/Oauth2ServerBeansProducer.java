@@ -89,7 +89,9 @@ public class Oauth2ServerBeansProducer
         @ConfigProperty( name = "oauth2.server.tokenEndpointUri" ) Optional<String> tokenEndpointUri,
         @ConfigProperty( name = "oauth2.server.logoutEndpointUri" ) Optional<String> logoutEndpointUri,
         @ConfigProperty( name = "oauth2.server.enableJwtParser", defaultValue = "false" ) boolean enableJwtParser,
-        @ConfigProperty( name = "oauth2.server.iDTokenSignatureAlgorithmNames" ) Optional<String> idTokenSignatureAlgorithmNames )
+        @ConfigProperty( name = "oauth2.server.iDTokenSignatureAlgorithmNames" ) Optional<String> idTokenSignatureAlgorithmNames ,
+        @ConfigProperty( name = "oauth2.server.jwksEndpointUri" ) Optional<String> jwksEndpointUri
+    )
     {
         Set<String> algorithms = idTokenSignatureAlgorithmNames
             .map( names -> Stream.of( names.split( "," ) )
@@ -105,7 +107,7 @@ public class Oauth2ServerBeansProducer
             logoutEndpointUri.orElse( "" ),
             enableJwtParser,
             algorithms,
-            logoutEndpointUri.orElse( "" )
+            jwksEndpointUri.orElse( "" )
         );
     }
 }
