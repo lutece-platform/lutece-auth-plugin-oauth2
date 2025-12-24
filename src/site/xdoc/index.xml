@@ -29,106 +29,218 @@
             </subsection>
         </section>
         
-        <section name="Installation">
-        <subsection name="Configuration">
-       <p>
-           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml). 
-        </p>
-        <p>Pour la configuration client, utilisez une configuration du type</p>
-        <div class="source">
-<pre>           
-    &lt;bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf"&gt;
-        &lt;property name="clientId" value=" **** à renseigner **** "/&gt;
-        &lt;property name="clientSecret" value=" **** à renseigner **** "/&gt;
-        &lt;property name="redirectUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt;       
-</pre>
-</div>
-    <p>
-           Pour la configuration serveur, si le serveur OAuth supporte OpenID Connect, alors
-           seul le paramètre <code>issuer</code> est requis, en utilisant la class de configuration
-           <code>fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf</code>
-       </p>
-       <div class="source">
+        <section name="Configuration">
+                <subsection name="Properties Configuration (oauth2.properties)">
+                <p>
+                    Plugin configuration parameters can be externalized in the 
+                    <code>WEB-INF/conf/plugins/oauth2.properties</code> file for better environment management.
+                </p>
+
+                <h5>OAuth2 Client Configuration</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Default Value</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.clientId</code></td>
+                        <td>Client identifier registered with the OAuth2 provider</td>
+                        <td>&lt;required&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.clientSecret</code></td>
+                        <td>Client secret for authentication with the OAuth2 server</td>
+                        <td>&lt;required&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.public</code></td>
+                        <td>Indicates if the client is public (without secret)</td>
+                        <td>false</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.pkce</code></td>
+                        <td>Enables PKCE support (Proof Key for Code Exchange) for public clients</td>
+                        <td>false</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.redirectUri</code></td>
+                        <td>Redirect URI after authentication. Default: servlet/plugins/oauth2/callback</td>
+                        <td>servlet/plugins/oauth2/callback</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.client.postLogoutRedirectUri</code></td>
+                        <td>Redirect URI after logout. Default: Lutece home page</td>
+                        <td>Lutece home page</td>
+                    </tr>
+                </table>
+
+                <h5>OAuth2 Server Configuration (OpenID Connect)</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.oIDCServer.issuer</code></td>
+                        <td>Identity provider identifier (issuer) for OpenID Connect. 
+                        Used to automatically discover OAuth2 server endpoints</td>
+                    </tr>
+                </table>
+
+                <h5>OAuth2 Server Configuration (Direct)</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.issuer</code></td>
+                        <td>Unique identifier of the identity provider</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.authorizationEndpointUri</code></td>
+                        <td>URI of the authorization endpoint of the OAuth2 server</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.tokenEndpointUri</code></td>
+                        <td>URI of the token endpoint of the OAuth2 server</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.logoutEndpointUri</code></td>
+                        <td>URI of the logout endpoint of the OAuth2 server</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.enableJwtParser</code></td>
+                        <td>Enables JWT parsing if the server uses signed tokens</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.iDTokenSignatureAlgorithmNames</code></td>
+                        <td>Signature algorithms accepted for ID tokens (ex: HS512,RS256,RS512,ES256,ES512)</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.server.jwksEndpointUri</code></td>
+                        <td>URI of the JWKS endpoint to download public signature keys</td>
+                    </tr>
+                </table>
+
+                <h5>Callback Handler Configuration</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Values</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.callbackHandler.jwtParser</code></td>
+                        <td>JWT parser implementation</td>
+                        <td>oauth2.jjwtJWTParser or oauth2.mitreJWTParser</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.callbackHandler.default</code></td>
+                        <td>Indicates if this callback handler is the default one</td>
+                        <td>true / false</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.callbackHandler.server</code></td>
+                        <td>Reference to the OAuth2 server configuration bean</td>
+                        <td>oauth2.oIDCServer or oauth2.server</td>
+                    </tr>
+                </table>
+
+                <h5>LogUserInfo DataClient Configuration</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.dataclient.logUserInfo.dataServerUri</code></td>
+                        <td>URI of the userinfo endpoint of the OAuth2 server (ex: https://your-server.com/api/v1/userinfo)</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.dataclient.logUserInfo.tokenMethod</code></td>
+                        <td>Token transmission method (ex: HEADER for Authorization header)</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.dataclient.logUserInfo.scopes</code></td>
+                        <td>OAuth2 scopes requested (ex: openid,profile,email,address,phone)</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.dataclient.logUserInfo.acrValues</code></td>
+                        <td>Optional parameter for eIDAS (ex: eidas2) - specifies the required authentication level</td>
+                    </tr>
+                </table>
+
+                <h5>Global Configuration</h5>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Values</th>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.jwtParser</code></td>
+                        <td>Default JWT Parser implementation</td>
+                        <td>jjwt or mitre</td>
+                    </tr>
+                    <tr>
+                        <td><code>oauth2.error.page</code></td>
+                        <td>JSP page for OAuth2 error handling</td>
+                        <td>jsp/site/Portal.jsp?page=oauth2HandleError&amp;view=error</td>
+                    </tr>
+                </table>
+
+                <h5>Complete Configuration Example</h5>
+                <div class="source">
 <pre>
-    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf"&gt;
-        &lt;property name="issuer" value="${oauth2.issuer} "/&gt;
-    &lt;/bean&gt; 
+# OAuth2 Client Configuration
+oauth2.client.clientId=your-client-id
+oauth2.client.clientSecret=your-client-secret
+oauth2.client.public=false
+oauth2.client.pkce=false
+oauth2.client.redirectUri=
+oauth2.client.postLogoutRedirectUri=
+
+# OpenID Connect Server Configuration
+oauth2.oIDCServer.issuer=https://your-oidc-server.com
+
+# Callback Handler Configuration
+oauth2.callbackHandler.jwtParser=oauth2.jjwtJWTParser
+oauth2.callbackHandler.default=true
+oauth2.callbackHandler.server=oauth2.oIDCServer
+
+# DataClient LogUserInfo Configuration
+oauth2.dataclient.logUserInfo.dataServerUri=https://your-oidc-server.com/api/v1/userinfo
+oauth2.dataclient.logUserInfo.tokenMethod=HEADER
+oauth2.dataclient.logUserInfo.scopes=openid,profile,email,address,phone
+
+# Error handling
+oauth2.error.page=jsp/site/Portal.jsp?page=oauth2HandleError&amp;view=error
+
+# JWT Parser Implementation
+oauth2.jwtParser=jjwt
 </pre>
-        </div>
-        <p>La variable <code>oauth2.issuer</code> peut être définie dans un fichier de properties afin d'être adaptée aux différents environnements.</p>
-        <p>   
-           Une configuration directe est également possible, en utilisant la classe <code>fr.paris.lutece.plugins.oauth2.business.AuthServerConf</code> : 
-            <ul>
-                <li>Les adresses des WebServices la plate-forme Oauth2 cible (end points)</li>
-                <li>Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre
-                IDTokenSignatureAlgorithmNames soit être renseigné. Si les tokens ne
-                sont pas signés, alors le paramètre IDTokenSignatureAlgorithmNames ne doit pas être renseigné</li>
-                <li>Si le paramètre jwksEndpointUri est renseigné, les clefs de signature des token sont
-                téléchargées depuis cette adresse, qui doit pointer vers un fichier JWKS.</li>
-                <li>L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et 
-                associée à votre ID Client auprès du service Oauth2 utilisé. 
-      			</li>
-            </ul>
-            
-           doit ensuite être paramétré avec les informations 
-           du service client (id, secret et callback) :
-       </p>
-       <p>
-       <div class="source">
-<pre>           
-     
-    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf"&gt;
-        &lt;property name="issuer" value=" **** à renseigner **** "/&gt;
-        &lt;property name="authorizationEndpointUri"
-                                  value=" **** à renseigner **** "/&gt;
-        &lt;property name="tokenEndpointUri" value=" **** à renseigner **** "/&gt;
-        &lt;property name="logoutEndpointUri" value=" **** à renseigner **** "/&gt;
-        &lt;property name="enableJwtParser" value="****true si le serveur utilise JWT ****" /&gt;
-        &lt;property name="IDTokenSignatureAlgorithmNames"&gt;
-            &lt;set&gt;&lt;value&gt;HS512&lt;value&gt;&lt;/set&gt;
-        &lt;/property&gt;
-        &lt;property name="jwksEndpointUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt;  
-    
-    &lt;bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" &gt;
-       &lt;property name="authServerConf" ref="oauth2.server"&gt;
-       &lt;property name="authClientConf" ref="oauth2.client"&gt;
-       &lt;property name="jWTParser" ref="oauth2.jWTParser""&gt;
-    &lt;/bean&gt;      
-    
-    &lt;!-- DataClient UserInfo --&gt;
-   &lt;bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient"&gt;
-         &lt;property name="name" value="logUserInfo" /&gt;
-         &lt;property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/&gt;
-         &lt;property name="tokenMethod" value="HEADER"/&gt;
-         &lt;property name="scope"&gt;
-             &lt;set value-type="java.lang.String"&gt;
-                 &lt;value&gt;openid &lt;/value&gt;
-                 &lt;value&gt;profile &lt;/value&gt;
-                 &lt;value&gt;email &lt;/value&gt;
-                 &lt;value&gt;address &lt;/value&gt;
-                 &lt;value&gt;phone &lt;/value&gt;
-             &lt;/set&gt;
-         &lt;/property&gt;
-         &lt;!-- Optional eIDAS management --&gt;
-         &lt;!--
-         &lt;property name="acrValuesSet"&gt;
-             &lt;set value-type="java.lang.String"&gt;
-                 &lt;value&gt;eidas2 &lt;/value&gt;
-             &lt;/set&gt;
-         &lt;/property&gt;
-        --&gt;
-     &lt;/bean&gt;
+                </div>
 
-     &lt;!--     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /&gt; --&gt;
-     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" /&gt;
-        
-
-</pre>  
-       </div>        
-       </p>
-
+                <h5>Recommendations</h5>
+                <ul>
+                    <li><strong>Security:</strong> The <code>clientId</code> and <code>clientSecret</code> values should never 
+                    be hardcoded in production environments. Use a secrets management system 
+                    (environment variables, vaults, secure files, etc.)</li>
+                    
+                    <li><strong>OpenID Connect vs Direct Configuration:</strong> 
+                    If your OAuth2 server supports OpenID Connect, it is recommended to use <code>oauth2.oIDCServer.issuer</code> 
+                    for simpler and automatic configuration. Otherwise, use direct configuration with <code>oauth2.server.*</code></li>
+                    
+                    <li><strong>JWT Parser:</strong> The choice between JJWT and MITRE depends on your implementation. 
+                    JJWT is lighter, while Nimbus JOSE + JWT offers more features</li>
+                    
+                    <li><strong>PKCE:</strong> PKCE support is recommended for mobile applications and public clients</li>
+                    
+                    <li><strong>Scopes:</strong> Adjust the scope list according to the information you need 
+                    from the OAuth2 server</li>
+                </ul>
                 </subsection>
                 
             <subsection name="Dépannage">
