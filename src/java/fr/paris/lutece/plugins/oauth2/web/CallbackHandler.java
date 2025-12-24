@@ -716,8 +716,8 @@ public class CallbackHandler implements Serializable
     {
         String stRedirectUrl = _authClientConf.getRedirectUri( );
         UrlItem url = new UrlItem(stRedirectUrl);
-        
-        if ( stRedirectUrl == null )
+
+        if ( StringUtils.isEmpty( stRedirectUrl ) )
         {
             stRedirectUrl = _dataClientService.getDataClientUrl( request, dataClient.getName( ), getHandlerName( ) );
             url=new UrlItem(stRedirectUrl);
