@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,8 +73,10 @@ import jakarta.inject.Named;
 
 @ApplicationScoped
 @Named( "oauth2.jjwtJWTParser" )
-public class JjwtJWTParser implements JWTParser
+public class JjwtJWTParser implements JWTParser, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private final Map<String, KeyLocator> _keyLocatorsMap = new ConcurrentHashMap<>( );
     private final HttpAccess _httpAccess;
     private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);

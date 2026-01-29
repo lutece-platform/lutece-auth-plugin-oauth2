@@ -1,4 +1,4 @@
-/*
+    /*
  * Copyright (c) 2002-2025, City of Paris
  * All rights reserved.
  *
@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.jwt;
 
+import java.io.Serializable;
 import java.security.Key;
 
 import fr.paris.lutece.portal.service.util.AppException;
@@ -46,8 +47,10 @@ import io.jsonwebtoken.security.Jwks;
 /**
  * Key locator which fetches keys from a JWKS endpoint
  */
-public class KeyLocator extends LocatorAdapter<Key>
+public class KeyLocator extends LocatorAdapter<Key> implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private final String _strJwksEndpointUri;
     private final HttpAccess _httpAccess;
 

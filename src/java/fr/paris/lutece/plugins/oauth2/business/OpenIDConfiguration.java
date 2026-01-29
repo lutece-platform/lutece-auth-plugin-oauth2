@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -49,8 +50,10 @@ import fr.paris.lutece.portal.service.util.AppException;
  * @see https://openid.net/specs/openid-connect-rpinitiated-1_0.html
  * @since 2.0.0
  */
-public class OpenIDConfiguration
+public class OpenIDConfiguration implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private String _strIssuer;
     private String _strAuthorizationEndpoint;
     private String _strTokenEndpoint;

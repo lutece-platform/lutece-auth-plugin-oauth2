@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,8 +41,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Token
  */
-public class Token
+public class Token implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty( "access_token" )
     private String _strAccessToken;
     @JsonProperty( "token_type" )

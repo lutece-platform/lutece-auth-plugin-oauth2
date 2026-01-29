@@ -33,13 +33,16 @@
  */
 package fr.paris.lutece.plugins.oauth2.business;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * IDToken : informations provided by a JWT (Json Web Token)
  */
-public class IDToken
+public class IDToken implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private Set<String> _strAudience;
     private String _strExpiration;
     private String _strIssueAt;

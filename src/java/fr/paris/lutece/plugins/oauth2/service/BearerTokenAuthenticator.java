@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.oauth2.service;
 
+import java.io.Serializable;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,8 +46,10 @@ import fr.paris.lutece.util.signrequest.RequestAuthenticator;
  *
  * Add the access token into the request's header
  */
-public class BearerTokenAuthenticator implements RequestAuthenticator
+public class BearerTokenAuthenticator implements RequestAuthenticator, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private String _strAccessToken;
 
     /**

@@ -46,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -55,8 +56,9 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * DataClient
  */
-public abstract class AbstractDataClient implements DataClient
+public abstract class AbstractDataClient implements DataClient, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
 
     private static final char SEPARATOR = '+';

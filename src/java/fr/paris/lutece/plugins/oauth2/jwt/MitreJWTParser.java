@@ -55,6 +55,7 @@ import jakarta.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Serializable;
 import java.text.ParseException;
 
 import java.util.Date;
@@ -68,8 +69,10 @@ import java.util.HashSet;
 @ApplicationScoped
 @Named( "oauth2.mitreJWTParser" )
 
-public class MitreJWTParser implements JWTParser
+public class MitreJWTParser implements JWTParser, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     // Allow for time sync issues by having a window of X seconds.
     private int _nTimeSkewAllowance = 300;
     private static final Logger _logger = LogManager.getLogger(Constants.LOGGER_OAUTH2);
