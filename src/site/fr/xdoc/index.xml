@@ -32,103 +32,68 @@
         <section name="Installation">
         <subsection name="Configuration">
        <p>
-           Configurer le fichier de context du plugin (WEB-INF/conf/plugins/oauth2_context.xml). 
+           Toute la configuration se fait dans <code>WEB-INF/conf/plugins/oauth2.properties</code>. Le fichier de contexte
+           <code>WEB-INF/conf/plugins/oauth2_context.xml</code> ne contient que des r&#233;f&#233;rences <code>${...}</code> vers ces
+           propri&#233;t&#233;s et n'a pas &#224; &#234;tre modifi&#233; pour changer d'environnement.
         </p>
-        <p>Pour la configuration client, utilisez une configuration du type</p>
+        <p><b>Serveur (OpenID Connect)</b> : si le serveur supporte la d&#233;couverte OpenID Connect, seul l'issuer est requis
+           (classe <code>fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf</code>, bean <code>oauth2.server</code>).
+           Les endpoints sont lus dans <code>&lt;issuer&gt;/.well-known/openid-configuration</code>.</p>
         <div class="source">
-<pre>           
-    &lt;bean id="oauth2.client" class="fr.paris.lutece.plugins.oauth2.business.AuthClientConf"&gt;
-        &lt;property name="clientId" value=" **** à renseigner **** "/&gt;
-        &lt;property name="clientSecret" value=" **** à renseigner **** "/&gt;
-        &lt;property name="redirectUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt;       
+<pre>
+oauth2.issuer=https://fcp-low.sbx.dev-franceconnect.fr/api/v2
 </pre>
 </div>
-    <p>
-           Pour la configuration serveur, si le serveur OAuth supporte OpenID Connect, alors
-           seul le paramètre <code>issuer</code> est requis, en utilisant la class de configuration
-           <code>fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf</code>
-       </p>
-       <div class="source">
+        <p><b>Serveur (endpoints directs)</b> : remplacer le bean <code>oauth2.server</code> par la classe
+           <code>fr.paris.lutece.plugins.oauth2.business.AuthServerConf</code> (bloc comment&#233; dans le fichier de contexte) et
+           renseigner les cl&#233;s <code>oauth2.server.*</code> :</p>
+        <div class="source">
 <pre>
-    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.OIDCAuthServerConf"&gt;
-        &lt;property name="issuer" value="${oauth2.issuer} "/&gt;
-    &lt;/bean&gt; 
+oauth2.server.issuer=
+oauth2.server.authorizationEndpointUri=
+oauth2.server.tokenEndpointUri=
+oauth2.server.logoutEndpointUri=
+# si renseign&#233;, les clefs de signature sont t&#233;l&#233;charg&#233;es depuis ce fichier JWKS ; sinon le secret client est utilis&#233; (HMAC)
+oauth2.server.jwksEndpointUri=
+oauth2.server.enableJwtParser=true
+# liste des algorithmes accept&#233;s, s&#233;par&#233;s par des virgules ; laisser vide si les ID tokens ne sont pas sign&#233;s
+oauth2.server.iDTokenSignatureAlgorithmNames=HS512
 </pre>
-        </div>
-        <p>La variable <code>oauth2.issuer</code> peut être définie dans un fichier de properties afin d'être adaptée aux différents environnements.</p>
-        <p>   
-           Une configuration directe est également possible, en utilisant la classe <code>fr.paris.lutece.plugins.oauth2.business.AuthServerConf</code> : 
-            <ul>
-                <li>Les adresses des WebServices la plate-forme Oauth2 cible (end points)</li>
-                <li>Si le serveur utilise JWT et que les tokens sont signés, alors le paramètre
-                IDTokenSignatureAlgorithmNames soit être renseigné. Si les tokens ne
-                sont pas signés, alors le paramètre IDTokenSignatureAlgorithmNames ne doit pas être renseigné</li>
-                <li>Si le paramètre jwksEndpointUri est renseigné, les clefs de signature des token sont
-                téléchargées depuis cette adresse, qui doit pointer vers un fichier JWKS.</li>
-                <li>L'adresse du Callback du plugin (NB : Cette adresse doit être enregistrée et 
-                associée à votre ID Client auprès du service Oauth2 utilisé. 
-                </li>
-            </ul>
-            
-           doit ensuite être paramétré avec les informations 
-           du service client (id, secret et callback) :
-       </p>
-       <p>
-       <div class="source">
-<pre>           
-     
-    &lt;bean id="oauth2.server" class="fr.paris.lutece.plugins.oauth2.business.AuthServerConf"&gt;
-        &lt;property name="issuer" value=" **** à renseigner **** "/&gt;
-        &lt;property name="authorizationEndpointUri"
-                                  value=" **** à renseigner **** "/&gt;
-        &lt;property name="tokenEndpointUri" value=" **** à renseigner **** "/&gt;
-        &lt;property name="logoutEndpointUri" value=" **** à renseigner **** "/&gt;
-        &lt;property name="enableJwtParser" value="****true si le serveur utilise JWT ****" /&gt;
-        &lt;property name="IDTokenSignatureAlgorithmNames"&gt;
-            &lt;set&gt;&lt;value&gt;HS512&lt;value&gt;&lt;/set&gt;
-        &lt;/property&gt;
-        &lt;property name="jwksEndpointUri" value=" **** à renseigner **** "/&gt;
-    &lt;/bean&gt;  
-    
-    &lt;bean id="oauth2.callbackHandler" class="fr.paris.lutece.plugins.oauth2.web.CallbackHandler" &gt;
-       &lt;property name="authServerConf" ref="oauth2.server"&gt;
-       &lt;property name="authClientConf" ref="oauth2.client"&gt;
-       &lt;property name="jWTParser" ref="oauth2.jWTParser""&gt;
-    &lt;/bean&gt;      
-    
-    &lt;!-- DataClient UserInfo --&gt;
-   &lt;bean id="oauth2.logUserInfoDataClient" class="fr.paris.lutece.plugins.oauth2.dataclient.LogUserInfoDataClient"&gt;
-         &lt;property name="name" value="logUserInfo" /&gt;
-         &lt;property name="dataServerUri" value="https://fcp.integ01.dev-oauth2.fr/api/v1/userinfo"/&gt;
-         &lt;property name="tokenMethod" value="HEADER"/&gt;
-         &lt;property name="scope"&gt;
-             &lt;set value-type="java.lang.String"&gt;
-                 &lt;value&gt;openid &lt;/value&gt;
-                 &lt;value&gt;profile &lt;/value&gt;
-                 &lt;value&gt;email &lt;/value&gt;
-                 &lt;value&gt;address &lt;/value&gt;
-                 &lt;value&gt;phone &lt;/value&gt;
-             &lt;/set&gt;
-         &lt;/property&gt;
-         &lt;!-- Optional eIDAS management --&gt;
-         &lt;!--
-         &lt;property name="acrValuesSet"&gt;
-             &lt;set value-type="java.lang.String"&gt;
-                 &lt;value&gt;eidas2 &lt;/value&gt;
-             &lt;/set&gt;
-         &lt;/property&gt;
-        --&gt;
-     &lt;/bean&gt;
+</div>
+        <p><b>Client</b> (bean <code>oauth2.client</code>, classe <code>AuthClientConf</code>) :</p>
+        <div class="source">
+<pre>
+oauth2.clientId=
+oauth2.clientSecret=
+# client public : le secret n'est pas envoy&#233; au token endpoint
+oauth2.client.public=false
+# PKCE (code challenge S256)
+oauth2.client.pkce=false
+# vide = URL de la servlet de callback (&lt;base url&gt;/servlet/plugins/oauth2/callback)
+oauth2.client.redirectUri=
+# vide = URL de base du site
+oauth2.client.postLogoutRedirectUri=
+</pre>
+</div>
+        <p>L'URL de callback doit &#234;tre enregistr&#233;e et associ&#233;e &#224; votre ID client aupr&#232;s du fournisseur OAuth2.</p>
+        <p><b>Handler et DataClient</b> :</p>
+        <div class="source">
+<pre>
+oauth2.callbackHandler.default=true
 
-     &lt;!--     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.oidc.jwt.MitreJWTParser" /&gt; --&gt;
-     &lt;bean id="oauth2.jwtParser" class="fr.paris.lutece.plugins.oauth2.jwt.JjwtJWTParser" /&gt;
-        
+# DataClient d'exemple LogUserInfo (bean oauth2.logUserInfoDataClient, comment&#233; par d&#233;faut dans le fichier de contexte)
+#oauth2.dataclient.logUserInfo.dataServerUri=https://fcp-low.sbx.dev-franceconnect.fr/api/v2/userinfo
+#oauth2.dataclient.logUserInfo.tokenMethod=HEADER
+#oauth2.dataclient.logUserInfo.scopes=openid,profile,email
+#oauth2.dataclient.logUserInfo.acrValues=eidas1
 
-</pre>  
-       </div>        
-       </p>
-
+# page d'erreur
+oauth2.error.page=jsp/site/Portal.jsp?page=oauth2HandleError&amp;view=error
+</pre>
+</div>
+        <p>Le DataClient r&#233;el est fourni par le module consommateur (par exemple le module MyLutece Oauth2). Le bean d'exemple
+           <code>oauth2.logUserInfoDataClient</code> n'est &#224; d&#233;commenter que pour tester le plugin seul.
+           Les listes (scopes, acrValues, algorithmes) sont s&#233;par&#233;es par des virgules.</p>
                 </subsection>
                 
             <subsection name="Dépannage">
