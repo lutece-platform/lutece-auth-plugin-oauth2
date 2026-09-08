@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.oauth2.business;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * OAuth RegisteredClient
  */
@@ -116,9 +118,15 @@ public class AuthClientConf implements Serializable
      * @param strRedirectUri
      *            The RedirectUri
      */
+    /**
+     * Sets the redirect URI. A blank value is stored as null so that the callback servlet URL is used by default.
+     * 
+     * @param strRedirectUri
+     *            the redirect URI, may be blank
+     */
     public void setRedirectUri( String strRedirectUri )
     {
-        _strRedirectUri = strRedirectUri;
+        _strRedirectUri = StringUtils.isBlank( strRedirectUri ) ? null : strRedirectUri;
     }
 
 	public boolean isPublic() {
@@ -140,8 +148,14 @@ public class AuthClientConf implements Serializable
      * Sets the PostLogoutRedirectUri
      * @param strPostLogoutRedirectUri The PostLogoutRedirectUri
      */
+    /**
+     * Sets the post logout redirect URI. A blank value is stored as null so that the Lutece base URL is used by default.
+     * 
+     * @param strPostLogoutRedirectUri
+     *            the post logout redirect URI, may be blank
+     */
     public void setPostLogoutRedirectUri( String strPostLogoutRedirectUri )
     {
-        _strPostLogoutRedirectUri = strPostLogoutRedirectUri;
+        _strPostLogoutRedirectUri = StringUtils.isBlank( strPostLogoutRedirectUri ) ? null : strPostLogoutRedirectUri;
     }
 }
