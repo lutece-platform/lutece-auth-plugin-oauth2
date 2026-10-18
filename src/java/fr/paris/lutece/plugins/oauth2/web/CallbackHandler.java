@@ -152,6 +152,11 @@ public class CallbackHandler implements Serializable
      */
     void handle( HttpServletRequest request, HttpServletResponse response )
     {
+        if ( !checkDataClient( request, response ) )
+        {
+            return;
+        }
+
         String strError = request.getParameter( Constants.PARAMETER_ERROR );
         String strCode = request.getParameter( Constants.PARAMETER_CODE );
 
@@ -173,6 +178,11 @@ public class CallbackHandler implements Serializable
     /*** Logout the user */
     void logout( HttpServletRequest request, HttpServletResponse response )
     {
+        if ( !checkDataClient( request, response ) )
+        {
+            return;
+        }
+
         DataClient dataClient = _dataClientService.getClient( request );
         UrlItem url = new UrlItem( _authServerConf.getLogoutEndpointUri());
         url.addParameter( Constants.PARAMETER_CLIENT_ID, _authClientConf.getClientId( ) );
@@ -218,18 +228,57 @@ public class CallbackHandler implements Serializable
         else
         {
             // default method if there is no dataclient
-            try
-            {
-                UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
-                url.addParameter( Constants.PARAMETER_ERROR, strError );
-                _logger.info( strError );
-                response.sendRedirect( url.getUrl( ) );
-            }
-            catch( IOException ex )
-            {
+            _logger.info( strError );
+            redirectToErrorPage( request, response, strError );
+        }
+    }
 
-                _logger.error( "Error redirecting to the error page : " + ex.getMessage( ), ex );
-            }
+    /**
+     * Checks that the data client asked in the request exists. An unknown data client is logged and the user is redirected to the error page,
+     * instead of an error 500.
+     *
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
+     * @return true if the request asks no data client or an existing one, false if the response has been sent
+     */
+    private boolean checkDataClient( HttpServletRequest request, HttpServletResponse response )
+    {
+        String strDataClientName = request.getParameter( Constants.PARAMETER_DATA_CLIENT );
+
+        if ( StringUtils.isEmpty( strDataClientName ) || _dataClientService.isDataClient( strDataClientName ) )
+        {
+            return true;
+        }
+
+        _logger.warn( "OAuth2 callback : no data client found with the name {}", SecurityUtil.logForgingProtect( strDataClientName ) );
+        redirectToErrorPage( request, response, Constants.ERROR_TYPE_UNKNOWN_DATA_CLIENT );
+
+        return false;
+    }
+
+    /**
+     * Redirects to the error page of the plugin
+     *
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
+     * @param strError
+     *            The Error message
+     */
+    private void redirectToErrorPage( HttpServletRequest request, HttpServletResponse response, String strError )
+    {
+        try
+        {
+            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
+            url.addParameter( Constants.PARAMETER_ERROR, strError );
+            response.sendRedirect( url.getUrl( ) );
+        }
+        catch( IOException ex )
+        {
+            _logger.error( "Error redirecting to the error page : " + ex.getMessage( ), ex );
         }
     }
 

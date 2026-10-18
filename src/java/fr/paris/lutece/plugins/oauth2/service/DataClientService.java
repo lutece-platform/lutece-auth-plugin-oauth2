@@ -102,6 +102,18 @@ public DataClientService( )
 
 
 
+    /**
+     * Tells whether a DataClient exists for a given name
+     * 
+     * @param strName
+     *            The Data Client name
+     * @return true if a DataClient has this name
+     */
+    public boolean isDataClient( String strName )
+    {
+        return _dataClients.stream( ).anyMatch( dataClient -> StringUtils.equals( dataClient.getName( ), strName ) );
+    }
+
      /**
      * Gets a DataClient object for a given name
      * 
