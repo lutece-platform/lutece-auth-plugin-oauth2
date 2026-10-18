@@ -560,18 +560,23 @@ public class CallbackHandler implements Serializable
      * 
      * @param request
      *            The HTTP request
-     * @return True if the state is valid
+     * @return True if the state is the one stored in the session by the authorization request. A missing state is refused (login CSRF), and a
+     *         state is used once.
      */
     private boolean checkState( HttpServletRequest request )
     {
         String strState = request.getParameter( Constants.PARAMETER_STATE );
         HttpSession session = request.getSession( );
         String strStored = getStoredState( session );
-        boolean bCheck = ( ( strState == null ) || strState.equals( strStored ) );
+        boolean bCheck = ( strState != null ) && strState.equals( strStored );
 
-        if ( !bCheck )
+        if ( bCheck )
         {
-            _logger.debug( "Bad state returned by server : " + SecurityUtil.logForgingProtect( strState ) + " while expecting : " + strStored );
+            session.removeAttribute( getStateAttributeSessionName( ) );
+        }
+        else
+        {
+            _logger.warn( "Bad state returned by server : {}", ( strState != null ) ? SecurityUtil.logForgingProtect( strState ) : "none" );
         }
 
         return bCheck;

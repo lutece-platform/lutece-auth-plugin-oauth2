@@ -37,11 +37,13 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.mocks.MockHttpServletRequest;
 import fr.paris.lutece.test.mocks.MockHttpServletResponse;
 import jakarta.enterprise.inject.Vetoed;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * CallbackHandler Test: unknown data client
@@ -76,6 +78,12 @@ public class CallbackHandlerTest extends LuteceTestCase
         {
             return false;
         }
+
+        @Override
+        public DataClient getClient( HttpServletRequest request )
+        {
+            return null;
+        }
     }
 
     private CallbackHandler getHandler( )
@@ -107,5 +115,39 @@ public class CallbackHandlerTest extends LuteceTestCase
 
         assertNotNull( response._strRedirectUrl );
         assertTrue( response._strRedirectUrl.contains( Constants.ERROR_TYPE_UNKNOWN_DATA_CLIENT ) );
+    }
+
+    /**
+     * An authorization code without state is refused (login CSRF): no token request, redirect to the error page
+     */
+    @Test
+    public void testCodeWithoutState( )
+    {
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+        request.addParameter( Constants.PARAMETER_CODE, "code" );
+        RedirectResponse response = new RedirectResponse( );
+
+        getHandler( ).handle( request, response );
+
+        assertNotNull( response._strRedirectUrl );
+        assertTrue( response._strRedirectUrl.contains( Constants.ERROR_TYPE_INVALID_STATE ) );
+    }
+
+    /**
+     * An authorization code with a state that is not the one of the session is refused
+     */
+    @Test
+    public void testCodeWithWrongState( )
+    {
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+        request.addParameter( Constants.PARAMETER_CODE, "code" );
+        request.addParameter( Constants.PARAMETER_STATE, "forged" );
+        request.getSession( true ).setAttribute( "test" + Constants.STATE_SESSION_VARIABLE, "expected" );
+        RedirectResponse response = new RedirectResponse( );
+
+        getHandler( ).handle( request, response );
+
+        assertNotNull( response._strRedirectUrl );
+        assertTrue( response._strRedirectUrl.contains( Constants.ERROR_TYPE_INVALID_STATE ) );
     }
 }
