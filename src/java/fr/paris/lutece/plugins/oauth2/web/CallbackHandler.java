@@ -229,7 +229,7 @@ public class CallbackHandler implements Serializable
         else
         {
             // default method if there is no dataclient
-            _logger.info( strError );
+            _logger.info( "OAuth2 error : {}", ( ) -> SecurityUtil.logForgingProtect( StringUtils.defaultString( strError ) ) );
             redirectToErrorPage( request, response, strError );
         }
     }

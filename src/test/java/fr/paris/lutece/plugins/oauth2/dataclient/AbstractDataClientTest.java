@@ -36,6 +36,15 @@ package fr.paris.lutece.plugins.oauth2.dataclient;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +61,7 @@ import jakarta.enterprise.inject.Vetoed;
 public class AbstractDataClientTest extends LuteceTestCase
 {
     private static final String ERROR = "a&b c=d";
+    private static final String ERROR_MULTILINE = "access_denied\nINFO second line";
 
     /**
      * Response that keeps the redirect URL (not a CDI bean)
@@ -65,6 +75,26 @@ public class AbstractDataClientTest extends LuteceTestCase
         public void sendRedirect( String strUrl ) throws IOException
         {
             _strRedirectUrl = strUrl;
+        }
+    }
+
+    /**
+     * Appender that keeps the logged messages (not a CDI bean)
+     */
+    @Vetoed
+    private static class ListAppender extends AbstractAppender
+    {
+        private final List<String> _listMessages = new ArrayList<>( );
+
+        ListAppender( )
+        {
+            super( "AbstractDataClientTest", null, null, true, Property.EMPTY_ARRAY );
+        }
+
+        @Override
+        public void append( LogEvent event )
+        {
+            _listMessages.add( event.getMessage( ).getFormattedMessage( ) );
         }
     }
 
@@ -103,5 +133,37 @@ public class AbstractDataClientTest extends LuteceTestCase
 
         assertNotNull( response._strRedirectUrl );
         assertEquals( ERROR, getParameter( response._strRedirectUrl, Constants.PARAMETER_ERROR ), response._strRedirectUrl );
+    }
+
+    /**
+     * A line break in the error is not written as is in the log: every line of the error is marked as user data
+     */
+    @Test
+    public void testHandleErrorLogsTheErrorAsUserData( )
+    {
+        Logger logger = (Logger) LogManager.getLogger( Constants.LOGGER_OAUTH2 );
+        Level level = logger.getLevel( );
+        ListAppender appender = new ListAppender( );
+        appender.start( );
+        logger.addAppender( appender );
+        logger.setLevel( Level.INFO );
+
+        try
+        {
+            new LogUserInfoDataClient( ).handleError( new MockHttpServletRequest( ), new RedirectResponse( ), ERROR_MULTILINE );
+        }
+        finally
+        {
+            logger.removeAppender( appender );
+            logger.setLevel( level );
+            appender.stop( );
+        }
+
+        assertFalse( appender._listMessages.isEmpty( ) );
+
+        for ( String strMessage : appender._listMessages )
+        {
+            assertFalse( strMessage.contains( "\nINFO second line" ), strMessage );
+        }
     }
 }

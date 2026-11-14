@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.oauth2.service.BearerTokenAuthenticator;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
@@ -291,7 +292,7 @@ public abstract class AbstractDataClient implements DataClient, Serializable
         {
             UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( Constants.PROPERTY_ERROR_PAGE ) );
             url.addParameter( Constants.PARAMETER_ERROR, URLEncoder.encode( StringUtils.defaultString( strError ), StandardCharsets.UTF_8 ) );
-            _logger.info( strError );
+            _logger.info( "OAuth2 error : {}", ( ) -> SecurityUtil.logForgingProtect( StringUtils.defaultString( strError ) ) );
             response.sendRedirect( url.getUrl( ) );
         }
         catch( IOException ex )
