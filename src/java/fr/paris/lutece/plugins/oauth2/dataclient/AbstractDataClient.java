@@ -42,11 +42,14 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -287,7 +290,7 @@ public abstract class AbstractDataClient implements DataClient, Serializable
         try
         {
             UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( Constants.PROPERTY_ERROR_PAGE ) );
-            url.addParameter( Constants.PARAMETER_ERROR, strError );
+            url.addParameter( Constants.PARAMETER_ERROR, URLEncoder.encode( StringUtils.defaultString( strError ), StandardCharsets.UTF_8 ) );
             _logger.info( strError );
             response.sendRedirect( url.getUrl( ) );
         }

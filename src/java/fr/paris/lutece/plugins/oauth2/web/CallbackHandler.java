@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -273,7 +274,7 @@ public class CallbackHandler implements Serializable
         try
         {
             UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPropertiesService.getProperty( PROPERTY_ERROR_PAGE ) );
-            url.addParameter( Constants.PARAMETER_ERROR, strError );
+            url.addParameter( Constants.PARAMETER_ERROR, URLEncoder.encode( StringUtils.defaultString( strError ), StandardCharsets.UTF_8 ) );
             response.sendRedirect( url.getUrl( ) );
         }
         catch( IOException ex )

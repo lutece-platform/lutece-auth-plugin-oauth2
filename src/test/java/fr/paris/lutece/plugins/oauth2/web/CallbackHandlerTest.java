@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClientTest;
 import fr.paris.lutece.plugins.oauth2.dataclient.DataClient;
 import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.test.LuteceTestCase;
@@ -149,5 +150,21 @@ public class CallbackHandlerTest extends LuteceTestCase
 
         assertNotNull( response._strRedirectUrl );
         assertTrue( response._strRedirectUrl.contains( Constants.ERROR_TYPE_INVALID_STATE ) );
+    }
+
+    /**
+     * The error given by the authorization server is put in the URL of the error page as one parameter
+     */
+    @Test
+    public void testProviderErrorKeptWhole( )
+    {
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+        request.addParameter( Constants.PARAMETER_ERROR, "a&b c=d" );
+        RedirectResponse response = new RedirectResponse( );
+
+        getHandler( ).handle( request, response );
+
+        assertNotNull( response._strRedirectUrl );
+        assertEquals( "a&b c=d", AbstractDataClientTest.getParameter( response._strRedirectUrl, Constants.PARAMETER_ERROR ), response._strRedirectUrl );
     }
 }
