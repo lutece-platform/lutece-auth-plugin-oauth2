@@ -1,4 +1,11 @@
-<div>
-	<p>Une erreur est survenue: <strong>${error!}</strong>.
-	<p>Veuillez nous excuser pour la gêne occasionnée</p>
-</div>
+<@cTpl>
+<@cContainer>
+	<@cTitle level=1>#i18n{oauth2.handleError.title}</@cTitle>
+	<#if error?has_content>
+	<p>#i18n{oauth2.handleError.labelError} <strong>${error}</strong></p>
+	<#else>
+	<p>#i18n{oauth2.handleError.labelErrorUnknown}</p>
+	</#if>
+	<p>#i18n{oauth2.handleError.labelApology}</p>
+</@cContainer>
+</@cTpl>
