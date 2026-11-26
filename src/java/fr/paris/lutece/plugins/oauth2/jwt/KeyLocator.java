@@ -35,12 +35,20 @@ package fr.paris.lutece.plugins.oauth2.jwt;
 
 import java.io.Serializable;
 import java.security.Key;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.paris.lutece.plugins.oauth2.web.Constants;
 
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.LocatorAdapter;
+import io.jsonwebtoken.security.Jwk;
 import io.jsonwebtoken.security.JwkSet;
 import io.jsonwebtoken.security.Jwks;
 
@@ -50,6 +58,9 @@ import io.jsonwebtoken.security.Jwks;
 public class KeyLocator extends LocatorAdapter<Key> implements Serializable
 {
     private static final long serialVersionUID = 1L;
+    private static final String PARAMETER_USE = "use";
+    private static final String USE_SIGNATURE = "sig";
+    private static final Logger _logger = LogManager.getLogger( Constants.LOGGER_OAUTH2 );
 
     private final String _strJwksEndpointUri;
     private final HttpAccess _httpAccess;
@@ -85,7 +96,25 @@ public class KeyLocator extends LocatorAdapter<Key> implements Serializable
     {
         String jwks = _httpAccess.doGet( _strJwksEndpointUri );
         JwkSet jwkSet = Jwks.setParser( ).build( ).parse( jwks );
-        return jwkSet.getKeys( ).stream( ).filter( k -> k.getId( ).equals( keyId ) ).map( k -> k.toKey( ) ).findFirst( ).orElse( null );
+        // the "kid" of a JWK is optional (RFC 7517): keys without one never match a token that names its key
+        List<Jwk<?>> listCandidates = jwkSet.getKeys( ).stream( )
+                .filter( k -> ( keyId == null ) || keyId.equals( k.getId( ) ) )
+                .filter( k -> ( k.get( PARAMETER_USE ) == null ) || USE_SIGNATURE.equals( k.get( PARAMETER_USE ) ) )
+                .collect( Collectors.toList( ) );
+
+        if ( keyId != null && !listCandidates.isEmpty( ) )
+        {
+            return listCandidates.get( 0 ).toKey( );
+        }
+        if ( keyId == null && listCandidates.size( ) == 1 )
+        {
+            // a token without kid can only be verified when the set has exactly one usable key
+            return listCandidates.get( 0 ).toKey( );
+        }
+
+        // no key: the parser refuses the token, which follows the normal error path of the sign-in
+        _logger.error( "No key of the JWKS {} matches the id_token (kid: {}, candidate keys: {})", _strJwksEndpointUri, keyId, listCandidates.size( ) );
+        return null;
     }
 
 }
