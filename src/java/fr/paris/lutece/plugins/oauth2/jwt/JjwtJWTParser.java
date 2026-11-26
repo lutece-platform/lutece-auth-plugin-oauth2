@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -231,7 +232,8 @@ public class JjwtJWTParser implements JWTParser, Serializable
     {
         JwtParserBuilder parserBuilder = Jwts.parser( );
 
-        if ( serverConfig.getJwksEndpointUri( ) != null )
+        // the oauth2.server producer gives an empty URI when none is configured: the client secret is then the key
+        if ( StringUtils.isNotBlank( serverConfig.getJwksEndpointUri( ) ) )
         {
             parserBuilder.keyLocator( getKeyLocator( serverConfig.getJwksEndpointUri( ) ) );
         }

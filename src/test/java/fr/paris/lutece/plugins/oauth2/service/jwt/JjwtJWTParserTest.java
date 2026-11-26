@@ -141,6 +141,27 @@ public class JjwtJWTParserTest
     }
 
     /**
+     * AX-10: the oauth2.server producer gives an empty JWKS URL when none is configured; the id_token must then be
+     * verified with the client secret (HS512 of the shipped configuration), not fetched from an empty URL
+     */
+    @Test
+    public void testParseJWTEmptyJwksUriUsesClientSecret( ) throws Exception
+    {
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( ) );
+
+        AuthClientConf clientConfig = new AuthClientConf( );
+        clientConfig.setClientSecret( SECRET );
+
+        AuthServerConf serverConfig = new AuthServerConf( );
+        serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
+        serverConfig.setJwksEndpointUri( "" );
+        new JjwtJWTParser( ).parseJWT( token, clientConfig, serverConfig, NONCE );
+
+        assertNotNull( token.getIdToken( ) );
+    }
+
+    /**
      * Test of parseJWT method, of class JjwtJWTParser.
      */
     @Test
