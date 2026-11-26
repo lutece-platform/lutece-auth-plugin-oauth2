@@ -45,6 +45,8 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
  */
 public class LogUserInfoDataClient extends AbstractDataClient
 {
+    private static final String ERROR_TYPE_USERINFO = "ERROR_RETRIEVING_USER_INFO";
+
 
     /**
      * {@inheritDoc }
@@ -55,6 +57,13 @@ public class LogUserInfoDataClient extends AbstractDataClient
 
         String strData = getData( token );
         _logger.debug( "UserInfo retrieved  after Authentication " + strData );
+
+        if ( strData == null )
+        {
+            // getData has already logged the HTTP error of the userinfo endpoint
+            handleError( request, response, ERROR_TYPE_USERINFO );
+            return;
+        }
 
         try
         {
