@@ -119,6 +119,19 @@ public class KeyLocatorTest extends LuteceTestCase
     }
 
     /**
+     * Shape of the provider's JWKS seen on the bench: a copy of its key WITHOUT kid placed first, then the same key
+     * material with kid=default; the token names kid=default and must be verified
+     */
+    @Test
+    public void testSameKeyWithAndWithoutKid( ) throws Exception
+    {
+        KeyPair signer = rsa( );
+        String strJwt = Jwts.builder( ).header( ).keyId( "default" ).and( ).subject( "s" ).signWith( signer.getPrivate( ) ).compact( );
+
+        assertDoesNotThrow( ( ) -> parse( strJwt, jwks( new String [ ] { null, "default" }, signer, signer ) ) );
+    }
+
+    /**
      * Token without kid, the JWKS has exactly one key: it is used
      */
     @Test

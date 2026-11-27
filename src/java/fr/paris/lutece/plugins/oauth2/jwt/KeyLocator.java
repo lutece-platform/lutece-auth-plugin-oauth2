@@ -35,8 +35,13 @@ package fr.paris.lutece.plugins.oauth2.jwt;
 
 import java.io.Serializable;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +54,6 @@ import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.LocatorAdapter;
 import io.jsonwebtoken.security.Jwk;
-import io.jsonwebtoken.security.JwkSet;
 import io.jsonwebtoken.security.Jwks;
 
 /**
@@ -58,7 +62,9 @@ import io.jsonwebtoken.security.Jwks;
 public class KeyLocator extends LocatorAdapter<Key> implements Serializable
 {
     private static final long serialVersionUID = 1L;
+    private static final String PARAMETER_KEYS = "keys";
     private static final String PARAMETER_USE = "use";
+    private static final ObjectMapper MAPPER = new ObjectMapper( );
     private static final String USE_SIGNATURE = "sig";
     private static final Logger _logger = LogManager.getLogger( Constants.LOGGER_OAUTH2 );
 
@@ -92,12 +98,48 @@ public class KeyLocator extends LocatorAdapter<Key> implements Serializable
         }
     }
 
+    /**
+     * Parses each key of a JWKS document on its own. The key set of jjwt is a set compared on the key material: the
+     * same key published twice (with and without kid) is kept only once, possibly without its kid, so the keys are not
+     * read through it. A key that cannot be parsed (unsupported type, invalid parameters) is skipped.
+     *
+     * @param strJwks
+     *            the JWKS document
+     * @return the keys, in the order of the document
+     */
+    private List<Jwk<?>> parseKeys( String strJwks )
+    {
+        List<Jwk<?>> listKeys = new ArrayList<>( );
+
+        try
+        {
+            JsonNode nodeKeys = MAPPER.readTree( strJwks ).path( PARAMETER_KEYS );
+
+            for ( JsonNode nodeKey : nodeKeys )
+            {
+                try
+                {
+                    listKeys.add( Jwks.parser( ).build( ).parse( MAPPER.writeValueAsString( nodeKey ) ) );
+                }
+                catch( RuntimeException ex )
+                {
+                    _logger.warn( "A key of the JWKS {} is skipped: {}", _strJwksEndpointUri, ex.getMessage( ) );
+                }
+            }
+        }
+        catch( JsonProcessingException ex )
+        {
+            _logger.error( "The JWKS {} is not valid JSON: {}", _strJwksEndpointUri, ex.getMessage( ) );
+        }
+
+        return listKeys;
+    }
+
     private Key getKey( String keyId ) throws HttpAccessException
     {
         String jwks = _httpAccess.doGet( _strJwksEndpointUri );
-        JwkSet jwkSet = Jwks.setParser( ).build( ).parse( jwks );
         // the "kid" of a JWK is optional (RFC 7517): keys without one never match a token that names its key
-        List<Jwk<?>> listCandidates = jwkSet.getKeys( ).stream( )
+        List<Jwk<?>> listCandidates = parseKeys( jwks ).stream( )
                 .filter( k -> ( keyId == null ) || keyId.equals( k.getId( ) ) )
                 .filter( k -> ( k.get( PARAMETER_USE ) == null ) || USE_SIGNATURE.equals( k.get( PARAMETER_USE ) ) )
                 .collect( Collectors.toList( ) );
