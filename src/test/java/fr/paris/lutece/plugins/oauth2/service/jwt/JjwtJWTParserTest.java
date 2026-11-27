@@ -141,6 +141,35 @@ public class JjwtJWTParserTest
     }
 
     /**
+     * A client secret too short for HMAC (here 4 bytes) must refuse the token through TokenValidationException, never
+     * escape as a WeakKeyException (HTTP 500)
+     */
+    @Test
+    public void testParseJWTShortClientSecretIsRefused( ) throws Exception
+    {
+        Token token = new Token( );
+        token.setIdTokenString( buildJWT( ) );
+
+        AuthClientConf clientConfig = new AuthClientConf( );
+        clientConfig.setClientSecret( "stub" );
+
+        AuthServerConf serverConfig = new AuthServerConf( );
+        serverConfig.setIDTokenSignatureAlgorithmNames( Set.of( "HS512" ) );
+        serverConfig.setJwksEndpointUri( "" );
+
+        try
+        {
+            new JjwtJWTParser( ).parseJWT( token, clientConfig, serverConfig, NONCE );
+        }
+        catch( TokenValidationException e )
+        {
+            // expected: the normal error path of the sign-in
+            return;
+        }
+        fail( "Validation should have failed" );
+    }
+
+    /**
      * AX-10: the oauth2.server producer gives an empty JWKS URL when none is configured; the id_token must then be
      * verified with the client secret (HS512 of the shipped configuration), not fetched from an empty URL
      */

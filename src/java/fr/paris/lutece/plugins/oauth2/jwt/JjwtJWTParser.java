@@ -38,6 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.crypto.SecretKey;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +66,7 @@ import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.KeyException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -221,6 +224,39 @@ public class JjwtJWTParser implements JWTParser, Serializable
     }
     
     /**
+     * Builds the HMAC key of the client secret, used to verify the id_token when no JWKS endpoint is configured
+     *
+     * @param clientConfig
+     *            the client configuration
+     * @return the key
+     * @throws TokenValidationException
+     *             if the client secret is missing or too short for HMAC: the token is refused through the normal error path
+     */
+    private SecretKey getClientSecretKey( AuthClientConf clientConfig ) throws TokenValidationException
+    {
+        String strSecret = clientConfig.getClientSecret( );
+
+        if ( StringUtils.isEmpty( strSecret ) )
+        {
+            _logger.error( "OAuth2 id_token validation: no client secret to verify the HMAC signature (no JWKS endpoint configured)" );
+            throw new TokenValidationException( "No client secret to verify the id_token" );
+        }
+
+        byte [ ] secret = strSecret.getBytes( StandardCharsets.UTF_8 );
+
+        try
+        {
+            return Keys.hmacShaKeyFor( secret );
+        }
+        catch( KeyException ex )
+        {
+            _logger.error( "OAuth2 id_token validation: the client secret is {} bytes, too short for an HMAC signature (HS256 needs at least 32 bytes, HS384 48, HS512 64): {}",
+                    secret.length, ex.getMessage( ) );
+            throw new TokenValidationException( "Client secret too short for the HMAC verification of the id_token", ex );
+        }
+    }
+
+    /**
      * Get claims
      * @param strCompactJwt
      * @param clientConfig
@@ -239,7 +275,7 @@ public class JjwtJWTParser implements JWTParser, Serializable
         }
         else
         {
-            parserBuilder.verifyWith( Keys.hmacShaKeyFor( clientConfig.getClientSecret( ).getBytes( StandardCharsets.UTF_8 ) ) );
+            parserBuilder.verifyWith( getClientSecretKey( clientConfig ) );
         }
 
         JwtParser parser = parserBuilder.build( );
